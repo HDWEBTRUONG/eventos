@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">edix</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings"></string>
+    <string name="normal_button">aaaa</string>
+    <string name="title_bar_name"></string>
+    <string name="infoButton">情報</string>
+    <string name="error_message_data_access">データにアクセスできません</string>
+    <string name="error_message">ネットワークに繋がっていない \n可能性があります。\n通信環境の良い場所へ \n移動して下さい。</string>
+    <string name="update_button_message">更新する</string>
+
+</resources>

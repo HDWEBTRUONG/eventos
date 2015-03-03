@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+    <TextView
+        android:id="@+id/error_message_data_access"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/error_message_data_access"
+        android:textColor="@color/gray"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="150px"/>
+    <ImageView
+        android:id="@+id/smart_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/smart_phone"
+        android:paddingTop="300px"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:id="@+id/error_message_update"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/error_message"
+        android:textColor="@color/gray"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:paddingTop="600px"/>
+    <Button
+        android:id="@+id/update_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/update_button"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="56dp"
+        android:text="@string/update_button_message"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

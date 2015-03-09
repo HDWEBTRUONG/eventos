@@ -7,16 +7,12 @@
 
     <include layout="@layout/title_bar_menu"
         android:id="@+id/title_bar"/>
-    <TextView
-        android:id="@+id/webview_error_page"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"
-        android:text="ページの取得に失敗しました"
-        android:textColor="@android:color/black"
-        android:textSize="20dp"
-        android:visibility="gone" />
     <!-- コンテンツのレイアウト -->
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <WebView
         android:id="@+id/webView1"
         android:layout_width="match_parent"
@@ -24,4 +20,16 @@
         android:layout_marginRight="20px"
         android:layout_marginLeft="20px"
         />
+    </android.support.v4.widget.SwipeRefreshLayout>
+    <include layout="@layout/error_page"
+        android:id="@+id/error_page"/>
+    <ProgressBar
+        android:id="@+id/loading_spinner"
+        android:layout_marginTop="600px"
+        style="@android:style/Widget.ProgressBar.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone" />
 </LinearLayout>

@@ -12,18 +12,30 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class SubMenu extends Activity {
 
     private WebView myWebView;
     private boolean mIsFailure = false;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private String uuid;
+    private Map<String, String> extraHeaders;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
+         //UUIDの取得
+         uuid = UUID.randomUUID().toString();
          //メニューリストを表示
          setContentView(R.layout.menu_list);
+
+         extraHeaders = new HashMap<String, String>();
+         extraHeaders.put("UUID", uuid);
+
          //レイアウトで指定したWebViewのIDを指定する。
          myWebView = (WebView)findViewById(R.id.webView1);
          //リンクをタップしたときに標準ブラウザを起動させない
@@ -31,7 +43,7 @@ public class SubMenu extends Activity {
          // JS利用を許可する
          myWebView.getSettings().setJavaScriptEnabled(true);
          //最初にホーム画面のページを表示する。
-         myWebView.loadUrl(Constants.SUB_MENU_URL);
+         myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
 
          overridePendingTransition(R.anim.right_in, R.anim.nothing);
 

@@ -9,14 +9,21 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import biz.appvisor.push.android.sdk.AppVisorPush;
 
@@ -26,6 +33,13 @@ public class MainActivity extends Activity {
     private AppVisorPush appVisorPush;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String active_url = Constants.HOME_URL;
+    private String device_token;
+    private Map<String, String> extraHeaders;
+    private ImageView imageView;
+    private EditText etitText;
+    private static String TAG = "myTag";
+    private String responce;
+    private MyHttpSender myJsonSender;
     //レイアウトで指定したWebViewのIDを指定する。
 
     private boolean mIsFailure = false;
@@ -33,6 +47,12 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //UUIDの取得
+        device_token = UUID.randomUUID().toString().replace("-","").replace(" ","");
+
+        extraHeaders = new HashMap<String, String>();
+        extraHeaders.put("user_id", device_token);
+
         //ホーム画面の設定
         setContentView(R.layout.activity_main);
 
@@ -49,9 +69,28 @@ public class MainActivity extends Activity {
         myWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         if(!mIsFailure){
-            //最初にホーム画面のページを表示する。
-            myWebView.loadUrl(active_url);
+            if (device_token != null){
+                //最初にホーム画面のページを表示する。
+                myWebView.loadUrl(active_url,extraHeaders);
+            }
         }
+
+//        HttpURLConnection con = null;
+//        // URLの作成
+//        URL url = new URL(active_url);
+//
+//        // 接続用HttpURLConnectionオブジェクト作成
+//        con = (HttpURLConnection)url.openConnection();
+//        // リクエストメソッドの設定
+//        con.setRequestMethod("POST");
+//        // リダイレクトを自動で許可しない設定
+//        con.setInstanceFollowRedirects(false);
+//        // ヘッダーの設定(複数設定可能)
+//        con.setRequestProperty("device_token",device_token);
+//
+//        // 接続
+//        con.connect();
+
 
         //ズーム機能を有効にする
         myWebView.setVerticalScrollbarOverlay(true);
@@ -61,17 +100,6 @@ public class MainActivity extends Activity {
 
         myWebView.getSettings().setLoadWithOverviewMode(true);
         myWebView.getSettings().setUseWideViewPort(true);
-//        myWebView.getSettings().setSupportZoom(true);
-//
-//        try{
-//            Field nameField = myWebView.getSettings().getClass().getDeclaredField("mBuiltInZoomControls");
-//            nameField.setAccessible(true);
-//            nameField.set(myWebView.getSettings(), false);
-//
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
-
 
         myWebView.setWebViewClient(mWebViewClient);
 
@@ -100,9 +128,7 @@ public class MainActivity extends Activity {
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 //URLを表示する
-//                myWebView.setWebViewClient(mWebViewClient_err);
-
-                myWebView.loadUrl(active_url);
+                myWebView.loadUrl(active_url,extraHeaders);
             }
         });
 
@@ -121,6 +147,42 @@ public class MainActivity extends Activity {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
+
+        Log.d("device_token",device_token);
+
+
+        // device_tokenをJSON形式で登録する
+//        List< String [] > list = new ArrayList< String [] >();
+//        list.add ( new String[] { device_token } );
+
+        try {
+
+//            // 引数にサーバーのURLを入れる。
+//            myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
+//            myJsonSender.mData = myJsonSender.createJson ( (ArrayList< String[] > ) list );
+//            myJsonSender.start ();
+//            myJsonSender.join ();
+
+
+            // 引数にサーバーのURLを入れる。
+            myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
+            myJsonSender.mData = device_token ;
+            myJsonSender.start ();
+            myJsonSender.join ();
+
+
+            // responseがあればログ出力する。
+            if ( myJsonSender.mResponse != null ) {
+                Log.i ( "message", myJsonSender.mResponse );
+            }
+
+        } catch ( InterruptedException e ) {
+
+            e.printStackTrace ();
+            Log.i ( "JSON", e.toString () );
+
+        }
+
     }
 
     @Override
@@ -166,7 +228,7 @@ public class MainActivity extends Activity {
                     Bundle bundle = data.getExtras();
                     active_url = bundle.getString("key.url", "");
                     if (null != myWebView) {
-                        myWebView.loadUrl(active_url);
+                        myWebView.loadUrl(active_url,extraHeaders);
                     }
                 }
                 break;
@@ -194,6 +256,7 @@ public class MainActivity extends Activity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)) {
+                MainActivity.this.myWebView.loadUrl(url, MainActivity.this.extraHeaders);
                 return false;
             }else{
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
@@ -228,8 +291,6 @@ public class MainActivity extends Activity {
                 findViewById(R.id.swipe_refresh_layout).setVisibility(View.GONE);
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
-
-//                mIsFailure = false;
             }else {
                 if (url.equals(Constants.HOME_URL)) {
                     active_url = url;
@@ -245,6 +306,7 @@ public class MainActivity extends Activity {
                     findViewById(R.id.webView1).setVisibility(View.VISIBLE);
                     //エラーページを非表示にする
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
+
                 } else if ((url.indexOf(Constants.GOOGLEMAP_URL) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)) {
                     active_url = url;
                     // SwipeRefreshLayoutの設定
@@ -285,24 +347,6 @@ public class MainActivity extends Activity {
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     textView.setText(myWebView.getTitle());
-//                }else if(url.indexOf(Constants.GOOGLEMAP_URL) != -1){
-//                    active_url = url;
-//                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-//                    mSwipeRefreshLayout.setEnabled(true);
-//                    //スピナを非表示にする。
-//                    findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-//                    //ホーム以外の場合はタイトルバーを表示する
-//                    findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
-//                    //SWIPEを表示にする。
-//                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-//                    //WEBVIEWを表示にする
-//                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
-//                    //エラーページを非表示にする
-//                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
-//                    // IDからTextViewインスタンスを取得
-//                    TextView textView = (TextView) findViewById(R.id.content_text);
-//                    // 表示するテキストの設定
-//                    textView.setText(Constants.GOOGLEMAP_TITLE);
                 } else {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);

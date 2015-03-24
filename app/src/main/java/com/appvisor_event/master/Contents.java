@@ -1,6 +1,5 @@
 package com.appvisor_event.master;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SubMenu extends Activity {
+public class Contents {
 
     private WebView myWebView;
     private boolean mIsFailure = false;
@@ -27,30 +26,30 @@ public class SubMenu extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         //UUIDの取得
-         uuid = UUID.randomUUID().toString();
-         //メニューリストを表示
-         setContentView(R.layout.menu_list);
+        super.onCreate(savedInstanceState);
+        //UUIDの取得
+        uuid = UUID.randomUUID().toString();
+        //メニューリストを表示
+        setContentView(R.layout.menu_list);
 
-         extraHeaders = new HashMap<String, String>();
-         extraHeaders.put("UUID", uuid);
+        extraHeaders = new HashMap<String, String>();
+        extraHeaders.put("UUID", uuid);
 
-         //レイアウトで指定したWebViewのIDを指定する。
-         myWebView = (WebView)findViewById(R.id.webView1);
-         //リンクをタップしたときに標準ブラウザを起動させない
-         myWebView.setWebViewClient(new WebViewClient());
-         // JS利用を許可する
-         myWebView.getSettings().setJavaScriptEnabled(true);
-         //最初にホーム画面のページを表示する。
-         myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+        //レイアウトで指定したWebViewのIDを指定する。
+        myWebView = (WebView)findViewById(R.id.webView1);
+        //リンクをタップしたときに標準ブラウザを起動させない
+        myWebView.setWebViewClient(new WebViewClient());
+        // JS利用を許可する
+        myWebView.getSettings().setJavaScriptEnabled(true);
+        //最初にホーム画面のページを表示する。
+        myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
 
-         overridePendingTransition(R.anim.right_in, R.anim.nothing);
+        overridePendingTransition(R.anim.right_in, R.anim.nothing);
 
-         myWebView.setWebViewClient(mWebViewClient);
+        myWebView.setWebViewClient(mWebViewClient);
 
-         ImageButton menu_buttom = (ImageButton)findViewById(R.id.menu_buttom_return);
-         menu_buttom.setOnClickListener(new View.OnClickListener() {
+        ImageButton menu_buttom = (ImageButton)findViewById(R.id.menu_buttom_return);
+        menu_buttom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
@@ -59,8 +58,8 @@ public class SubMenu extends Activity {
 
                 overridePendingTransition(R.anim.nothing,R.anim.right_out);
 
-             }
-            });
+            }
+        });
 
         Button update_button = (Button)findViewById(R.id.update_button);
 

@@ -3,25 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/title_bar_color">
+    android:background="@android:color/white">
 
-    <include layout="@layout/title_bar_menu"
+    <include layout="@layout/activity_main_title"
         android:id="@+id/title_bar"/>
-    <!-- コンテンツのレイアウト -->
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginRight="20px"
-        android:layout_marginLeft="20px">
-    <WebView
-        android:id="@+id/webView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginRight="20px"
-        android:layout_marginLeft="20px"
-        />
+        android:layout_height="match_parent">
+        <!-- コンテンツのレイアウト -->
+        <WebView
+            android:id="@+id/webView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
     </android.support.v4.widget.SwipeRefreshLayout>
     <include layout="@layout/error_page"
         android:id="@+id/error_page"/>

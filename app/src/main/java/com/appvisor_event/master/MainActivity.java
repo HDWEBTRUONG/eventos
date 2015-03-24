@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,9 +15,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -35,14 +32,10 @@ public class MainActivity extends Activity {
     private String active_url = Constants.HOME_URL;
     private String device_token;
     private Map<String, String> extraHeaders;
-    private ImageView imageView;
-    private EditText etitText;
-    private static String TAG = "myTag";
-    private String responce;
     private MyHttpSender myJsonSender;
     //レイアウトで指定したWebViewのIDを指定する。
-
     private boolean mIsFailure = false;
+    private Handler mHandler = new Handler();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -74,23 +67,6 @@ public class MainActivity extends Activity {
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         }
-
-//        HttpURLConnection con = null;
-//        // URLの作成
-//        URL url = new URL(active_url);
-//
-//        // 接続用HttpURLConnectionオブジェクト作成
-//        con = (HttpURLConnection)url.openConnection();
-//        // リクエストメソッドの設定
-//        con.setRequestMethod("POST");
-//        // リダイレクトを自動で許可しない設定
-//        con.setInstanceFollowRedirects(false);
-//        // ヘッダーの設定(複数設定可能)
-//        con.setRequestProperty("device_token",device_token);
-//
-//        // 接続
-//        con.connect();
-
 
         //ズーム機能を有効にする
         myWebView.setVerticalScrollbarOverlay(true);
@@ -150,19 +126,7 @@ public class MainActivity extends Activity {
 
         Log.d("device_token",device_token);
 
-
-        // device_tokenをJSON形式で登録する
-//        List< String [] > list = new ArrayList< String [] >();
-//        list.add ( new String[] { device_token } );
-
         try {
-
-//            // 引数にサーバーのURLを入れる。
-//            myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
-//            myJsonSender.mData = myJsonSender.createJson ( (ArrayList< String[] > ) list );
-//            myJsonSender.start ();
-//            myJsonSender.join ();
-
 
             // 引数にサーバーのURLを入れる。
             myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
@@ -255,21 +219,14 @@ public class MainActivity extends Activity {
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)) {
+            active_url = url;
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
                 MainActivity.this.myWebView.loadUrl(url, MainActivity.this.extraHeaders);
                 return false;
             }else{
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
-        }
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-            findViewById(R.id.loading_spinner).setVisibility(View.VISIBLE);
-            findViewById(R.id.title_bar).setVisibility(View.GONE);
-            findViewById(R.id.webView1).setVisibility(View.GONE);
-            findViewById(R.id.error_page).setVisibility(View.GONE);
         }
         /**
          * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
@@ -281,8 +238,6 @@ public class MainActivity extends Activity {
                 mIsFailure = true;
             }
             if (mIsFailure) {
-                //スピナを非表示にする。
-                findViewById(R.id.loading_spinner).setVisibility(View.GONE);
                 //ホーム以外の場合はタイトルバーを表示する
                 findViewById(R.id.title_bar).setVisibility(View.GONE);
                 //WEBVIEWを非表示にする。
@@ -296,8 +251,6 @@ public class MainActivity extends Activity {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
                     mSwipeRefreshLayout.setEnabled(true);
-                    //スピナを非表示にする。
-                    findViewById(R.id.loading_spinner).setVisibility(View.GONE);
                     //ホームの場合はタイトルバーを非表示にする
                     findViewById(R.id.title_bar).setVisibility(View.GONE);
                     //SWIPEを表示にする。
@@ -311,12 +264,19 @@ public class MainActivity extends Activity {
                     active_url = url;
                     // SwipeRefreshLayoutの設定
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-                    //スピナを非表示にする。
-                    findViewById(R.id.loading_spinner).setVisibility(View.GONE);
                     //SWIPEを表示にする。
                     findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-                    //ホーム以外の場合はタイトルバーを表示する
-                    findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
+                    if (findViewById(R.id.title_bar).getVisibility() == View.GONE)
+                    {
+                        findViewById(R.id.title_bar).setVisibility(View.INVISIBLE);
+                    }
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //ホーム以外の場合はタイトルバーを表示する
+                            findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
+                        }
+                    }, 150);
                     //WEBVIEWを表示にする
                     findViewById(R.id.webView1).setVisibility(View.VISIBLE);
                     //エラーページを非表示にする
@@ -327,16 +287,23 @@ public class MainActivity extends Activity {
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     textView.setText(Constants.GOOGLEMAP_TITLE);
-                } else if (url.equals(Constants.BOOTH_URL)) {
+                } else if ((url.indexOf(Constants.BOOTH_URL) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
                     active_url = url;
                     // SwipeRefreshLayoutの設定
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-                    //スピナを非表示にする。
-                    findViewById(R.id.loading_spinner).setVisibility(View.GONE);
                     //SWIPEを表示にする。
                     findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-                    //ホーム以外の場合はタイトルバーを表示する
-                    findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
+                    if (findViewById(R.id.title_bar).getVisibility() == View.GONE)
+                    {
+                        findViewById(R.id.title_bar).setVisibility(View.INVISIBLE);
+                    }
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //ホーム以外の場合はタイトルバーを表示する
+                            findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
+                        }
+                    }, 150);
                     //WEBVIEWを表示にする
                     findViewById(R.id.webView1).setVisibility(View.VISIBLE);
                     //エラーページを非表示にする
@@ -351,10 +318,17 @@ public class MainActivity extends Activity {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
                     mSwipeRefreshLayout.setEnabled(true);
-                    //スピナを非表示にする。
-                    findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-                    //ホーム以外の場合はタイトルバーを表示する
-                    findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
+//                    if (findViewById(R.id.title_bar).getVisibility() == View.GONE)
+//                    {
+//                        findViewById(R.id.title_bar).setVisibility(View.INVISIBLE);
+//                    }
+//                    mHandler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            //ホーム以外の場合はタイトルバーを表示する
+                            findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
+//                        }
+//                    }, 150);
                     //SWIPEを表示にする。
                     findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
                     //WEBVIEWを表示にする
@@ -368,6 +342,8 @@ public class MainActivity extends Activity {
                 }
             }
         }
+
+
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {

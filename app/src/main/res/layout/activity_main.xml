@@ -21,13 +21,4 @@
     </android.support.v4.widget.SwipeRefreshLayout>
     <include layout="@layout/error_page"
         android:id="@+id/error_page"/>
-    <ProgressBar
-        android:id="@+id/loading_spinner"
-        android:layout_marginTop="600px"
-        style="@android:style/Widget.ProgressBar.Inverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        android:visibility="gone" />
 </LinearLayout>

@@ -24,8 +24,6 @@ public class Constants {
     public static final String GOOGLEMAP_URL = "www.google.com/maps";
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL2 = "maps.google.com/maps";
-    // GoogleMapのタイトル
-    public static final String GOOGLEMAP_TITLE = "アクセス";
     // ユーザー取得のためのAPI_
     public static final String REGISTER_API_URL = "http://stg-api.appvisor-event.com/" + Event + "/api/users/register.json";
     //PUSHの設定値

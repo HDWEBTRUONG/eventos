@@ -262,7 +262,7 @@ public class Contents extends Activity{
                     // IDからTextViewインスタンスを取得
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
-                    textView.setText(Constants.GOOGLEMAP_TITLE);
+                    textView.setText(myWebView.getTitle());
                 } else if ((url.indexOf(Constants.BOOTH_URL) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
                     active_url = url;
                     // SwipeRefreshLayoutの設定

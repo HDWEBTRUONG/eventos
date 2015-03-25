@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -44,6 +45,8 @@ public class SubMenu extends Activity {
          myWebView.getSettings().setJavaScriptEnabled(true);
          //最初にホーム画面のページを表示する。
          myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+         //CATHEを使用しない
+         myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
          overridePendingTransition(R.anim.right_in, R.anim.nothing);
 
@@ -124,6 +127,7 @@ public class SubMenu extends Activity {
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             mIsFailure = true;
+            myWebView.loadUrl("");
         }
     };
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {

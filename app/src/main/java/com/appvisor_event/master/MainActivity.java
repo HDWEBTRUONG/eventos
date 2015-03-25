@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,8 +16,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +34,6 @@ public class MainActivity extends Activity {
     private MyHttpSender myJsonSender;
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
-    private Handler mHandler = new Handler();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -49,9 +47,6 @@ public class MainActivity extends Activity {
         //ホーム画面の設定
         setContentView(R.layout.activity_main);
 
-        //タイトルバーを非表示
-        findViewById(R.id.title_bar).setVisibility(View.GONE);
-
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
 
@@ -59,7 +54,7 @@ public class MainActivity extends Activity {
         myWebView.getSettings().setJavaScriptEnabled(true);
 
         //CATHEを使用しない
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
         if(!mIsFailure){
             if (device_token != null){
@@ -80,20 +75,6 @@ public class MainActivity extends Activity {
         myWebView.setWebViewClient(mWebViewClient);
 
         myWebView.goBack();
-
-        ImageButton btn = (ImageButton) findViewById(R.id.menu_buttom);
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                // インテントのインスタンス生成
-                Intent intent = new Intent(MainActivity.this, SubMenu.class);
-                int requestCode = 1;
-                startActivityForResult(intent, requestCode);
-
-            }
-        });
 
         Button update_button = (Button)findViewById(R.id.update_button);
 
@@ -183,24 +164,6 @@ public class MainActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case 1:
-                if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    active_url = bundle.getString("key.url", "");
-                    if (null != myWebView) {
-                        myWebView.loadUrl(active_url,extraHeaders);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
@@ -221,25 +184,25 @@ public class MainActivity extends Activity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
-                MainActivity.this.myWebView.loadUrl(url, MainActivity.this.extraHeaders);
+                MainActivity.this.myWebView.stopLoading();
                 return false;
             }else{
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
+
         }
         /**
          * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
          */
+
         @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
             if(url.equals(Constants.ERROR_URL)){
                 mIsFailure = true;
             }
             if (mIsFailure) {
-                //ホーム以外の場合はタイトルバーを表示する
-                findViewById(R.id.title_bar).setVisibility(View.GONE);
                 //WEBVIEWを非表示にする。
                 findViewById(R.id.webView1).setVisibility(View.GONE);
                 //SWIPEを非表示にする。
@@ -251,103 +214,29 @@ public class MainActivity extends Activity {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
                     mSwipeRefreshLayout.setEnabled(true);
-                    //ホームの場合はタイトルバーを非表示にする
-                    findViewById(R.id.title_bar).setVisibility(View.GONE);
                     //SWIPEを表示にする。
                     findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
                     //WEBVIEWを表示にする
                     findViewById(R.id.webView1).setVisibility(View.VISIBLE);
                     //エラーページを非表示にする
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
-
-                } else if ((url.indexOf(Constants.GOOGLEMAP_URL) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)) {
-                    active_url = url;
-                    // SwipeRefreshLayoutの設定
-                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-                    //SWIPEを表示にする。
-                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-                    if (findViewById(R.id.title_bar).getVisibility() == View.GONE)
-                    {
-                        findViewById(R.id.title_bar).setVisibility(View.INVISIBLE);
-                    }
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //ホーム以外の場合はタイトルバーを表示する
-                            findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
-                        }
-                    }, 150);
-                    //WEBVIEWを表示にする
-                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
-                    //エラーページを非表示にする
-                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
-                    //更新処理はできなくする
-                    mSwipeRefreshLayout.setEnabled(false);
-                    // IDからTextViewインスタンスを取得
-                    TextView textView = (TextView) findViewById(R.id.content_text);
-                    // 表示するテキストの設定
-                    textView.setText(Constants.GOOGLEMAP_TITLE);
-                } else if ((url.indexOf(Constants.BOOTH_URL) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
-                    active_url = url;
-                    // SwipeRefreshLayoutの設定
-                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-                    //SWIPEを表示にする。
-                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-                    if (findViewById(R.id.title_bar).getVisibility() == View.GONE)
-                    {
-                        findViewById(R.id.title_bar).setVisibility(View.INVISIBLE);
-                    }
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //ホーム以外の場合はタイトルバーを表示する
-                            findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
-                        }
-                    }, 150);
-                    //WEBVIEWを表示にする
-                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
-                    //エラーページを非表示にする
-                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
-                    //更新処理はできなくする
-                    mSwipeRefreshLayout.setEnabled(false);
-                    // IDからTextViewインスタンスを取得
-                    TextView textView = (TextView) findViewById(R.id.content_text);
-                    // 表示するテキストの設定
-                    textView.setText(myWebView.getTitle());
                 } else {
                     active_url = url;
-                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-                    mSwipeRefreshLayout.setEnabled(true);
-//                    if (findViewById(R.id.title_bar).getVisibility() == View.GONE)
-//                    {
-//                        findViewById(R.id.title_bar).setVisibility(View.INVISIBLE);
-//                    }
-//                    mHandler.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            //ホーム以外の場合はタイトルバーを表示する
-                            findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
-//                        }
-//                    }, 150);
-                    //SWIPEを表示にする。
-                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-                    //WEBVIEWを表示にする
-                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
-                    //エラーページを非表示にする
-                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
-                    // IDからTextViewインスタンスを取得
-                    TextView textView = (TextView) findViewById(R.id.content_text);
-                    // 表示するテキストの設定
-                    textView.setText(myWebView.getTitle());
+                    // TODO Auto-generated method stub
+                    // インテントのインスタンス生成
+                    Intent intent = new Intent(MainActivity.this, Contents.class);
+                    Log.d("active_url",active_url);
+                    intent.putExtra("key.url", active_url);
+                    // サブ画面の呼び出し
+                    startActivity(intent);
                 }
             }
         }
 
-
-
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             mIsFailure = true;
+            myWebView.loadUrl("");
         }
     };
 }

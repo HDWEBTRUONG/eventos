@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import biz.appvisor.push.android.sdk.AppVisorPush;
 
@@ -39,10 +38,11 @@ public class Contents extends Activity{
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //UUIDの取得
-        device_token = UUID.randomUUID().toString().replace("-","").replace(" ","");
+        device_token  = AppUUID.get(this.getApplicationContext());
 
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user_id", device_token);
+        Log.d("device_token",device_token);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
@@ -300,8 +300,6 @@ public class Contents extends Activity{
                 }
             }
         }
-
-
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {

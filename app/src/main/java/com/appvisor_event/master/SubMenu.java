@@ -15,7 +15,6 @@ import android.widget.ImageButton;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class SubMenu extends Activity {
 
@@ -30,7 +29,7 @@ public class SubMenu extends Activity {
     public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
          //UUIDの取得
-         uuid = UUID.randomUUID().toString();
+         uuid  = AppUUID.get(this.getApplicationContext());
          //メニューリストを表示
          setContentView(R.layout.menu_list);
 

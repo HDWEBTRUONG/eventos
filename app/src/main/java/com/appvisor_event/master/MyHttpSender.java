@@ -51,7 +51,7 @@ public class MyHttpSender extends Thread {
 
             // 送るデータをnameとvalueの組にし、ArrayListに格納する。
             ArrayList<NameValuePair> nameValuePairs = new ArrayList < NameValuePair > () ;
-            nameValuePairs.add ( new BasicNameValuePair( "device_token", mData ) );    // ここでは"name"というnameで一つだけ追加している。
+            nameValuePairs.add ( new BasicNameValuePair( "device_id", mData ) );    // ここでは"name"というnameで一つだけ追加している。
             Log.d("mData",mData);
 
             // ArrayListをセットする。

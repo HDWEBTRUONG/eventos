@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //UUIDの取得
-        device_token = AppUUID.get(this.getApplicationContext());
+        device_token = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
 
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user_id", device_token);

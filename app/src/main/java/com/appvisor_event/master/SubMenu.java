@@ -29,7 +29,7 @@ public class SubMenu extends Activity {
     public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
          //UUIDの取得
-         uuid  = AppUUID.get(this.getApplicationContext());
+         uuid  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
          //メニューリストを表示
          setContentView(R.layout.menu_list);
 

@@ -225,7 +225,7 @@ public class MainActivity extends Activity {
                     // TODO Auto-generated method stub
                     // インテントのインスタンス生成
                     Intent intent = new Intent(MainActivity.this, Contents.class);
-                    Log.d("active_url",active_url);
+                    // URLを表示
                     intent.putExtra("key.url", active_url);
                     // サブ画面の呼び出し
                     startActivity(intent);

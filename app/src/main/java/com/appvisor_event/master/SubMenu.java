@@ -65,9 +65,9 @@ public class SubMenu extends Activity {
              }
             });
 
-        Button update_button = (Button)findViewById(R.id.update_button);
+         Button update_button = (Button)findViewById(R.id.update_button);
 
-        update_button.setOnClickListener(new View.OnClickListener() {
+         update_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub

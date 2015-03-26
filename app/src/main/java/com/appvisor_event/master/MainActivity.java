@@ -52,9 +52,10 @@ public class MainActivity extends Activity {
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
 
-        //CATHEを使用しない
+        //CATHEを使用する
         myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
+        // UUIDが取得できていれば、URLをロードする。
         if(!mIsFailure){
             if (device_token != null){
                 //最初にホーム画面のページを表示する。
@@ -67,14 +68,15 @@ public class MainActivity extends Activity {
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setBuiltInZoomControls(true);
         myWebView.getSettings().setSupportZoom(true);
-
         myWebView.getSettings().setLoadWithOverviewMode(true);
         myWebView.getSettings().setUseWideViewPort(true);
 
+        // WEBクライアントを呼ぶ
         myWebView.setWebViewClient(mWebViewClient);
 
         myWebView.goBack();
 
+        // 更新ボタンを使用した場合の処理
         Button update_button = (Button)findViewById(R.id.update_button);
 
         update_button.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +86,7 @@ public class MainActivity extends Activity {
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 //URLを表示する
+                extraHeaders.put("user_id", device_token);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         });

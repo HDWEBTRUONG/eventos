@@ -56,7 +56,7 @@ public class Contents extends Activity{
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
 
-        //CATHEを使用しない
+        //CATHEを使用する
         myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
         // インテントを取得
@@ -67,7 +67,8 @@ public class Contents extends Activity{
 
         if(!mIsFailure){
             if (device_token != null){
-                //最初にホーム画面のページを表示する。
+                //デバイストークンが取れていれば、URLをロードする。
+                extraHeaders.put("user_id", device_token);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         }
@@ -106,7 +107,8 @@ public class Contents extends Activity{
                 // TODO Auto-generated method stub
                 // エラーをTRUEに戻す
                 mIsFailure = false;
-                //URLを表示する
+                // 更新を行う
+                extraHeaders.put("user_id", device_token);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         });
@@ -177,6 +179,8 @@ public class Contents extends Activity{
                     }
 
                     if (null != myWebView) {
+                        Log.d("device_token",device_token);
+                        extraHeaders.put("user_id", device_token);
                         myWebView.loadUrl(active_url,extraHeaders);
                     }
                 }
@@ -206,6 +210,7 @@ public class Contents extends Activity{
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
+                extraHeaders.put("user_id", device_token);
                 Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
                 return false;
             }else{

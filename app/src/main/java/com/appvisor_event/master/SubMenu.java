@@ -3,6 +3,7 @@ package com.appvisor_event.master;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,7 +22,7 @@ public class SubMenu extends Activity {
     private WebView myWebView;
     private boolean mIsFailure = false;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private String uuid;
+    private String device_token;
     private Map<String, String> extraHeaders;
 
     /** Called when the activity is first created. */
@@ -29,12 +30,12 @@ public class SubMenu extends Activity {
     public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
          //UUIDの取得
-         uuid  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+         device_token  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
          //メニューリストを表示
          setContentView(R.layout.menu_list);
 
          extraHeaders = new HashMap<String, String>();
-         extraHeaders.put("UUID", uuid);
+         extraHeaders.put("user_id", device_token);
 
          //レイアウトで指定したWebViewのIDを指定する。
          myWebView = (WebView)findViewById(R.id.webView1);
@@ -42,9 +43,9 @@ public class SubMenu extends Activity {
          myWebView.setWebViewClient(new WebViewClient());
          // JS利用を許可する
          myWebView.getSettings().setJavaScriptEnabled(true);
-         //最初にホーム画面のページを表示する。
+         // ドロワー画面のページを表示する。
          myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
-         //CATHEを使用しない
+         //CATHEを使用する
          myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
          overridePendingTransition(R.anim.right_in, R.anim.nothing);
@@ -73,8 +74,7 @@ public class SubMenu extends Activity {
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 //URLを表示する
-//                myWebView.setWebViewClient(mWebViewClient_err);
-
+                extraHeaders.put("user_id", device_token);
                 myWebView.loadUrl(Constants.SUB_MENU_URL);
             }
         });
@@ -85,7 +85,17 @@ public class SubMenu extends Activity {
     }
 
     private WebViewClient mWebViewClient = new WebViewClient() {
-
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
+                extraHeaders.put("user_id", device_token);
+                SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
+                return false;
+            }else{
+                view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                return true;
+            }
+        }
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
@@ -98,7 +108,7 @@ public class SubMenu extends Activity {
                 findViewById(R.id.webView1).setVisibility(View.GONE);
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
-            }else{
+            }else {
                 //ホーム以外の場合はタイトルバーを表示する
                 findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
                 //SWIPEを非表示にする。
@@ -109,7 +119,17 @@ public class SubMenu extends Activity {
                 findViewById(R.id.error_page).setVisibility(View.GONE);
 
                 if (url.equals(Constants.SUB_MENU_URL)) {
-                } else {
+                } else if(url.indexOf(Constants.EXHIBITER_DOMAIN) != -1){
+                    Intent intent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("key.url",url);
+
+                    intent.putExtras(bundle);
+                    setResult(RESULT_OK, intent);
+
+                    finish();
+                    overridePendingTransition(R.anim.nothing,R.anim.right_out);
+                }else {
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
                     bundle.putString("key.url",url);

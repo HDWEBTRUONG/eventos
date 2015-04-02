@@ -18,15 +18,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-public class MyHttpSender extends Thread {
-
+public class DeviceTokenSender extends Thread {
     // フィールド変数の設定
-    String mData;  // 送信用の文字列をここに格納
+    String device_id;  // 送信用のdevice_idをここに格納
+    String device_token;  // 送信用のdevice_tokenをここに格納
     String mResponse;  // 送信結果を受け取る変数
     String mUrl;  // 送信先のURL
 
     // コンストラクタの設定。
-    MyHttpSender ( String url ) {
+    DeviceTokenSender ( String url ) {
         mUrl = url;
     }
 
@@ -35,7 +35,7 @@ public class MyHttpSender extends Thread {
     public void run () {
 
         // 送信用のデータが格納されていなければreturn
-        if ( mData == null ) {
+        if ( device_id == null & device_token == null) {
             return;
         }
 
@@ -50,12 +50,12 @@ public class MyHttpSender extends Thread {
             DefaultHttpClient client = new DefaultHttpClient ();
 
             // 送るデータをnameとvalueの組にし、ArrayListに格納する。
-            ArrayList<NameValuePair> nameValuePairs = new ArrayList < NameValuePair > () ;
-            nameValuePairs.add ( new BasicNameValuePair( "device_id", mData ) );
-            Log.d("mData",mData);
+            ArrayList<NameValuePair> DeviceValuePairs = new ArrayList < NameValuePair > () ;
+            DeviceValuePairs.add ( new BasicNameValuePair( "device_id", device_id ) );
+            DeviceValuePairs.add ( new BasicNameValuePair( "device_token", device_token ) );
 
             // ArrayListをセットする。
-            request.setEntity ( new UrlEncodedFormEntity( nameValuePairs ) );
+            request.setEntity ( new UrlEncodedFormEntity( DeviceValuePairs ) );
 
             // requestを発行、responseを受け取る。
             HttpResponse response = client.execute ( request );
@@ -103,5 +103,4 @@ public class MyHttpSender extends Thread {
 
         super.run ();
     }
-
 }

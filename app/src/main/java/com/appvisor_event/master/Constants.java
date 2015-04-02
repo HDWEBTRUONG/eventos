@@ -24,9 +24,11 @@ public class Constants {
     public static final String GOOGLEMAP_URL = "www.google.com/maps";
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL2 = "maps.google.com/maps";
-    // ユーザー取得のためのAPI_
+    // ユーザー取得のためのAPI
     public static final String REGISTER_API_URL = "http://stg-api.appvisor-event.com/" + Event + "/api/users/register.json";
+    // device_tokenのためのAPI
+    public static final String DEVICE_TOKEN_API_URL = "http://stg-api.appvisor-event.com/" + Event + "/api/users/update.json";
     //PUSHの設定値
     public static final String APPID = "qXCjqre1kb";
-    public static final String GCM_SENDER_ID = "733514090177";
+    public static final String GCM_SENDER_ID = "291145099319";
 }

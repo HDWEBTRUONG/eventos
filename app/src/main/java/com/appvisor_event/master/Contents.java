@@ -27,22 +27,21 @@ public class Contents extends Activity{
     private AppVisorPush appVisorPush;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String active_url = Constants.HOME_URL;
-    private String device_token;
+    private String device_id;
     private Map<String, String> extraHeaders;
     private MyHttpSender myJsonSender;
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
-    private Handler mHandler = new Handler();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //UUIDの取得
-        device_token  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
 
         extraHeaders = new HashMap<String, String>();
-        extraHeaders.put("user_id", device_token);
-        Log.d("device_token",device_token);
+        extraHeaders.put("user_id", device_id);
+        Log.d("device_token",device_id);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
@@ -57,7 +56,7 @@ public class Contents extends Activity{
         myWebView.getSettings().setJavaScriptEnabled(true);
 
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
         // インテントを取得
         Intent intent = getIntent();
@@ -66,9 +65,9 @@ public class Contents extends Activity{
         Log.d("active_url_contents",active_url);
 
         if(!mIsFailure){
-            if (device_token != null){
+            if (device_id != null){
                 //デバイストークンが取れていれば、URLをロードする。
-                extraHeaders.put("user_id", device_token);
+                extraHeaders.put("user_id", device_id);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         }
@@ -108,7 +107,7 @@ public class Contents extends Activity{
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 // 更新を行う
-                extraHeaders.put("user_id", device_token);
+                extraHeaders.put("user_id", device_id);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         });
@@ -129,13 +128,13 @@ public class Contents extends Activity{
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
 
-        Log.d("device_token", device_token);
+        Log.d("device_token", device_id);
 
         try {
 
             // 引数にサーバーのURLを入れる。
             myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
-            myJsonSender.mData = device_token ;
+            myJsonSender.mData = device_id ;
             myJsonSender.start ();
             myJsonSender.join ();
 
@@ -179,8 +178,8 @@ public class Contents extends Activity{
                     }
 
                     if (null != myWebView) {
-                        Log.d("device_token",device_token);
-                        extraHeaders.put("user_id", device_token);
+                        Log.d("device_token",device_id);
+                        extraHeaders.put("user_id", device_id);
                         myWebView.loadUrl(active_url,extraHeaders);
                     }
                 }
@@ -210,7 +209,7 @@ public class Contents extends Activity{
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
-                extraHeaders.put("user_id", device_token);
+                extraHeaders.put("user_id", device_id);
                 Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
                 return false;
             }else{

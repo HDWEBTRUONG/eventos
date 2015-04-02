@@ -22,7 +22,7 @@ public class SubMenu extends Activity {
     private WebView myWebView;
     private boolean mIsFailure = false;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private String device_token;
+    private String device_id;
     private Map<String, String> extraHeaders;
 
     /** Called when the activity is first created. */
@@ -30,12 +30,12 @@ public class SubMenu extends Activity {
     public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
          //UUIDの取得
-         device_token  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
          //メニューリストを表示
          setContentView(R.layout.menu_list);
 
          extraHeaders = new HashMap<String, String>();
-         extraHeaders.put("user_id", device_token);
+         extraHeaders.put("user_id", device_id);
 
          //レイアウトで指定したWebViewのIDを指定する。
          myWebView = (WebView)findViewById(R.id.webView1);
@@ -46,7 +46,7 @@ public class SubMenu extends Activity {
          // ドロワー画面のページを表示する。
          myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
          //CATHEを使用する
-         myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+         myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
          overridePendingTransition(R.anim.right_in, R.anim.nothing);
 
@@ -74,7 +74,7 @@ public class SubMenu extends Activity {
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 //URLを表示する
-                extraHeaders.put("user_id", device_token);
+                extraHeaders.put("user_id", device_id);
                 myWebView.loadUrl(Constants.SUB_MENU_URL);
             }
         });
@@ -88,7 +88,7 @@ public class SubMenu extends Activity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
-                extraHeaders.put("user_id", device_token);
+                extraHeaders.put("user_id", device_id);
                 SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
                 return false;
             }else{

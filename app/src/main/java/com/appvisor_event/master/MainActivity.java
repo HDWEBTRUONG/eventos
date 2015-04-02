@@ -17,6 +17,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.google.android.gcm.GCMRegistrar;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +30,11 @@ public class MainActivity extends Activity {
     private AppVisorPush appVisorPush;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String active_url = Constants.HOME_URL;
+    private String device_id;
     private String device_token;
     private Map<String, String> extraHeaders;
     private MyHttpSender myJsonSender;
+    private DeviceTokenSender myJsonDeviceTokenSender;
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
 
@@ -38,10 +42,13 @@ public class MainActivity extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //UUIDの取得
-        device_token = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        device_id = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        //DEVICE_TOKENの取得
+        device_token = GCMRegistrar.getRegistrationId(this).replace("-","").replace(" ","").replace(">","").replace("<","");
+        Log.d("device_token",device_token);
 
         extraHeaders = new HashMap<String, String>();
-        extraHeaders.put("user_id", device_token);
+        extraHeaders.put("user_id", device_id);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main);
@@ -53,11 +60,11 @@ public class MainActivity extends Activity {
         myWebView.getSettings().setJavaScriptEnabled(true);
 
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
         // UUIDが取得できていれば、URLをロードする。
         if(!mIsFailure){
-            if (device_token != null){
+            if (device_id != null){
                 //最初にホーム画面のページを表示する。
                 myWebView.loadUrl(active_url,extraHeaders);
             }
@@ -86,7 +93,7 @@ public class MainActivity extends Activity {
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 //URLを表示する
-                extraHeaders.put("user_id", device_token);
+                extraHeaders.put("user_id", device_id);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         });
@@ -107,13 +114,13 @@ public class MainActivity extends Activity {
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
 
-        Log.d("device_token",device_token);
+        Log.d("device_id",device_id);
 
         try {
 
             // 引数にサーバーのURLを入れる。
             myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
-            myJsonSender.mData = device_token ;
+            myJsonSender.mData = device_id ;
             myJsonSender.start ();
             myJsonSender.join ();
 
@@ -121,6 +128,29 @@ public class MainActivity extends Activity {
             // responseがあればログ出力する。
             if ( myJsonSender.mResponse != null ) {
                 Log.i ( "message", myJsonSender.mResponse );
+            }
+
+        } catch ( InterruptedException e ) {
+
+            e.printStackTrace ();
+            Log.i ( "JSON", e.toString () );
+
+        }
+        Log.d("device_id",device_id);
+
+        try {
+
+            // 引数にサーバーのURLを入れる。
+            myJsonDeviceTokenSender = new DeviceTokenSender ( Constants.DEVICE_TOKEN_API_URL );
+            myJsonDeviceTokenSender.device_id = device_id ;
+            myJsonDeviceTokenSender.device_token = device_token ;
+            myJsonDeviceTokenSender.start ();
+            myJsonDeviceTokenSender.join ();
+
+
+            // responseがあればログ出力する。
+            if ( myJsonDeviceTokenSender.mResponse != null ) {
+                Log.i ( "message", myJsonDeviceTokenSender.mResponse );
             }
 
         } catch ( InterruptedException e ) {

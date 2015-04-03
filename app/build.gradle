@@ -19,9 +19,9 @@ android {
     }
     productFlavors {
         Reed_Exhibitions_Japan_edix {
-            applicationId = "com.appvisor_event.edix"
-            versionCode 20150109
-            versionName "1.1.0"
+            applicationId = "com.appvisor_event.Reed_Exhibitions_Japan_edix"
+            versionCode 20150408
+            versionName "1.0.0"
         }
     }
 }

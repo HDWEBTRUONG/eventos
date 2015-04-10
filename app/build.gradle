@@ -20,7 +20,7 @@ android {
     productFlavors {
         Reed_Exhibitions_Japan_edix {
             applicationId = "com.appvisor_event.Reed_Exhibitions_Japan_edix"
-            versionCode 20150408
+            versionCode 20150409
             versionName "1.0.0"
         }
     }

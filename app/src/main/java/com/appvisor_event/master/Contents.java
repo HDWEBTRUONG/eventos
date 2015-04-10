@@ -40,7 +40,7 @@ public class Contents extends Activity{
         device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
 
         extraHeaders = new HashMap<String, String>();
-        extraHeaders.put("user_id", device_id);
+        extraHeaders.put("user-id", device_id);
         Log.d("device_token",device_id);
 
         //ホーム画面の設定
@@ -67,7 +67,7 @@ public class Contents extends Activity{
         if(!mIsFailure){
             if (device_id != null){
                 //デバイストークンが取れていれば、URLをロードする。
-                extraHeaders.put("user_id", device_id);
+                extraHeaders.put("user-id", device_id);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         }
@@ -107,7 +107,7 @@ public class Contents extends Activity{
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 // 更新を行う
-                extraHeaders.put("user_id", device_id);
+                extraHeaders.put("user-id", device_id);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         });
@@ -179,7 +179,7 @@ public class Contents extends Activity{
 
                     if (null != myWebView) {
                         Log.d("device_token",device_id);
-                        extraHeaders.put("user_id", device_id);
+                        extraHeaders.put("user-id", device_id);
                         myWebView.loadUrl(active_url,extraHeaders);
                     }
                 }
@@ -209,7 +209,7 @@ public class Contents extends Activity{
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
-                extraHeaders.put("user_id", device_id);
+                extraHeaders.put("user-id", device_id);
                 Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
                 return false;
             }else{

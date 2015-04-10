@@ -35,7 +35,7 @@ public class SubMenu extends Activity {
          setContentView(R.layout.menu_list);
 
          extraHeaders = new HashMap<String, String>();
-         extraHeaders.put("user_id", device_id);
+         extraHeaders.put("user-id", device_id);
 
          //レイアウトで指定したWebViewのIDを指定する。
          myWebView = (WebView)findViewById(R.id.webView1);
@@ -74,7 +74,7 @@ public class SubMenu extends Activity {
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 //URLを表示する
-                extraHeaders.put("user_id", device_id);
+                extraHeaders.put("user-id", device_id);
                 myWebView.loadUrl(Constants.SUB_MENU_URL);
             }
         });
@@ -88,7 +88,7 @@ public class SubMenu extends Activity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
-                extraHeaders.put("user_id", device_id);
+                extraHeaders.put("user-id", device_id);
                 SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
                 return false;
             }else{

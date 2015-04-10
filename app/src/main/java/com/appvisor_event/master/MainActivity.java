@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
         Log.d("device_token",device_token);
 
         extraHeaders = new HashMap<String, String>();
-        extraHeaders.put("user_id", device_id);
+        extraHeaders.put("user-id", device_id);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main);
@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
                 // エラーをTRUEに戻す
                 mIsFailure = false;
                 //URLを表示する
-                extraHeaders.put("user_id", device_id);
+                extraHeaders.put("user-id", device_id);
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         });

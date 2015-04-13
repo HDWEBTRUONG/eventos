@@ -11,7 +11,7 @@ public class Constants {
     //サブメニューのURL
     public static final String SUB_MENU_URL = "https://api.appvisor-event.com/" + Event + "/menu";
     //ブースのURL
-    public static final String BOOTH_URL = "https://api.appvisor-event.com/" + Event + "/areamap";
+    public static final String BOOTH_URL = "https://api.appvisor-event.com/" + Event + "/client/booths/detail";
     //ブースのURL
     public static final String HALL_URL = "https://api.appvisor-event.com/" + Event + "/hall/maps";
     //ERRORのURL

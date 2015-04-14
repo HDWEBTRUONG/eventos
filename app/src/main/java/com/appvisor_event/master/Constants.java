@@ -30,5 +30,5 @@ public class Constants {
     public static final String DEVICE_TOKEN_API_URL = "https://api.appvisor-event.com/" + Event + "/api/users/update.json";
     //PUSHの設定値
     public static final String APPID = "qXCjqre1kb";
-    public static final String GCM_SENDER_ID = "291145099319";
+    public static final String GCM_SENDER_ID = "837751854279";
 }

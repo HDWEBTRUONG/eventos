@@ -6,14 +6,18 @@ public class Constants {
     private Constants(){}
     //ホームのURL
     public static final String Event = "edix";
+    //ベースURL
+    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
     //ホームのURL
-    public static final String HOME_URL = "https://api.appvisor-event.com/" + Event;
+    public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
-    public static final String SUB_MENU_URL = "https://api.appvisor-event.com/" + Event + "/menu";
+    public static final String SUB_MENU_URL = BASE_URL + Event + "/menu";
     //ブースのURL
-    public static final String BOOTH_URL = "https://api.appvisor-event.com/" + Event + "/client/booths/detail";
-    //ブースのURL
-    public static final String HALL_URL = "https://api.appvisor-event.com/" + Event + "/hall/maps";
+    public static final String BOOTH_URL = BASE_URL + Event + "/client/booths/detail";
+    //会場案内図のURL
+    public static final String HALL_URL = BASE_URL + Event + "/hall/maps";
+    //お気に入りのURL
+    public static final String FAVORITE_URL = BASE_URL + Event + "/favorites";
     //ERRORのURL
     public static final String ERROR_URL = "data:text/html,chromewebdata";
     //アプリ内に表示させるドメイン
@@ -25,9 +29,9 @@ public class Constants {
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL2 = "maps.google.com/maps";
     // ユーザー取得のためのAPI
-    public static final String REGISTER_API_URL = "https://api.appvisor-event.com/" + Event + "/api/users/register.json";
+    public static final String REGISTER_API_URL = BASE_URL + Event + "/api/users/register.json";
     // device_tokenのためのAPI
-    public static final String DEVICE_TOKEN_API_URL = "https://api.appvisor-event.com/" + Event + "/api/users/update.json";
+    public static final String DEVICE_TOKEN_API_URL = BASE_URL + Event + "/api/users/update.json";
     //PUSHの設定値
     public static final String APPID = "qXCjqre1kb";
     public static final String GCM_SENDER_ID = "837751854279";

@@ -159,6 +159,15 @@ public class Contents extends Activity{
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (myWebView.canGoBack() == true) {
                 myWebView.goBack();
+                // 0.2秒待機
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        extraHeaders.put("user-id", device_id);
+                        myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
+                    }
+                }, 50);
+                Log.d("URLです。",myWebView.getUrl());
                 return true;
             }
         }
@@ -197,7 +206,8 @@ public class Contents extends Activity{
                 @Override
                 public void run() {
                     mSwipeRefreshLayout.setRefreshing(false);
-                    myWebView.reload();
+                    extraHeaders.put("user-id", device_id);
+                    myWebView.loadUrl(active_url,extraHeaders);
                 }
             }, 3000);
         }

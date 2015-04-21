@@ -5,9 +5,9 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "edix";
+    public static final String Event = "office";
     //ベースURL
-    public static final String BASE_URL = "https://api.appvisor-event.com/";
+    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -33,6 +33,6 @@ public class Constants {
     // device_tokenのためのAPI
     public static final String DEVICE_TOKEN_API_URL = BASE_URL + Event + "/api/users/update.json";
     //PUSHの設定値
-    public static final String APPID = "qXCjqre1kb";
-    public static final String GCM_SENDER_ID = "837751854279";
+    public static final String APPID = "oF6jW6bUdb";
+    public static final String GCM_SENDER_ID = "122887043686";
 }

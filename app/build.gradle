@@ -23,6 +23,11 @@ android {
             versionCode 20150409
             versionName "1.0.0"
         }
+        Reed_Exhibitions_Japan_office {
+            applicationId = "com.appvisor_event.Reed_Exhibitions_Japan_office"
+            versionCode 20150420
+            versionName "1.0.0"
+        }
     }
 }
 

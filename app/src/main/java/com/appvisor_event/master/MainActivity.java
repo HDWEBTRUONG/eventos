@@ -92,6 +92,8 @@ public class MainActivity extends Activity {
                 // TODO Auto-generated method stub
                 // エラーをTRUEに戻す
                 mIsFailure = false;
+                // WEBクライアントを呼ぶ
+                myWebView.setWebViewClient(mWebViewClient);
                 //URLを表示する
                 extraHeaders.put("user-id", device_id);
                 myWebView.loadUrl(active_url,extraHeaders);
@@ -108,7 +110,19 @@ public class MainActivity extends Activity {
         this.appVisorPush.startPush(Constants.GCM_SENDER_ID, 0, R.drawable.ic_launcher, MainActivity.class, getString(R.string.app_name));
         //Push反応率チェック(必須)
         this.appVisorPush.trackPushWithActivity(this);
-
+        //例：Push内のメーセージ内容をAlertで表示させる。
+        Bundle bundle = this.appVisorPush.getBundleFromAppVisorPush(this);
+        if(bundle.getString("w") != null) {
+            //追加パラメータの取得(Option)
+            String wString = bundle.getString("w");
+            active_url = wString;
+            // インテントのインスタンス生成
+            Intent intent = new Intent(MainActivity.this, Contents.class);
+            // URLを表示
+            intent.putExtra("key.url", active_url);
+            // サブ画面の呼び出し
+            startActivity(intent);
+        }
         // SwipeRefreshLayoutの設定
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);

@@ -59,6 +59,12 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar"
             >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="appvisorpushscheme"  android:host="execute"/>
+            </intent-filter>
         </activity>
         <activity android:name=".SubMenu"
                   android:label="@string/app_name"

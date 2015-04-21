@@ -13,7 +13,7 @@ public class Constants {
     //サブメニューのURL
     public static final String SUB_MENU_URL = BASE_URL + Event + "/menu";
     //ブースのURL
-    public static final String BOOTH_URL = BASE_URL + Event + "/client/booths/detail";
+    public static final String BOOTH = "/booths/";
     //会場案内図のURL
     public static final String HALL_URL = BASE_URL + Event + "/hall/maps";
     //お気に入りのURL

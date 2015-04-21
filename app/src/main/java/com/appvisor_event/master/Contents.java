@@ -277,7 +277,7 @@ public class Contents extends Activity{
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     textView.setText(myWebView.getTitle());
-                } else if ((url.indexOf(Constants.BOOTH_URL) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
+                } else if ((url.indexOf(Constants.BOOTH) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
                     active_url = url;
                     // SwipeRefreshLayoutの設定
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);

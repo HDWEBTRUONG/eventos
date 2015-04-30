@@ -7,7 +7,7 @@ public class Constants {
     //ホームのURL
     public static final String Event = "office";
     //ベースURL
-    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL

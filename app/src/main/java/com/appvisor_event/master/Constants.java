@@ -34,5 +34,5 @@ public class Constants {
     public static final String DEVICE_TOKEN_API_URL = BASE_URL + Event + "/api/users/update.json";
     //PUSHの設定値
     public static final String APPID = "oF6jW6bUdb";
-    public static final String GCM_SENDER_ID = "122887043686";
+    public static final String GCM_SENDER_ID = "209915915811";
 }

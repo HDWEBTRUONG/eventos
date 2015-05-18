@@ -21,6 +21,8 @@
         android:paddingLeft="30px"
         android:paddingTop="30px"
         android:paddingBottom="30px"
+        android:state_pressed="true"
+        android:state_enabled="false"
         android:background="@android:color/transparent"
         android:src="@drawable/btn_back" />
     <ImageButton

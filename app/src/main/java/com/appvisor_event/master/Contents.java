@@ -98,21 +98,25 @@ public class Contents extends Activity{
             }
         });
 
-        ImageButton btn_button = (ImageButton)findViewById(R.id.btn_back_button);
-        btn_button.setOnClickListener(new View.OnClickListener() {
+        ImageButton btn_back_button = (ImageButton)findViewById(R.id.btn_back_button);
+        btn_back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
                     if (myWebView.canGoBack() == true) {
                         myWebView.goBack();
                         // 0.2秒待機
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                extraHeaders.put("user-id", device_id);
-                                myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
-                            }
-                        }, 50);
+                        if(myWebView.getUrl().indexOf(Constants.FAVORITE_URL) != 1){
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    extraHeaders.put("user-id", device_id);
+                                    myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
+                                }
+                            }, 200);
+
+                        }
                         Log.d("URLです。",myWebView.getUrl());
                     }else{
                         finish();
@@ -181,13 +185,17 @@ public class Contents extends Activity{
             if (myWebView.canGoBack() == true) {
                 myWebView.goBack();
                 // 0.2秒待機
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        extraHeaders.put("user-id", device_id);
-                        myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
-                    }
-                }, 50);
+                if(myWebView.getUrl().indexOf(Constants.FAVORITE_URL) != 1){
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            extraHeaders.put("user-id", device_id);
+                            myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
+                        }
+                    }, 200);
+
+                }
                 Log.d("URLです。",myWebView.getUrl());
                 return true;
             }
@@ -342,4 +350,5 @@ public class Contents extends Activity{
             myWebView.loadUrl("");
         }
     };
+
 }

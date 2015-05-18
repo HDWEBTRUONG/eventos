@@ -98,6 +98,28 @@ public class Contents extends Activity{
             }
         });
 
+        ImageButton btn_button = (ImageButton)findViewById(R.id.btn_back_button);
+        btn_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
+                    if (myWebView.canGoBack() == true) {
+                        myWebView.goBack();
+                        // 0.2秒待機
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                extraHeaders.put("user-id", device_id);
+                                myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
+                            }
+                        }, 50);
+                        Log.d("URLです。",myWebView.getUrl());
+                    }else{
+                        finish();
+                    }
+            }
+        });
+
         Button update_button = (Button)findViewById(R.id.update_button);
 
         update_button.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +133,6 @@ public class Contents extends Activity{
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         });
-
 
         //sdk初期化(必須)
         this.appVisorPush = AppVisorPush.sharedInstance();

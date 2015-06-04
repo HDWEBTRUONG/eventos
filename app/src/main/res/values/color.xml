@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="title_bar_color">#0e3085</color>
+    <color name="title_bar_color">#126F12</color>
     <color name="title_bar_txt_color">#ffffff</color>
     <!--更新時の色指定-->
     <color name="white">#ffffff</color>

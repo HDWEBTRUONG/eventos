@@ -25,8 +25,13 @@ android {
         }
         Reed_Exhibitions_Japan_office {
             applicationId = "com.appvisor_event.Reed_Exhibitions_Japan_office"
-            versionCode 20150511
-            versionName "1.0.1"
+            versionCode 20150527
+            versionName "1.0.2"
+        }
+        Event_and_convention_house_scaj {
+            applicationId = "com.appvisor_event.Event_and_convention_house_scaj"
+            versionCode 20150529
+            versionName "1.0.0"
         }
     }
 }

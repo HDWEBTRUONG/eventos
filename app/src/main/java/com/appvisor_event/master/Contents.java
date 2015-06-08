@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.WebBackForwardList;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,6 +33,7 @@ public class Contents extends Activity{
     private MyHttpSender myJsonSender;
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
+    private String backurl = "#####";
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -104,19 +106,9 @@ public class Contents extends Activity{
             public void onClick(View v) {
                 // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
                     if (myWebView.canGoBack() == true) {
+                        WebBackForwardList list = myWebView.copyBackForwardList() ;
+                        backurl = list.getItemAtIndex(list.getCurrentIndex() -1).getUrl();
                         myWebView.goBack();
-                        // 0.2秒待機
-                        if(myWebView.getUrl().indexOf(Constants.FAVORITE_URL) != 1){
-
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    extraHeaders.put("user-id", device_id);
-                                    myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
-                                }
-                            }, 200);
-
-                        }
                         Log.d("URLです。",myWebView.getUrl());
                     }else{
                         finish();
@@ -183,19 +175,9 @@ public class Contents extends Activity{
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (myWebView.canGoBack() == true) {
+                WebBackForwardList list = myWebView.copyBackForwardList() ;
+                backurl = list.getItemAtIndex(list.getCurrentIndex() -1).getUrl();
                 myWebView.goBack();
-                // 0.2秒待機
-                if(myWebView.getUrl().indexOf(Constants.FAVORITE_URL) != 1){
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            extraHeaders.put("user-id", device_id);
-                            myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
-                        }
-                    }, 200);
-
-                }
                 Log.d("URLです。",myWebView.getUrl());
                 return true;
             }
@@ -340,6 +322,13 @@ public class Contents extends Activity{
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     textView.setText(myWebView.getTitle());
+                }
+                // 0.2秒待機
+                if(backurl.equals(myWebView.getUrl())){
+                    extraHeaders.put("user-id", device_id);
+                    myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
+                    backurl = "####";
+
                 }
             }
         }

@@ -18,19 +18,9 @@ android {
         }
     }
     productFlavors {
-        Reed_Exhibitions_Japan_edix {
-            applicationId = "com.appvisor_event.Reed_Exhibitions_Japan_edix"
-            versionCode 20150409
-            versionName "1.0.0"
-        }
-        Reed_Exhibitions_Japan_office {
-            applicationId = "com.appvisor_event.Reed_Exhibitions_Japan_office"
-            versionCode 20150527
-            versionName "1.0.2"
-        }
-        Event_and_convention_house_scaj {
-            applicationId = "com.appvisor_event.Event_and_convention_house_scaj"
-            versionCode 20150529
+        hcr{
+            applicationId = "com.appvisor_event.hcr"
+            versionCode 20150716
             versionName "1.0.0"
         }
     }

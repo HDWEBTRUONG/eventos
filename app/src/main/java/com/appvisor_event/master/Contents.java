@@ -20,12 +20,9 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Map;
 
-import biz.appvisor.push.android.sdk.AppVisorPush;
-
 public class Contents extends Activity{
 
     private WebView myWebView;
-    private AppVisorPush appVisorPush;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String active_url = Constants.HOME_URL;
     private String device_id;
@@ -129,16 +126,6 @@ public class Contents extends Activity{
                 myWebView.loadUrl(active_url,extraHeaders);
             }
         });
-
-        //sdk初期化(必須)
-        this.appVisorPush = AppVisorPush.sharedInstance();
-        //AppVisorPush用のAPPIDを設定します。
-        String appID = Constants.APPID;
-        this.appVisorPush.setAppInfor(getApplicationContext(), appID);
-        //通知関連の内容を設定します。(GCM_SENDER_ID,通知アイコン,ステータスバーアイコン,通知で起動するClass名、デフォルトの通知タイトル)
-        this.appVisorPush.startPush(Constants.GCM_SENDER_ID, 0, R.drawable.ic_launcher, MainActivity.class, getString(R.string.app_name));
-        //Push反応率チェック(必須)
-        this.appVisorPush.trackPushWithActivity(this);
 
         // SwipeRefreshLayoutの設定
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);

@@ -43,6 +43,10 @@
         </receiver>
 
         <service android:name="biz.appvisor.push.android.sdk.AppVisorPushIntentService" />
+        <service
+            android:name="biz.appvisor.push.android.sdk.NotificationStartService"
+            android:exported="false" >
+        </service>
         <activity android:name=".SplashActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"

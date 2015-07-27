@@ -82,6 +82,8 @@
             android:theme="@android:style/Theme.Holo.NoActionBar"
             >
         </activity>
+
+        <receiver android:name=".modules.alarm.AlermBroadcastReceiver" android:process=":remote" />
     </application>
 
 </manifest>

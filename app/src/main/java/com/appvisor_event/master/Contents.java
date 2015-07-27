@@ -9,13 +9,19 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.JsResult;
 import android.webkit.WebBackForwardList;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.appvisor_event.master.modules.AssetsManager;
+import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
+import com.appvisor_event.master.modules.JavascriptManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -155,6 +161,8 @@ public class Contents extends Activity{
 
         }
 
+        // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
+        this.setupFavoritSeminarAlarm();
     }
 
     @Override
@@ -230,6 +238,9 @@ public class Contents extends Activity{
          */
         @Override
         public void onPageFinished(WebView view, String url) {
+            // ajax通信をキャッチしてレスポンスを受け取れるように準備する
+            Contents.this.setupJavascriptHandler();
+
             super.onPageFinished(view, url);
             if(url.equals(Constants.ERROR_URL)){
                 mIsFailure = true;
@@ -327,4 +338,41 @@ public class Contents extends Activity{
         }
     };
 
+
+    private void setupFavoritSeminarAlarm()
+    {
+        this.setupWebChromeClient();
+        this.setupJavascriptManager();
+    }
+
+    private void setupWebChromeClient()
+    {
+        this.myWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                if (JavascriptManager.getInstance().onJsAlert(message))
+                {
+                    result.cancel();
+                    return true;
+                }
+
+                return super.onJsAlert(view, url, message, result);
+            }
+        });
+    }
+
+    private void setupJavascriptManager()
+    {
+        JavascriptManager.getInstance().addHandler(new FavoritSeminarJavascriptHandler(this.getApplicationContext()));
+    }
+
+    private void setupJavascriptHandler()
+    {
+        this.myWebView.loadUrl(String.format("javascript: %s;", this.ajaxHandlerJavascript()));
+    }
+
+    private String ajaxHandlerJavascript()
+    {
+        return new AssetsManager(this).loadStringFromFile("ajax_handler.js");
+    }
 }

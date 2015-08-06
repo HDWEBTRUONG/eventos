@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -61,6 +62,12 @@ public class MainActivity extends Activity {
 
         //CATHEを使用する
         myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+
+        // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
 
         // UUIDが取得できていれば、URLをロードする。
         if(!mIsFailure){

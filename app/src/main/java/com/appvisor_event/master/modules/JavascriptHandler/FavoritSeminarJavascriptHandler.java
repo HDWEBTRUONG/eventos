@@ -37,16 +37,15 @@ public class FavoritSeminarJavascriptHandler implements JavascriptManager.Javasc
     private boolean analyze()
     {
         try {
-            if (!this.isHandleUrl())
+            if (this.isHandleUrl())
             {
-                return false;
+                this.resetFavoritSeminarAlarm();
+                return true;
             }
-
-            this.resetFavoritSeminarAlarm();
         } catch (JSONException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
     private boolean isHandleUrl() throws JSONException {

@@ -127,7 +127,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
-        Log.d("device_token",device_id);
+        Log.d("device_token", device_id);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
@@ -142,7 +142,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         myWebView.getSettings().setAllowFileAccess(true);
 
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -698,13 +698,21 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         this.myWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                if (JavascriptManager.getInstance().onJsAlert(message))
+                if (0 != message.indexOf("ajax-handler:"))
                 {
-                    result.cancel();
-                    return true;
+                    return super.onJsAlert(view, url, message, result);
                 }
 
-                return super.onJsAlert(view, url, message, result);
+                message = message.replace("ajax-handler:", "");
+                JavascriptManager.getInstance().onJsAlert(message);
+
+                if (0 == url.indexOf(Constants.SETTING_URL))
+                {
+                    myWebView.reload();
+                }
+
+                result.cancel();
+                return true;
             }
         });
     }

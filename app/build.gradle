@@ -18,9 +18,9 @@ android {
         }
     }
     productFlavors {
-        hcr{
-            applicationId = "com.appvisor_event.hcr"
-            versionCode 20150716
+        aobayama{
+            applicationId = "com.appvisor_event.aobayama"
+            versionCode 20160128
             versionName "1.0.0"
         }
     }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -87,7 +86,7 @@ public class SubMenu extends Activity {
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1)  || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
                 extraHeaders.put("user-id", device_id);
                 SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
                 return false;
@@ -119,6 +118,7 @@ public class SubMenu extends Activity {
                 findViewById(R.id.error_page).setVisibility(View.GONE);
 
                 if (url.equals(Constants.SUB_MENU_URL)) {
+
                 } else if(url.indexOf(Constants.EXHIBITER_DOMAIN) != -1){
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
@@ -144,6 +144,12 @@ public class SubMenu extends Activity {
         }
 
         @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+
+        @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             mIsFailure = true;
             myWebView.loadUrl("");
@@ -152,14 +158,7 @@ public class SubMenu extends Activity {
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            // 3秒待機
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    myWebView.reload();
-                }
-            }, 3000);
+            myWebView.reload();
         }
     };
 }

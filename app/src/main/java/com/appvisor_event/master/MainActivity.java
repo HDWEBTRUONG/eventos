@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -23,12 +22,12 @@ import com.google.android.gcm.GCMRegistrar;
 import java.util.HashMap;
 import java.util.Map;
 
-import biz.appvisor.push.android.sdk.AppVisorPush;
+//import biz.appvisor.push.android.sdk.AppVisorPush;
 
 public class MainActivity extends Activity {
 
     private WebView myWebView;
-    private AppVisorPush appVisorPush;
+//    private AppVisorPush appVisorPush;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String active_url = Constants.HOME_URL;
     private String device_id;
@@ -107,29 +106,6 @@ public class MainActivity extends Activity {
             }
         });
 
-
-        //sdk初期化(必須)
-        this.appVisorPush = AppVisorPush.sharedInstance();
-        //AppVisorPush用のAPPIDを設定します。
-        String appID = Constants.APPID;
-        this.appVisorPush.setAppInfor(getApplicationContext(), appID);
-        //通知関連の内容を設定します。(GCM_SENDER_ID,通知アイコン,ステータスバーアイコン,通知で起動するClass名、デフォルトの通知タイトル)
-        this.appVisorPush.startPush(Constants.GCM_SENDER_ID, 0, R.drawable.ic_launcher, MainActivity.class, getString(R.string.app_name));
-        //Push反応率チェック(必須)
-        this.appVisorPush.trackPushWithActivity(this);
-        //例：Push内のメーセージ内容をAlertで表示させる。
-        Bundle bundle = this.appVisorPush.getBundleFromAppVisorPush(this);
-        if(bundle.getString("w") != null) {
-            //追加パラメータの取得(Option)
-            String wString = bundle.getString("w");
-            active_url = wString;
-            // インテントのインスタンス生成
-            Intent intent = new Intent(MainActivity.this, Contents.class);
-            // URLを表示
-            intent.putExtra("key.url", active_url);
-            // サブ画面の呼び出し
-            startActivity(intent);
-        }
         // SwipeRefreshLayoutの設定
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
@@ -220,14 +196,15 @@ public class MainActivity extends Activity {
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
+            myWebView.reload();
             // 3秒待機
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    myWebView.reload();
-                }
-            }, 3000);
+//            new Handler().postDelayed(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//
+//                }
+//            }, 10000);
         }
     };
 
@@ -284,6 +261,12 @@ public class MainActivity extends Activity {
                     startActivity(intent);
                 }
             }
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            mSwipeRefreshLayout.setRefreshing(false);
         }
 
         @Override

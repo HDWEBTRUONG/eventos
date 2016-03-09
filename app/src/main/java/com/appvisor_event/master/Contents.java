@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JsResult;
-import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -116,10 +114,13 @@ public class Contents extends Activity{
             public void onClick(View v) {
                 // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
                     if (myWebView.canGoBack() == true) {
-                        WebBackForwardList list = myWebView.copyBackForwardList() ;
-                        backurl = list.getItemAtIndex(list.getCurrentIndex() -1).getUrl();
-                        myWebView.goBack();
-                        Log.d("URLです。",myWebView.getUrl());
+                        Log.d("戻る前URL",(myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl()));
+//                        if (myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl().indexOf(Constants.FAVORITE_URL) != -1){
+//                            myWebView.goBack();
+//                            backurl = myWebView.getUrl();
+//                        }else{
+                            myWebView.goBack();
+
                     }else{
                         finish();
                     }
@@ -177,10 +178,13 @@ public class Contents extends Activity{
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (myWebView.canGoBack() == true) {
-                WebBackForwardList list = myWebView.copyBackForwardList() ;
-                backurl = list.getItemAtIndex(list.getCurrentIndex() -1).getUrl();
-                myWebView.goBack();
-                Log.d("URLです。",myWebView.getUrl());
+//                if(myWebView.copyBackForwardList().getItemAtIndex(-1).getUrl().indexOf(Constants.FAVORITE_URL) != -1){
+//                    extraHeaders.put("user-id", device_id);
+                  myWebView.goBack();
+                  Log.d("getUrl", myWebView.getUrl());
+//                    myWebView.loadUrl(myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl(), extraHeaders);
+//                }
+//                myWebView.goBack();
                 return true;
             }
         }
@@ -214,15 +218,9 @@ public class Contents extends Activity{
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            // 3秒待機
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    extraHeaders.put("user-id", device_id);
-                    myWebView.loadUrl(active_url,extraHeaders);
-                }
-            }, 3000);
+            // 更新処理
+            extraHeaders.put("user-id", device_id);
+            myWebView.loadUrl(active_url,extraHeaders);
         }
     };
 
@@ -231,7 +229,7 @@ public class Contents extends Activity{
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             active_url = url;
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
                 extraHeaders.put("user-id", device_id);
                 Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
                 return false;
@@ -275,24 +273,6 @@ public class Contents extends Activity{
                     //エラーページを非表示にする
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
 
-                } else if ((url.indexOf(Constants.GOOGLEMAP_URL) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)) {
-                    active_url = url;
-                    // SwipeRefreshLayoutの設定
-                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-                    //SWIPEを表示にする。
-                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-                    //ホーム以外の場合はタイトルバーを表示する
-                    findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
-                    //WEBVIEWを表示にする
-                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
-                    //エラーページを非表示にする
-                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
-                    //更新処理はできなくする
-                    mSwipeRefreshLayout.setEnabled(false);
-                    // IDからTextViewインスタンスを取得
-                    TextView textView = (TextView) findViewById(R.id.content_text);
-                    // 表示するテキストの設定
-                    textView.setText(myWebView.getTitle());
                 } else if ((url.indexOf(Constants.BOOTH) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
                     active_url = url;
                     // SwipeRefreshLayoutの設定
@@ -310,7 +290,11 @@ public class Contents extends Activity{
                     // IDからTextViewインスタンスを取得
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
-                    textView.setText(myWebView.getTitle());
+                    if(myWebView.getTitle().length() >= 10){
+                        textView.setText(myWebView.getTitle().substring(0,10) + "...");
+                    }else{
+                        textView.setText(myWebView.getTitle());
+                    }
                 } else {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -326,7 +310,11 @@ public class Contents extends Activity{
                     // IDからTextViewインスタンスを取得
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
-                    textView.setText(myWebView.getTitle());
+                    if(myWebView.getTitle().length() >= 15){
+                        textView.setText(myWebView.getTitle().substring(0,15) + "...");
+                    }else{
+                        textView.setText(myWebView.getTitle());
+                    }
                 }
                 // 0.2秒待機
                 if(backurl.equals(myWebView.getUrl())){
@@ -336,6 +324,7 @@ public class Contents extends Activity{
 
                 }
             }
+            mSwipeRefreshLayout.setRefreshing(false);
         }
 
         @Override

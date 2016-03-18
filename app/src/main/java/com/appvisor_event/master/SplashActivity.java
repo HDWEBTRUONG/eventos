@@ -40,7 +40,7 @@ public class SplashActivity extends Activity {
             public void onPrepared(MediaPlayer mp) {
                 intent = new Intent(getApplication(), MainActivity.class);
                 video.start();
-                new Handler().postDelayed(delayFunc, 300);
+                new Handler().postDelayed(delayFunc, 500);
             }
         });
     }

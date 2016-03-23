@@ -331,6 +331,12 @@ public class Contents extends Activity{
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             mIsFailure = true;
             myWebView.loadUrl("");
+            //WEBVIEWを非表示にする。
+            findViewById(R.id.webView1).setVisibility(View.GONE);
+            //SWIPEを非表示にする。
+            findViewById(R.id.swipe_refresh_layout).setVisibility(View.GONE);
+            //エラーページを表示する
+            findViewById(R.id.error_page).setVisibility(View.VISIBLE);
         }
     };
 

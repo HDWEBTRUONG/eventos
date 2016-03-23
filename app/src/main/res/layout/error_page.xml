@@ -12,13 +12,13 @@
         android:gravity="center_horizontal"
         android:textStyle="bold"
         android:textSize="20dp"
-        android:paddingTop="150px"/>
+        android:paddingTop="50dp"/>
     <ImageView
         android:id="@+id/smart_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/smart_phone"
-        android:paddingTop="300px"
+        android:paddingTop="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
     <TextView
@@ -30,7 +30,7 @@
         android:gravity="center_horizontal"
         android:textStyle="bold"
         android:textSize="20dp"
-        android:paddingTop="600px"/>
+        android:paddingTop="220dp"/>
     <Button
         android:id="@+id/update_button"
         android:layout_width="wrap_content"

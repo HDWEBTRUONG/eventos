@@ -2,18 +2,10 @@ package com.appvisor_event.master;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.Window;
 import android.widget.VideoView;
-
-import java.io.IOException;
 
 public class SplashActivity extends Activity {
     private VideoView video;
@@ -44,6 +36,7 @@ public class SplashActivity extends Activity {
             }
         });
     }
+
     private final Runnable delayFunc= new Runnable() {
         @Override
         public void run() {

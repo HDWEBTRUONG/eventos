@@ -160,6 +160,13 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onRestart(){
+        Log.d("RESTART","mainActivityに戻った");
+        //recreate();
+        super.onRestart();
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
         if (keyCode == KeyEvent.KEYCODE_BACK) {

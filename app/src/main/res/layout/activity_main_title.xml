@@ -12,29 +12,27 @@
         android:textColor="@color/title_bar_txt_color"
         android:textSize="18sp"
         android:textStyle="bold" />
-    <ImageButton
+    <ImageView
         android:id="@+id/btn_back_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:paddingRight="30px"
-        android:paddingLeft="30px"
-        android:paddingTop="30px"
-        android:paddingBottom="30px"
+        android:paddingLeft="20px"
+        android:paddingTop="20px"
+        android:paddingBottom="20px"
         android:state_pressed="true"
-        android:state_enabled="false"
-        android:background="@android:color/transparent"
+        android:state_selected="true"
         android:src="@drawable/btn_back" />
-    <ImageButton
+    <ImageView
         android:id="@+id/menu_buttom"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:paddingRight="30px"
-        android:paddingLeft="30px"
-        android:paddingTop="30px"
-        android:paddingBottom="30px"
-        android:background="@android:color/transparent"
+        android:paddingRight="20px"
+        android:paddingLeft="20px"
+        android:paddingTop="20px"
+        android:paddingBottom="20px"
         android:src="@drawable/btn_menu" />
 
 </RelativeLayout>

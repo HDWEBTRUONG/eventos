@@ -3,6 +3,7 @@ package com.appvisor_event.master;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,6 +13,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class SubMenu extends Activity {
          // JS利用を許可する
          myWebView.getSettings().setJavaScriptEnabled(true);
          // ドロワー画面のページを表示する。
-         myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+         myWebView.loadUrl(Constants.SUB_MENU_URL, extraHeaders);
          //CATHEを使用する
          myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
@@ -51,12 +53,13 @@ public class SubMenu extends Activity {
 
          myWebView.setWebViewClient(mWebViewClient);
 
-         ImageButton menu_buttom = (ImageButton)findViewById(R.id.menu_buttom_return);
+         final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom_return);
          menu_buttom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 // 次画面のアクティビティ終了
+                menu_buttom .setBackgroundColor(getResources().getColor(R.color.selected_color));
                 finish();
 
                 overridePendingTransition(R.anim.nothing,R.anim.right_out);
@@ -81,6 +84,14 @@ public class SubMenu extends Activity {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
+    }
+
+    @Override
+    public void onRestart(){
+        final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom_return);
+        menu_buttom .setBackgroundColor(Color.TRANSPARENT);
+
+        super.onRestart();
     }
 
     private WebViewClient mWebViewClient = new WebViewClient() {

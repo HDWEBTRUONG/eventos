@@ -2,6 +2,7 @@ package com.appvisor_event.master;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.appvisor_event.master.modules.AssetsManager;
@@ -94,13 +96,14 @@ public class Contents extends Activity{
 
         myWebView.goBack();
 
-        ImageButton btn = (ImageButton) findViewById(R.id.menu_buttom);
+        final ImageView btn = (ImageView) findViewById(R.id.menu_buttom);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 // インテントのインスタンス生成
+                btn .setBackgroundColor(getResources().getColor(R.color.selected_color));
                 Intent intent = new Intent(Contents.this, SubMenu.class);
                 int requestCode = 1;
                 startActivityForResult(intent, requestCode);
@@ -108,7 +111,7 @@ public class Contents extends Activity{
             }
         });
 
-        ImageButton btn_back_button = (ImageButton)findViewById(R.id.btn_back_button);
+        final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
         btn_back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,9 +122,11 @@ public class Contents extends Activity{
 //                            myWebView.goBack();
 //                            backurl = myWebView.getUrl();
 //                        }else{
+                        btn_back_button .setBackgroundColor(getResources().getColor(R.color.selected_color));
                             myWebView.goBack();
 
                     }else{
+                        btn_back_button .setBackgroundColor(getResources().getColor(R.color.selected_color));
                         finish();
                     }
             }
@@ -171,6 +176,15 @@ public class Contents extends Activity{
 
         // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
         this.setupFavoritSeminarAlarm();
+    }
+
+    @Override
+    public void onRestart(){
+        final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
+        final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom);
+        menu_buttom .setBackgroundColor(Color.TRANSPARENT);
+        btn_back_button .setBackgroundColor(Color.TRANSPARENT);
+        super.onRestart();
     }
 
     @Override
@@ -228,6 +242,9 @@ public class Contents extends Activity{
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            Log.d("Override","OVERRIDE");
+            recreate();
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
                 extraHeaders.put("user-id", device_id);
@@ -243,6 +260,8 @@ public class Contents extends Activity{
          */
         @Override
         public void onPageFinished(WebView view, String url) {
+            final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
+            btn_back_button.setBackgroundColor(Color.TRANSPARENT);
             // ajax通信をキャッチしてレスポンスを受け取れるように準備する
             Contents.this.setupJavascriptHandler();
 

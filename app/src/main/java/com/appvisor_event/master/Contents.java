@@ -243,8 +243,6 @@ public class Contents extends Activity{
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-            Log.d("Override","OVERRIDE");
-            recreate();
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
                 extraHeaders.put("user-id", device_id);

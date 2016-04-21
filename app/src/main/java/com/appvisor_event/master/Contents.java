@@ -166,12 +166,10 @@ public class Contents extends Activity implements BeaconConsumer {
 
         // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
         this.setupFavoritSeminarAlarm();
-        startQR();
     }
 
     public void onClickSearch(View view){
         view .setBackgroundColor(getResources().getColor(R.color.selected_color));
-        myWebView.loadUrl("javascript:NavigationSearchButton.run()");
     }
     public void onClickButtonBack(View view) {
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
@@ -188,6 +186,14 @@ public class Contents extends Activity implements BeaconConsumer {
             view .setBackgroundColor(getResources().getColor(R.color.selected_color));
             Contents.this.finish();
         }
+    }
+
+    public void buttonBar(){
+        ViewGroup linearLayout = (ViewGroup) findViewById(R.id.title_bar);
+        View view = (View)linearLayout.findViewById(R.id.menu_buttom);
+        view.setVisibility(View.GONE);
+        View searchLayout = LayoutInflater.from(Contents.this).inflate(R.layout.search_layout,linearLayout);
+        linearLayout.addView(searchLayout,1);
     }
 
     public void onClickMenu(View view) {
@@ -346,6 +352,7 @@ public class Contents extends Activity implements BeaconConsumer {
             Contents.this.setupJavascriptHandler();
 
             super.onPageFinished(view, url);
+            myWebView.loadUrl("javascript:NavigationSearchButton.run()");
             if(url.equals(Constants.ERROR_URL)){
                 mIsFailure = true;
             }

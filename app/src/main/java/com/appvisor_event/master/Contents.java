@@ -348,11 +348,11 @@ public class Contents extends Activity implements BeaconConsumer {
         public void onPageFinished(WebView view, String url) {
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
+            myWebView.loadUrl("javascript:NavigationSearchButton.run()");
             // ajax通信をキャッチしてレスポンスを受け取れるように準備する
             Contents.this.setupJavascriptHandler();
 
             super.onPageFinished(view, url);
-            myWebView.loadUrl("javascript:NavigationSearchButton.run()");
             if(url.equals(Constants.ERROR_URL)){
                 mIsFailure = true;
             }

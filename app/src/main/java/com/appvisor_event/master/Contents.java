@@ -39,6 +39,7 @@ import com.google.zxing.qrcode.encoder.QRCode;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.Region;
 
@@ -214,7 +215,16 @@ public class Contents extends Activity implements BeaconConsumer {
         }
     }
 
-    public void startBeacon(){
+    public void startBeacon(String data){
+        String[] param = data.split("/", -1);
+        String[] beac = new String[4];
+        for (int i = 0 ; i < param.length ; i++){
+            beac = param[i].split(".",-1);
+        }
+        region= beac[0];
+        UUID = beac[1];
+        minor= beac[3];
+        mayor= beac[2];
         beaconManager = BeaconManager.getInstanceForApplication(this);
         bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
         if(!bluetoothAdapter.isEnabled()){
@@ -506,11 +516,11 @@ public class Contents extends Activity implements BeaconConsumer {
         });
 
         try {
-            mayor = "0.0";
-            minor = "0.0";
-            UUID = "ASVBRGBr";
+            Identifier may = Identifier.parse(mayor);
+            Identifier min = Identifier.parse(minor);
+            Identifier uui = Identifier.parse(UUID);
             region= "number1";
-            beaconManager.startMonitoringBeaconsInRegion(new Region("UniqueId",null,null,null));
+            beaconManager.startMonitoringBeaconsInRegion(new Region(region,uui,may,min));
         }catch (RemoteException e){}
     }
 }

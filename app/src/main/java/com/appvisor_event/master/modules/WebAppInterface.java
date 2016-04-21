@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ public class WebAppInterface {
 
     @JavascriptInterface
     public void beacons(String data){
+        String[] param = data.split("/", -1);
         ((Contents)context).startBeacon();
     }
 
@@ -39,11 +41,7 @@ public class WebAppInterface {
 
     @JavascriptInterface
     public void addNavigationBarButton(String fileName, String url){
-        linearLayout = (ViewGroup) linearLayout.findViewById(R.id.title_bar);
-        View view = (View)linearLayout.findViewById(R.id.menu_buttom);
-        view.setVisibility(View.GONE);
-        View searchLayout = LayoutInflater.from((Contents)context).inflate(R.layout.search_layout,null);
-        linearLayout.addView(searchLayout);
+        ((Contents)context).buttonBar();
     }
 
     @JavascriptInterface

@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -32,7 +33,11 @@ import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
 import com.appvisor_event.master.modules.WebAppInterface;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.Result;
+import com.google.zxing.qrcode.encoder.QRCode;
 
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -61,19 +66,22 @@ public class Contents extends Activity implements BeaconConsumer {
     private String mayor;
     private String UUID;
     private String region;
-    private GPSManager gps;
     private double longitude;
     private double latitude;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //UUIDの取得
-        device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        device_id = AppUUID.get(this.getApplicationContext()).replace("-", "").replace(" ", "").replace(">", "").replace("<", "");
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
-        Log.d("device_token",device_id);
-        gps = new GPSManager(this);
+        Log.d("device_token", device_id);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
@@ -82,8 +90,7 @@ public class Contents extends Activity implements BeaconConsumer {
         findViewById(R.id.title_bar).setVisibility(View.GONE);
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
-        myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
-        startQR();
+        myWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
 
@@ -91,8 +98,7 @@ public class Contents extends Activity implements BeaconConsumer {
         myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
 
@@ -100,13 +106,13 @@ public class Contents extends Activity implements BeaconConsumer {
         Intent intent = getIntent();
         // インテントに保存されたデータを取得
         active_url = intent.getStringExtra("key.url");
-        Log.d("active_url_contents",active_url);
+        Log.d("active_url_contents", active_url);
 
-        if(!mIsFailure){
-            if (device_id != null){
+        if (!mIsFailure) {
+            if (device_id != null) {
                 //デバイストークンが取れていれば、URLをロードする。
                 extraHeaders.put("user-id", device_id);
-                myWebView.loadUrl(active_url,extraHeaders);
+                myWebView.loadUrl(active_url, extraHeaders);
             }
         }
         //ズーム機能を有効にする
@@ -122,28 +128,7 @@ public class Contents extends Activity implements BeaconConsumer {
 
         myWebView.goBack();
 
-        final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
-        btn_back_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
-                    if (myWebView.canGoBack() == true) {
-                        Log.d("戻る前URL",(myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl()));
-//                        if (myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl().indexOf(Constants.FAVORITE_URL) != -1){
-//                            myWebView.goBack();
-//                            backurl = myWebView.getUrl();
-//                        }else{
-                        btn_back_button .setBackgroundColor(getResources().getColor(R.color.selected_color));
-                            myWebView.goBack();
-
-                    }else{
-                        btn_back_button .setBackgroundColor(getResources().getColor(R.color.selected_color));
-                        finish();
-                    }
-            }
-        });
-
-        Button update_button = (Button)findViewById(R.id.update_button);
+        Button update_button = (Button) findViewById(R.id.update_button);
 
         update_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,7 +138,7 @@ public class Contents extends Activity implements BeaconConsumer {
                 mIsFailure = false;
                 // 更新を行う
                 extraHeaders.put("user-id", device_id);
-                myWebView.loadUrl(active_url,extraHeaders);
+                myWebView.loadUrl(active_url, extraHeaders);
             }
         });
 
@@ -167,26 +152,52 @@ public class Contents extends Activity implements BeaconConsumer {
         try {
 
             // 引数にサーバーのURLを入れる。
-            myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
-            myJsonSender.mData = device_id ;
-            myJsonSender.start ();
-            myJsonSender.join ();
+            myJsonSender = new MyHttpSender(Constants.REGISTER_API_URL);
+            myJsonSender.mData = device_id;
+            myJsonSender.start();
+            myJsonSender.join();
 
 
             // responseがあればログ出力する。
-            if ( myJsonSender.mResponse != null ) {
-                Log.i ( "message", myJsonSender.mResponse );
+            if (myJsonSender.mResponse != null) {
+                Log.i("message", myJsonSender.mResponse);
             }
 
-        } catch ( InterruptedException e ) {
+        } catch (InterruptedException e) {
 
-            e.printStackTrace ();
-            Log.i ( "JSON", e.toString () );
+            e.printStackTrace();
+            Log.i("JSON", e.toString());
 
         }
 
         // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
         this.setupFavoritSeminarAlarm();
+        startQR();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    public void onClickSearch(View view) {
+        view.setBackgroundColor(getResources().getColor(R.color.selected_color));
+        myWebView.loadUrl("javascript:NavigationSearchButton.run()");
+    }
+
+    public void onClickButtonBack(View view) {
+        // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
+        if (myWebView.canGoBack() == true) {
+            Log.d("戻る前URL", (myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() - 1).getUrl()));
+//                        if (myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl().indexOf(Constants.FAVORITE_URL) != -1){
+//                            myWebView.goBack();
+//                            backurl = myWebView.getUrl();
+//                        }else{
+            view.setBackgroundColor(getResources().getColor(R.color.selected_color));
+            myWebView.goBack();
+
+        } else {
+            view.setBackgroundColor(getResources().getColor(R.color.selected_color));
+            Contents.this.finish();
+        }
     }
 
     public void onClickMenu(View view) {
@@ -198,38 +209,43 @@ public class Contents extends Activity implements BeaconConsumer {
 
     }
 
-    public void startQR(){
-        if(gps.canGetLocation){
-            Intent intent = new Intent(this,QrCodeActivity.class);
-            startActivityForResult(intent,3);
-        }else{
-            gps.showSettingsAlert();
-        }
+    public void startQR() {
+        Intent intent = new Intent(this, QrCodeActivity.class);
+        startActivityForResult(intent, 3);
+        View layout = findViewById(R.id.main);
+        View view1 = (View) layout.findViewById(R.id.menu_buttom);
+        view1.setVisibility(View.GONE);
+
+        ViewGroup linearLayout = (ViewGroup) findViewById(R.id.title_bar);
+        View view = (View) linearLayout.findViewById(R.id.menu_buttom);
+        view.setVisibility(View.GONE);
+        View searchLayout = LayoutInflater.from(this).inflate(R.layout.search_layout, null);
+        linearLayout.addView(searchLayout);
     }
 
-    public void startBeacon(){
+    public void startBeacon() {
         beaconManager = BeaconManager.getInstanceForApplication(this);
         bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
-        if(!bluetoothAdapter.isEnabled()){
+        if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, 2);
-        }else if(beaconManager.checkAvailability()) {
+        } else if (beaconManager.checkAvailability()) {
             beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
             beaconManager.bind(this);
             beaconManager.setBackgroundMode(true);
-        }else{
-            Toast.makeText(this,"iBeacon is not supported on this device",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "iBeacon is not supported on this device", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void onRestart(){
+    public void onRestart() {
         super.onRestart();
-        final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
-        final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom);
-        menu_buttom .setBackgroundColor(Color.TRANSPARENT);
-        btn_back_button .setBackgroundColor(Color.TRANSPARENT);
-        if(beaconManager!=null) {
+        final ImageView btn_back_button = (ImageView) findViewById(R.id.btn_back_button);
+        final ImageView menu_buttom = (ImageView) findViewById(R.id.menu_buttom);
+        menu_buttom.setBackgroundColor(Color.TRANSPARENT);
+        btn_back_button.setBackgroundColor(Color.TRANSPARENT);
+        if (beaconManager != null) {
             if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
         }
     }
@@ -241,21 +257,23 @@ public class Contents extends Activity implements BeaconConsumer {
             if (myWebView.canGoBack() == true) {
 //                if(myWebView.copyBackForwardList().getItemAtIndex(-1).getUrl().indexOf(Constants.FAVORITE_URL) != -1){
 //                    extraHeaders.put("user-id", device_id);
-                  myWebView.goBack();
-                  Log.d("getUrl", myWebView.getUrl());
+                myWebView.goBack();
+                Log.d("getUrl", myWebView.getUrl());
 //                    myWebView.loadUrl(myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl(), extraHeaders);
 //                }
 //                myWebView.goBack();
                 return true;
+            } else {
+                finish();
             }
         }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
-        if(beaconManager!=null) {
+        if (beaconManager != null) {
             if (beaconManager.isBound(this)) beaconManager.unbind(this);
         }
     }
@@ -269,30 +287,30 @@ public class Contents extends Activity implements BeaconConsumer {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     active_url = bundle.getString("key.url", "");
-                    if(active_url.equals(Constants.HOME_URL)){
+                    if (active_url.equals(Constants.HOME_URL)) {
                         finish();
                     }
 
                     if (null != myWebView) {
-                        Log.d("device_token",device_id);
+                        Log.d("device_token", device_id);
                         extraHeaders.put("user-id", device_id);
-                        myWebView.loadUrl(active_url,extraHeaders);
+                        myWebView.loadUrl(active_url, extraHeaders);
                     }
                 }
                 break;
             case 2:
-                if(resultCode==RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     this.recreate();
                 }
                 break;
             case 3:
-                if(resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     String code = bundle.getString("data");
-                    latitude = gps.getLatitude();
-                    longitude = gps.getLongitude();
+                    latitude = bundle.getDouble("lat");
+                    longitude = bundle.getDouble("lon");
                     myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + code + latitude + longitude + "')");
-                    Toast.makeText(Contents.this, code+"  "+latitude+"-"+longitude, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Contents.this, code + "  " + latitude + "-" + longitude, Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -300,43 +318,51 @@ public class Contents extends Activity implements BeaconConsumer {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
             // 更新処理
-            if(beaconManager.isBound(Contents.this))beaconManager.unbind(Contents.this);
+            if (beaconManager.isBound(Contents.this)) beaconManager.unbind(Contents.this);
             extraHeaders.put("user-id", device_id);
-            myWebView.loadUrl(active_url,extraHeaders);
+            myWebView.loadUrl(active_url, extraHeaders);
         }
     };
 
-    /** WebViewClientクラス */
+    /**
+     * WebViewClientクラス
+     */
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
             active_url = url;
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
+            if ((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
                 extraHeaders.put("user-id", device_id);
                 Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
                 return false;
-            }else{
+            } else {
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
         }
+
         /**
-         * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
+         * @see WebViewClient#onPageFinished(WebView, String)
          */
         @Override
         public void onPageFinished(WebView view, String url) {
-            final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
+            final ImageView btn_back_button = (ImageView) findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
             // ajax通信をキャッチしてレスポンスを受け取れるように準備する
             Contents.this.setupJavascriptHandler();
 
             super.onPageFinished(view, url);
-            if(url.equals(Constants.ERROR_URL)){
+            if (url.equals(Constants.ERROR_URL)) {
                 mIsFailure = true;
             }
             if (mIsFailure) {
@@ -348,7 +374,7 @@ public class Contents extends Activity implements BeaconConsumer {
                 findViewById(R.id.swipe_refresh_layout).setVisibility(View.GONE);
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 if (url.equals(Constants.HOME_URL)) {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -379,9 +405,9 @@ public class Contents extends Activity implements BeaconConsumer {
                     // IDからTextViewインスタンスを取得
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
-                    if(myWebView.getTitle().length() >= 10){
-                        textView.setText(myWebView.getTitle().substring(0,10) + "...");
-                    }else{
+                    if (myWebView.getTitle().length() >= 10) {
+                        textView.setText(myWebView.getTitle().substring(0, 10) + "...");
+                    } else {
                         textView.setText(myWebView.getTitle());
                     }
                 } else {
@@ -399,16 +425,16 @@ public class Contents extends Activity implements BeaconConsumer {
                     // IDからTextViewインスタンスを取得
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
-                    if(myWebView.getTitle().length() >= 15){
-                        textView.setText(myWebView.getTitle().substring(0,15) + "...");
-                    }else{
+                    if (myWebView.getTitle().length() >= 15) {
+                        textView.setText(myWebView.getTitle().substring(0, 15) + "...");
+                    } else {
                         textView.setText(myWebView.getTitle());
                     }
                 }
                 // 0.2秒待機
-                if(backurl.equals(myWebView.getUrl())){
+                if (backurl.equals(myWebView.getUrl())) {
                     extraHeaders.put("user-id", device_id);
-                    myWebView.loadUrl(myWebView.getUrl(),extraHeaders);
+                    myWebView.loadUrl(myWebView.getUrl(), extraHeaders);
                     backurl = "####";
 
                 }
@@ -430,19 +456,16 @@ public class Contents extends Activity implements BeaconConsumer {
     };
 
 
-    private void setupFavoritSeminarAlarm()
-    {
+    private void setupFavoritSeminarAlarm() {
         this.setupWebChromeClient();
         this.setupJavascriptManager();
     }
 
-    private void setupWebChromeClient()
-    {
+    private void setupWebChromeClient() {
         this.myWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                if (JavascriptManager.getInstance().onJsAlert(message))
-                {
+                if (JavascriptManager.getInstance().onJsAlert(message)) {
                     result.cancel();
                     return true;
                 }
@@ -452,18 +475,15 @@ public class Contents extends Activity implements BeaconConsumer {
         });
     }
 
-    private void setupJavascriptManager()
-    {
+    private void setupJavascriptManager() {
         JavascriptManager.getInstance().addHandler(new FavoritSeminarJavascriptHandler(this.getApplicationContext()));
     }
 
-    private void setupJavascriptHandler()
-    {
+    private void setupJavascriptHandler() {
         this.myWebView.loadUrl(String.format("javascript: %s;", this.ajaxHandlerJavascript()));
     }
 
-    private String ajaxHandlerJavascript()
-    {
+    private String ajaxHandlerJavascript() {
         return new AssetsManager(this).loadStringFromFile("ajax_handler.js");
     }
 
@@ -473,18 +493,18 @@ public class Contents extends Activity implements BeaconConsumer {
 
             @Override
             public void didEnterRegion(Region region) {
-                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+region+UUID+mayor+minor+"')");
+                myWebView.loadUrl("javascript:CheckIn.detectBeacon('" + device_id + region + UUID + mayor + minor + "')");
                 Log.i(TAG, "I just saw a Beacon");
             }
 
             @Override
             public void didExitRegion(Region region) {
-                Log.i(TAG,"I no longer see a Beacon");
+                Log.i(TAG, "I no longer see a Beacon");
             }
 
             @Override
             public void didDetermineStateForRegion(int i, Region region) {
-                Log.i(TAG,"I switched  from seeing to not seeing beacons: ");
+                Log.i(TAG, "I switched  from seeing to not seeing beacons: ");
             }
         });
 
@@ -492,8 +512,49 @@ public class Contents extends Activity implements BeaconConsumer {
             mayor = "0.0";
             minor = "0.0";
             UUID = "ASVBRGBr";
-            region= "number1";
-            beaconManager.startMonitoringBeaconsInRegion(new Region("UniqueId",null,null,null));
-        }catch (RemoteException e){}
+            region = "number1";
+            beaconManager.startMonitoringBeaconsInRegion(new Region("UniqueId", null, null, null));
+        } catch (RemoteException e) {
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Contents Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.appvisor_event.master/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Contents Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.appvisor_event.master/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 }

@@ -14,6 +14,7 @@
             android:textStyle="bold" />
         <ImageView
             android:id="@+id/btn_back_button"
+            android:onClick="onClickButtonBack"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
@@ -32,6 +33,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:onClick="onClickSearch"
                     android:padding="35px"
                     android:contentDescription="検索"
                     android:layout_alignParentRight="true"

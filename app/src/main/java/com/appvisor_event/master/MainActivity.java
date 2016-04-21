@@ -162,8 +162,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onRestart(){
         Log.d("RESTART","mainActivityに戻った");
-        recreate();
         super.onRestart();
+        this.recreate();
     }
 
     @Override

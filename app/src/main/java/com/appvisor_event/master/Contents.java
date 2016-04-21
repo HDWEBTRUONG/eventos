@@ -1,15 +1,21 @@
 package com.appvisor_event.master;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -18,46 +24,66 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
+import com.appvisor_event.master.modules.WebAppInterface;
+import com.google.zxing.Result;
+
+import org.altbeacon.beacon.BeaconConsumer;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.Region;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Contents extends Activity{
+public class Contents extends Activity implements BeaconConsumer {
 
     private WebView myWebView;
+    private static final String TAG = "TAG";
+    private BeaconManager beaconManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String active_url = Constants.HOME_URL;
     private String device_id;
     private Map<String, String> extraHeaders;
     private MyHttpSender myJsonSender;
+    private BluetoothAdapter bluetoothAdapter;
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
     private String backurl = "#####";
+    private String minor;
+    private String mayor;
+    private String UUID;
+    private String region;
+    private GPSManager gps;
+    private double longitude;
+    private double latitude;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //UUIDの取得
         device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
-
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
         Log.d("device_token",device_id);
+        gps = new GPSManager(this);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
 
         //タイトルバーを非表示
         findViewById(R.id.title_bar).setVisibility(View.GONE);
-
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
-
+        myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
+        startQR();
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
 
@@ -95,21 +121,6 @@ public class Contents extends Activity{
         myWebView.setWebViewClient(mWebViewClient);
 
         myWebView.goBack();
-
-        final ImageView btn = (ImageView) findViewById(R.id.menu_buttom);
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                // インテントのインスタンス生成
-                btn .setBackgroundColor(getResources().getColor(R.color.selected_color));
-                Intent intent = new Intent(Contents.this, SubMenu.class);
-                int requestCode = 1;
-                startActivityForResult(intent, requestCode);
-
-            }
-        });
 
         final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
         btn_back_button.setOnClickListener(new View.OnClickListener() {
@@ -149,7 +160,7 @@ public class Contents extends Activity{
         // SwipeRefreshLayoutの設定
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
-        mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.green, R.color.blue, R.color.yellow);
 
         Log.d("device_token", device_id);
 
@@ -178,13 +189,49 @@ public class Contents extends Activity{
         this.setupFavoritSeminarAlarm();
     }
 
+    public void onClickMenu(View view) {
+        // インテントのインスタンス生成
+        view.setBackgroundColor(getResources().getColor(R.color.selected_color));
+        Intent intent = new Intent(Contents.this, SubMenu.class);
+        int requestCode = 1;
+        startActivityForResult(intent, requestCode);
+
+    }
+
+    public void startQR(){
+        if(gps.canGetLocation){
+            Intent intent = new Intent(this,QrCodeActivity.class);
+            startActivityForResult(intent,3);
+        }else{
+            gps.showSettingsAlert();
+        }
+    }
+
+    public void startBeacon(){
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
+        if(!bluetoothAdapter.isEnabled()){
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 2);
+        }else if(beaconManager.checkAvailability()) {
+            beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+            beaconManager.bind(this);
+            beaconManager.setBackgroundMode(true);
+        }else{
+            Toast.makeText(this,"iBeacon is not supported on this device",Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onRestart(){
+        super.onRestart();
         final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
         final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom);
         menu_buttom .setBackgroundColor(Color.TRANSPARENT);
         btn_back_button .setBackgroundColor(Color.TRANSPARENT);
-        super.onRestart();
+        if(beaconManager!=null) {
+            if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
+        }
     }
 
     @Override
@@ -206,8 +253,17 @@ public class Contents extends Activity{
     }
 
     @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(beaconManager!=null) {
+            if (beaconManager.isBound(this)) beaconManager.unbind(this);
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
@@ -224,6 +280,21 @@ public class Contents extends Activity{
                     }
                 }
                 break;
+            case 2:
+                if(resultCode==RESULT_OK) {
+                    this.recreate();
+                }
+                break;
+            case 3:
+                if(resultCode == RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    String code = bundle.getString("data");
+                    latitude = gps.getLatitude();
+                    longitude = gps.getLongitude();
+                    myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + code + latitude + longitude + "')");
+                    Toast.makeText(Contents.this, code+"  "+latitude+"-"+longitude, Toast.LENGTH_SHORT).show();
+                }
+                break;
             default:
                 break;
         }
@@ -233,6 +304,7 @@ public class Contents extends Activity{
         @Override
         public void onRefresh() {
             // 更新処理
+            if(beaconManager.isBound(Contents.this))beaconManager.unbind(Contents.this);
             extraHeaders.put("user-id", device_id);
             myWebView.loadUrl(active_url,extraHeaders);
         }
@@ -393,5 +465,35 @@ public class Contents extends Activity{
     private String ajaxHandlerJavascript()
     {
         return new AssetsManager(this).loadStringFromFile("ajax_handler.js");
+    }
+
+    @Override
+    public void onBeaconServiceConnect() {
+        beaconManager.setMonitorNotifier(new MonitorNotifier() {
+
+            @Override
+            public void didEnterRegion(Region region) {
+                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+region+UUID+mayor+minor+"')");
+                Log.i(TAG, "I just saw a Beacon");
+            }
+
+            @Override
+            public void didExitRegion(Region region) {
+                Log.i(TAG,"I no longer see a Beacon");
+            }
+
+            @Override
+            public void didDetermineStateForRegion(int i, Region region) {
+                Log.i(TAG,"I switched  from seeing to not seeing beacons: ");
+            }
+        });
+
+        try {
+            mayor = "0.0";
+            minor = "0.0";
+            UUID = "ASVBRGBr";
+            region= "number1";
+            beaconManager.startMonitoringBeaconsInRegion(new Region("UniqueId",null,null,null));
+        }catch (RemoteException e){}
     }
 }

@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JsResult;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -46,6 +47,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Contents extends Activity implements BeaconConsumer {
+
+    private static final String TYPE_IMAGE = "image/*";
+    private ValueCallback<Uri> mUploadMessage;
+    private ValueCallback<Uri[]> mFilePathCallback;
 
     private WebView myWebView;
     private static final String TAG = "TAG";
@@ -188,7 +193,7 @@ public class Contents extends Activity implements BeaconConsumer {
         }
     }
 
-    public void buttonBar(){
+    public void buttonBar(String fileName, String url){
         ViewGroup linearLayout = (ViewGroup) findViewById(R.id.title_bar);
         View view = (View)linearLayout.findViewById(R.id.menu_buttom);
         view.setVisibility(View.GONE);
@@ -302,6 +307,35 @@ public class Contents extends Activity implements BeaconConsumer {
                     longitude = bundle.getDouble("lon");
                     Toast.makeText(Contents.this, code+"  "+latitude+"-"+longitude, Toast.LENGTH_SHORT).show();
                     myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + code + latitude + longitude + "')");
+                }
+            case 4:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (mFilePathCallback == null) {
+                        super.onActivityResult(requestCode, resultCode, data);
+                        return;
+                    }
+                    Uri[] results = null;
+                    if (resultCode == RESULT_OK) {
+                        String dataString = data.getDataString();
+                        if (dataString != null) {
+                            results = new Uri[]{Uri.parse(dataString)};
+                        }
+                    }
+                    mFilePathCallback.onReceiveValue(results);
+                    mFilePathCallback = null;
+                } else {
+                    if (mUploadMessage == null) {
+                        super.onActivityResult(requestCode, resultCode, data);
+                        return;
+                    }
+                    Uri result = null;
+                    if (resultCode == RESULT_OK) {
+                        if (data != null) {
+                            result = data.getData();
+                        }
+                    }
+                    mUploadMessage.onReceiveValue(result);
+                    mUploadMessage = null;
                 }
                 break;
             default:
@@ -453,18 +487,57 @@ public class Contents extends Activity implements BeaconConsumer {
         this.setupJavascriptManager();
     }
 
-    private void setupWebChromeClient()
-    {
+    private void setupWebChromeClient() {
         this.myWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                if (JavascriptManager.getInstance().onJsAlert(message))
-                {
+                if (JavascriptManager.getInstance().onJsAlert(message)) {
                     result.cancel();
                     return true;
                 }
 
                 return super.onJsAlert(view, url, message, result);
+            }
+
+            // For Android < 3.0
+            public void openFileChooser(ValueCallback<Uri> uploadFile) {
+                openFileChooser(uploadFile, "");
+            }
+
+            // For 3.0 <= Android < 4.1
+            public void openFileChooser(ValueCallback<Uri> uploadFile, String acceptType) {
+                openFileChooser(uploadFile, acceptType, "");
+            }
+
+            // For 4.1 <= Android < 5.0
+            public void openFileChooser(ValueCallback<Uri> uploadFile, String acceptType, String capture) {
+                if (mUploadMessage != null) {
+                    mUploadMessage.onReceiveValue(null);
+                }
+                mUploadMessage = uploadFile;
+
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType(TYPE_IMAGE);
+
+                startActivityForResult(intent, 4);
+            }
+
+            // For Android 5.0+
+            @Override
+            public boolean onShowFileChooser(WebView webView,
+                                             ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+                if (mFilePathCallback != null) {
+                    mFilePathCallback.onReceiveValue(null);
+                }
+                mFilePathCallback = filePathCallback;
+
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType(TYPE_IMAGE);
+                startActivityForResult(intent, 4);
+
+                return true;
             }
         });
     }
@@ -490,18 +563,18 @@ public class Contents extends Activity implements BeaconConsumer {
 
             @Override
             public void didEnterRegion(Region region) {
-                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+region+UUID+mayor+minor+"')");
+                myWebView.loadUrl("javascript:CheckIn.detectBeacon('" + device_id + region + UUID + mayor + minor + "')");
                 Log.i(TAG, "I just saw a Beacon");
             }
 
             @Override
             public void didExitRegion(Region region) {
-                Log.i(TAG,"I no longer see a Beacon");
+                Log.i(TAG, "I no longer see a Beacon");
             }
 
             @Override
             public void didDetermineStateForRegion(int i, Region region) {
-                Log.i(TAG,"I switched  from seeing to not seeing beacons: ");
+                Log.i(TAG, "I switched  from seeing to not seeing beacons: ");
             }
         });
 

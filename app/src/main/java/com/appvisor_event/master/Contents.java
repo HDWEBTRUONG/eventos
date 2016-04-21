@@ -164,7 +164,6 @@ public class Contents extends Activity implements BeaconConsumer {
 
         // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
         this.setupFavoritSeminarAlarm();
-        startQR();
     }
 
     public void onClickSearch(View view){

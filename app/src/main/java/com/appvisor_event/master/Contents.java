@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -64,6 +65,7 @@ public class Contents extends Activity implements BeaconConsumer {
     private String region;
     private double longitude;
     private double latitude;
+    private GPSManager gps;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -76,7 +78,7 @@ public class Contents extends Activity implements BeaconConsumer {
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
-
+        gps = new GPSManager(this);
         //タイトルバーを非表示
         findViewById(R.id.title_bar).setVisibility(View.GONE);
         //レイアウトで指定したWebViewのIDを指定する。
@@ -164,6 +166,7 @@ public class Contents extends Activity implements BeaconConsumer {
 
         // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
         this.setupFavoritSeminarAlarm();
+        startQR();
     }
 
     public void onClickSearch(View view){
@@ -197,15 +200,12 @@ public class Contents extends Activity implements BeaconConsumer {
     }
 
     public void startQR(){
-        Intent intent = new Intent(this,QrCodeActivity.class);
-        startActivityForResult(intent,3);
-        ViewGroup linearLayout = (ViewGroup) findViewById(R.id.title_bar);
-        View view = (View)linearLayout.findViewById(R.id.menu_buttom);
-        view.setVisibility(View.GONE);
-        View view2 = (View)linearLayout.findViewById(R.id.btn_back_button);
-        view2.setVisibility(View.GONE);
-        View searchLayout = LayoutInflater.from(this).inflate(R.layout.search_layout,null);
-        linearLayout.addView(searchLayout);
+        if(gps.canGetLocation){
+            Intent intent = new Intent(this,QrCodeActivity.class);
+            startActivityForResult(intent,3);
+        }else{
+            gps.showSettingsAlert();
+        }
     }
 
     public void startBeacon(){
@@ -294,8 +294,8 @@ public class Contents extends Activity implements BeaconConsumer {
                     String code = bundle.getString("data");
                     latitude = bundle.getDouble("lat");
                     longitude = bundle.getDouble("lon");
-                    myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + code + latitude + longitude + "')");
                     Toast.makeText(Contents.this, code+"  "+latitude+"-"+longitude, Toast.LENGTH_SHORT).show();
+                    myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + code + latitude + longitude + "')");
                 }
                 break;
             default:
@@ -312,7 +312,9 @@ public class Contents extends Activity implements BeaconConsumer {
         @Override
         public void onRefresh() {
             // 更新処理
-            if(beaconManager.isBound(Contents.this))beaconManager.unbind(Contents.this);
+            if(beaconManager!=null) {
+                if (beaconManager.isBound(Contents.this)) beaconManager.unbind(Contents.this);
+            }
             extraHeaders.put("user-id", device_id);
             myWebView.loadUrl(active_url,extraHeaders);
         }

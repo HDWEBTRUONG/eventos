@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -38,6 +39,7 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     private boolean isNetworkEnabled = false;
     private boolean canGetLocation = false;
     private Location location;
+    private Result result;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; //1 meter
     private static final long MIN_TIME_UPDT = 10 * 60;
 
@@ -54,10 +56,19 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
         mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
         mScannerView.startCamera();
         location = getLocation();
-        if(!canGetLocation){
-            showSettingsAlert();
-        }
     }
+
+    private final Runnable delayFunc= new Runnable() {
+        @Override
+        public void run() {
+            Intent intent = new Intent();
+            intent.putExtra("data",result.getText());
+            intent.putExtra("lon",longitude);
+            intent.putExtra("lat",latitude);
+            setResult(RESULT_OK,intent);
+            QrCodeActivity.this.finish();
+        }
+    };
 
     @Override
     public void onPause() {
@@ -76,13 +87,9 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     public void handleResult(final Result rawResult){
         Log.e("handler", rawResult.getText()); // Prints scan results
         Log.e("handler", rawResult.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
+        result = rawResult;
+        new Handler().postDelayed(delayFunc, 2500);
 
-        Intent intent = new Intent();
-        intent.putExtra("data",rawResult.getText());
-        intent.putExtra("lon",longitude);
-        intent.putExtra("lat",latitude);
-        setResult(RESULT_OK,intent);
-        QrCodeActivity.this.finish();
     }
 
     @Override
@@ -134,36 +141,6 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
 
     public boolean canGetLocation() {
         return this.canGetLocation;
-    }
-
-    public void showSettingsAlert(){
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("GPS settings");
-
-        // Setting Dialog Message
-        alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-
-        // Setting Icon to Dialog
-        //alertDialog.setIcon(R.drawable.delete);
-
-        // On pressing Settings button
-        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                QrCodeActivity.this.startActivity(intent);
-            }
-        });
-
-        // on pressing cancel button
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                QrCodeActivity.this.finish();
-                dialog.cancel();
-            }
-        });
-
-        // Showing Alert Message
-        alertDialog.show();
     }
 
     @Override

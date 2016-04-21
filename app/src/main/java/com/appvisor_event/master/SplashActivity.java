@@ -2,45 +2,29 @@ package com.appvisor_event.master;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.VideoView;
+import android.view.Window;
 
 public class SplashActivity extends Activity {
-    private VideoView video;
-    private Intent intent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // タイトルを非表示にします。
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // splash.xmlをViewに指定します。
         setContentView(R.layout.splash);
-        video = (VideoView)findViewById(R.id.videoView);
-        // 動画の設定&再生
-        String path = "android.resource://" + getPackageName() + "/" + R.raw.splash;
-        video.setVideoPath(path);
-        // 再生完了通知のリスナーの設定
-        video.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-            // TODO Auto-generated method stub
-                startActivity(intent);
-                SplashActivity.this.finish();
-            }
-        });
-        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            public void onPrepared(MediaPlayer mp) {
-                intent = new Intent(getApplication(), MainActivity.class);
-                video.start();
-                new Handler().postDelayed(delayFunc, 500);
-            }
-        });
+        Handler hdl = new Handler();
+        // 500ms遅延させてsplashHandlerを実行します。
+        hdl.postDelayed(new splashHandler(), 1000);
     }
-
-    private final Runnable delayFunc= new Runnable() {
-        @Override
+    class splashHandler implements Runnable {
         public void run() {
-            video.setBackgroundColor(00 * 00000000);
+            // スプラッシュ完了後に実行するActivityを指定します。
+            Intent intent = new Intent(getApplication(), MainActivity.class);
+            startActivity(intent);
+            // SplashActivityを終了させます。
+            SplashActivity.this.finish();
         }
-    };
+    }
 }

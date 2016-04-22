@@ -9,10 +9,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:paddingRight="20px"
-        android:paddingLeft="20px"
-        android:paddingTop="20px"
-        android:paddingBottom="20px"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:contentDescription="@string/infoButton"
         android:src="@drawable/btn_menu" />
 

@@ -13,9 +13,7 @@ import android.os.RemoteException;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -39,6 +37,8 @@ import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -188,7 +188,24 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     public void onClickSearch(View view){
-        view .setBackgroundColor(getResources().getColor(R.color.selected_color));
+        if (null == view)
+        {
+            return;
+        }
+
+        view.setBackgroundColor(getResources().getColor(R.color.selected_color));
+
+        String url = (String)view.getTag(R.string.search_button_tag_key);
+
+        try {
+            url = URLDecoder.decode(url, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("onClickSearch", url);
+
+        myWebView.loadUrl(String.format("javascript:window.location.href = '%s'", url));
     }
     public void onClickButtonBack(View view) {
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
@@ -207,12 +224,21 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         }
     }
 
-    public void buttonBar(){
-        ViewGroup linearLayout = (ViewGroup) findViewById(R.id.title_bar);
-        View view = (View)linearLayout.findViewById(R.id.menu_buttom);
-        view.setVisibility(View.GONE);
-        View searchLayout = LayoutInflater.from(Contents.this).inflate(R.layout.search_layout,linearLayout);
-        linearLayout.addView(searchLayout,1);
+    public void buttonBar(final String fileName, final String url){
+        Log.d("buttonBar", "fileName: " + fileName + " url: " + url);
+        runOnUiThread(new Runnable() {
+            public void run() {
+                int resId = getResources().getIdentifier(fileName, "drawable", getPackageName());
+                if (0 != resId)
+                {
+                    ImageView searchImageButton = (ImageView)findViewById(R.id.bar_search_button);
+                    searchImageButton.setImageResource(resId);
+                    searchImageButton.setBackgroundColor(0);
+                    searchImageButton.setTag(R.string.search_button_tag_key, url);
+                    searchImageButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     public void onClickMenu(View view) {
@@ -383,6 +409,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 return true;
             }
         }
+
         /**
          * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
          */
@@ -390,7 +417,11 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         public void onPageFinished(WebView view, String url) {
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
+
+            ImageView searchImageButton = (ImageView)findViewById(R.id.bar_search_button);
+            searchImageButton.setVisibility(View.GONE);
             myWebView.loadUrl("javascript:NavigationSearchButton.run()");
+
             // ajax通信をキャッチしてレスポンスを受け取れるように準備する
             Contents.this.setupJavascriptHandler();
 

@@ -255,8 +255,6 @@ public class Contents extends Activity implements BeaconConsumer {
             beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
             beaconManager.bind(this);
             beaconManager.setBackgroundMode(true);
-        }else{
-            Toast.makeText(this,"iBeacon is not supported on this device",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -331,7 +329,6 @@ public class Contents extends Activity implements BeaconConsumer {
                     String code = bundle.getString("data");
                     latitude = bundle.getDouble("lat");
                     longitude = bundle.getDouble("lon");
-                    Toast.makeText(Contents.this, code+"  "+latitude+"-"+longitude, Toast.LENGTH_SHORT).show();
                     myWebView.loadUrl("javascript:scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                     Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                 }

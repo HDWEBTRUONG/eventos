@@ -41,7 +41,7 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     private Location location;
     private Result result;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; //1 meter
-    private static final long MIN_TIME_UPDT = 10 * 60;
+    private static final long MIN_TIME_UPDT = 10 * 30;
 
     protected LocationManager locationManager;
 

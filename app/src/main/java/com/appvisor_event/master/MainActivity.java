@@ -2,6 +2,7 @@ package com.appvisor_event.master;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.google.android.gcm.GCMRegistrar;
 
 import java.util.HashMap;
@@ -25,6 +27,8 @@ import java.util.Map;
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
 public class MainActivity extends Activity {
+
+    private GcmClient gcmClient = null;
 
     private WebView myWebView;
 //    private AppVisorPush appVisorPush;
@@ -157,11 +161,15 @@ public class MainActivity extends Activity {
 
         }
 
+        this.initGCM();
+        this.checkGCMNotification();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
+
+        GcmClient.checkPlayServices(this);
     }
 
     @Override
@@ -294,4 +302,61 @@ public class MainActivity extends Activity {
         }
     };
 
+    private void initGCM()
+    {
+        if (GcmClient.checkPlayServices(this))
+        {
+            this.gcmClient = new GcmClient(this.getApplicationContext());
+
+            Log.d("MainActivity", "RegistrationID: " + this.gcmClient.getRegistrationId());
+        }
+    }
+
+    private void checkGCMNotification()
+    {
+        Bundle extras = this.getIntent().getExtras();
+        if (null != extras && extras.getBoolean("GcmNotification", false))
+        {
+            for (String key : extras.keySet())
+            {
+                Log.d("MainActivity", "checkGCMNotification: " + key + " = " + extras.get(key));
+            }
+            this.actionPushNortification(extras);
+        }
+    }
+
+    private void actionPushNortification(Bundle extras)
+    {
+        int notificationId = extras.getInt("id", 0);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(notificationId);
+
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                .setTitle("お知らせ")
+                .setMessage(extras.getString("content", ""))
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+
+        final String link = extras.getString("link", null);
+        if (null != link)
+        {
+            dialog.setNegativeButton("開く", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    final int linkId = Integer.parseInt(link);
+
+                    GcmClient gcmClient = new GcmClient(MainActivity.this.getApplicationContext());
+                    gcmClient.openLink(linkId);
+                }
+            });
+        }
+
+        dialog.create().show();
+    }
 }

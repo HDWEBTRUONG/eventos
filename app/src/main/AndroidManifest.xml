@@ -103,6 +103,17 @@
             android:name=".modules.alarm.AlermBroadcastReceiver"
             android:process=":remote" />
 
+        <!-- Support Google Cloud Message -->
+        <receiver
+            android:name=".modules.Gcm.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".modules.Gcm.GcmIntentService" />
+
         <activity android:name=".QrCodeActivity"></activity>
     </application>
 

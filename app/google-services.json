@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "485246024931",
+    "project_id": "api-project-485246024931"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485246024931:android:bb570df58173633c",
+        "android_client_info": {
+          "package_name": "com.appvisor_event.tamiya_passport_staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzBBAPm_eCXiF-CCGieo59L70Ksc0AR6s"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

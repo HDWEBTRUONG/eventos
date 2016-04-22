@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
@@ -33,7 +35,7 @@ import java.util.ArrayList;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
-public class QrCodeActivity extends Activity implements ZXingScannerView.ResultHandler, LocationListener{
+public class QrCodeActivity extends Activity implements ZXingScannerView.ResultHandler, LocationListener, AppPermission.Interface {
 
     private ZXingScannerView mScannerView;
     private ArrayList<BarcodeFormat> formats;
@@ -47,36 +49,44 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; //1 meter
     private static final long MIN_TIME_UPDT = 10 * 60;
 
+    private static final String[] needPermissions = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+
     protected LocationManager locationManager;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        AppPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (checkPermission())
+        if (AppPermission.checkPermission(this, needPermissions))
         {
-            mScannerView = new ZXingScannerView(this);   // Programmatically initialize the scanner view
-            setContentView(mScannerView);
-            formats = new ArrayList<BarcodeFormat>();
-            formats.add(BarcodeFormat.QR_CODE);
-            mScannerView.setFormats(formats);
-            mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
-            mScannerView.startCamera();
-            location = getLocation();
+            startScanner();
         }
         else {
-            requestPermissions();
+            AppPermission.requestPermissions(this, needPermissions);
         }
     }
 
-    private Boolean checkPermission()
+    private void startScanner()
     {
-        return (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA));
-    }
-
-    private void requestPermissions()
-    {
-
+        mScannerView = new ZXingScannerView(this);   // Programmatically initialize the scanner view
+        setContentView(mScannerView);
+        formats = new ArrayList<BarcodeFormat>();
+        formats.add(BarcodeFormat.QR_CODE);
+        mScannerView.setFormats(formats);
+        mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
+        mScannerView.startCamera();
+        location = getLocation();
     }
 
     private final Runnable delayFunc= new Runnable() {
@@ -94,13 +104,21 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     @Override
     public void onPause() {
         super.onPause();
-        mScannerView.stopCamera();   // Stop camera on pause
+
+        if (null != mScannerView)
+        {
+            mScannerView.stopCamera();   // Stop camera on pause
+        }
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-        mScannerView.stopCamera();
+
+        if (null != mScannerView)
+        {
+            mScannerView.stopCamera();
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -177,5 +195,46 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public Boolean isRequirePermission(String permission) {
+        AppPermission.log(String.format("isRequirePermission: %s", permission));
+
+        Boolean isRequirePermission = false;
+
+        switch (permission)
+        {
+            case Manifest.permission.CAMERA:
+            case Manifest.permission.ACCESS_FINE_LOCATION:
+            case Manifest.permission.ACCESS_COARSE_LOCATION:
+                isRequirePermission = true;
+                break;
+        }
+
+        return isRequirePermission;
+    }
+
+    @Override
+    public void showErrorDialog() {
+        AppPermission.log(String.format("showErrorDialog"));
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.permission_dialog_title))
+                .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        AppPermission.openSettings(QrCodeActivity.this);
+                        QrCodeActivity.this.finish();
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    @Override
+    public void allRequiredPermissions() {
+        startScanner();
     }
 }

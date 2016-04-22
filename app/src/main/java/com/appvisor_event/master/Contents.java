@@ -1,13 +1,13 @@
 package com.appvisor_event.master;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,18 +26,15 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
 import com.appvisor_event.master.modules.WebAppInterface;
-import com.google.zxing.Result;
-import com.google.zxing.qrcode.encoder.QRCode;
 
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -48,7 +45,7 @@ import org.altbeacon.beacon.Region;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Contents extends Activity implements BeaconConsumer {
+public class Contents extends Activity implements BeaconConsumer, AppPermission.Interface {
 
     private Uri m_uri;
     private static final String TYPE_IMAGE = "image/*";
@@ -74,6 +71,20 @@ public class Contents extends Activity implements BeaconConsumer {
     private double longitude;
     private double latitude;
     private GPSManager gps;
+
+
+    private static final String[] needPermissions = {
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        AppPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -210,16 +221,23 @@ public class Contents extends Activity implements BeaconConsumer {
         Intent intent = new Intent(Contents.this, SubMenu.class);
         int requestCode = 1;
         startActivityForResult(intent, requestCode);
-
     }
 
     public void startQR(){
-        if(gps.canGetLocation){
-            Intent intent = new Intent(this,QrCodeActivity.class);
-            startActivityForResult(intent,3);
-        }else{
-            gps.showSettingsAlert();
+        if (AppPermission.checkPermission(this, needPermissions))
+        {
+            startQRCodeScanner();
         }
+        else {
+            AppPermission.requestPermissions(this, needPermissions);
+        }
+
+//        if(gps.canGetLocation){
+//            Intent intent = new Intent(this,QrCodeActivity.class);
+//            startActivityForResult(intent,3);
+//        }else{
+//            gps.showSettingsAlert();
+//        }
     }
 
     public void startBeacon(){
@@ -235,6 +253,12 @@ public class Contents extends Activity implements BeaconConsumer {
         }else{
             Toast.makeText(this,"iBeacon is not supported on this device",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void startQRCodeScanner()
+    {
+        Intent intent = new Intent(this, QrCodeActivity.class);
+        startActivityForResult(intent, 3);
     }
 
     @Override
@@ -618,5 +642,47 @@ public class Contents extends Activity implements BeaconConsumer {
             region= "number1";
             beaconManager.startMonitoringBeaconsInRegion(new Region("UniqueId",null,null,null));
         }catch (RemoteException e){}
+    }
+
+
+
+    @Override
+    public Boolean isRequirePermission(String permission) {
+        AppPermission.log(String.format("isRequirePermission: %s", permission));
+
+        Boolean isRequirePermission = false;
+
+        switch (permission)
+        {
+            case android.Manifest.permission.CAMERA:
+            case android.Manifest.permission.ACCESS_FINE_LOCATION:
+            case android.Manifest.permission.ACCESS_COARSE_LOCATION:
+                isRequirePermission = true;
+                break;
+        }
+
+        return isRequirePermission;
+    }
+
+    @Override
+    public void showErrorDialog() {
+        AppPermission.log(String.format("showErrorDialog"));
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.permission_dialog_title))
+                .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        AppPermission.openSettings(Contents.this);
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    @Override
+    public void allRequiredPermissions() {
+        startQRCodeScanner();
     }
 }

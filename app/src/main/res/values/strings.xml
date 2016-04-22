@@ -15,4 +15,7 @@
     <string name="permission_dialog_message_camera_and_location">アプリ設定 > 権限 から\nカメラと位置情報を許可してください。</string>
     <string name="search_button_tag_key">1</string>
 
+    <string name="location_settings_title">位置情報の設定</string>
+    <string name="location_settings_message">位置情報をONにしてください。</string>
+
 </resources>

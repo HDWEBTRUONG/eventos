@@ -5,7 +5,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,10 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * Created by gomez on 2016/04/21.
@@ -61,16 +57,16 @@ public class GPSManager extends Service implements LocationListener {
 
     public void showSettingsAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-        alertDialog.setTitle("GPS settings");
+        alertDialog.setTitle(R.string.location_settings_title);
 
         // Setting Dialog Message
-        alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+        alertDialog.setMessage(R.string.location_settings_message);
 
         // Setting Icon to Dialog
         //alertDialog.setIcon(R.drawable.delete);
 
         // On pressing Settings button
-        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton("設定", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog,int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 context.startActivity(intent);
@@ -78,7 +74,7 @@ public class GPSManager extends Service implements LocationListener {
         });
 
         // on pressing cancel button
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }

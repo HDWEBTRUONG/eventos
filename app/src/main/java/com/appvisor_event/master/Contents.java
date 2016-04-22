@@ -267,34 +267,47 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     public void startBeacon(String data){
-        regionB = new ArrayList<Region>();
-        regId = new ArrayList<String>();
-        String[] param = data.split("/", -1);
-        for (int i = 0 ; i < param.length ; i++){
-            String[] beac = param[i].split("\\.",-1);
-            region= beac[0];
-            UUID = beac[1];
-            minor= beac[3];
-            mayor= beac[2];
-            regId.add(region);
-            Identifier may = Identifier.parse(mayor);
-            Identifier min = Identifier.parse(minor);
-            Identifier uui = Identifier.parse(UUID);
-            Region reg = new Region(region, uui, may, min);
-            regionB.add(reg);
-        }
+        gps = new GPSManager(this);
+        if(gps.canGetLocation) {
+            regionB = new ArrayList<Region>();
+            regId = new ArrayList<String>();
+            String[] param = data.split("/", -1);
+            for (int i = 0; i < param.length; i++) {
+                String[] beac = param[i].split("\\.", -1);
+                region = beac[0];
+                UUID = beac[1];
+                minor = beac[3];
+                mayor = beac[2];
+                regId.add(region);
+                Identifier may = Identifier.parse(mayor);
+                Identifier min = Identifier.parse(minor);
+                Identifier uui = Identifier.parse(UUID);
+                Region reg = new Region(region, uui, may, min);
+                regionB.add(reg);
+            }
 
-        Log.d("TAG",String.valueOf(regionB.get(0).getIdentifier(0)));
-        beaconManager = BeaconManager.getInstanceForApplication(this);
-        bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
-        if(!bluetoothAdapter.isEnabled()){
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, 2);
-        }else if(beaconManager.checkAvailability()) {
-            beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
-            beaconManager.bind(this);
-            beaconManager.setBackgroundMode(true);
+            Log.d("TAG", String.valueOf(regionB.get(0).getIdentifier(0)));
+            beaconManager = BeaconManager.getInstanceForApplication(this);
+            bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
+            if (!bluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, 2);
+            } else if (beaconManager.checkAvailability()) {
+                beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+                beaconManager.bind(this);
+                beaconManager.setBackgroundMode(true);
+            }
         }
+        else {
+            gps.showSettingsAlert();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        myWebView.reload();
     }
 
     @Override
@@ -561,7 +574,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         myWebView.post(new Runnable() {
             @Override
             public void run() {
-                myWebView.loadUrl("javascript:detectBeacon('"+device_id+"','"+re+"','"+ui+"','"+ma+"','"+min+"')");
+                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+"','"+re+"','"+ui+"','"+ma+"','"+min+"')");
             }
         });
     }

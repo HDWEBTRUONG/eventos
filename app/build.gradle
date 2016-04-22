@@ -18,7 +18,7 @@ android {
         }
     }
     productFlavors {
-        aobayama{
+        passport{
             applicationId = "com.appvisor_event.tamiya_passport_staging"
             versionCode 20160421
             versionName "1.0.0"

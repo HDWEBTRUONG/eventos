@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -48,6 +50,7 @@ import java.util.Map;
 
 public class Contents extends Activity implements BeaconConsumer {
 
+    private Uri m_uri;
     private static final String TYPE_IMAGE = "image/*";
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mFilePathCallback;
@@ -516,11 +519,12 @@ public class Contents extends Activity implements BeaconConsumer {
                 }
                 mUploadMessage = uploadFile;
 
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType(TYPE_IMAGE);
-
-                startActivityForResult(intent, 4);
+//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//                intent.addCategory(Intent.CATEGORY_OPENABLE);
+//                intent.setType(TYPE_IMAGE);
+//
+//                startActivityForResult(intent, 4);
+                openIntent();
             }
 
             // For Android 5.0+
@@ -532,12 +536,41 @@ public class Contents extends Activity implements BeaconConsumer {
                 }
                 mFilePathCallback = filePathCallback;
 
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType(TYPE_IMAGE);
-                startActivityForResult(intent, 4);
+//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//                intent.addCategory(Intent.CATEGORY_OPENABLE);
+//                intent.setType(TYPE_IMAGE);
+//                startActivityForResult(intent, 4);
+                openIntent();
 
                 return true;
+            }
+
+            private void openIntent()
+            {
+                //カメラの起動Intentの用意
+                String photoName = System.currentTimeMillis() + ".jpg";
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.Images.Media.TITLE, photoName);
+                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                m_uri = getContentResolver()
+                        .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
+                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, m_uri);
+
+                // ギャラリー用のIntent作成
+                Intent intentGallery;
+                if (Build.VERSION.SDK_INT < 19) {
+                    intentGallery = new Intent(Intent.ACTION_GET_CONTENT);
+                    intentGallery.setType("image/*");
+                } else {
+                    intentGallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intentGallery.addCategory(Intent.CATEGORY_OPENABLE);
+                    intentGallery.setType("image/jpeg");
+                }
+                Intent intent = Intent.createChooser(intentCamera, "画像の選択");
+                intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intentGallery});
+                startActivityForResult(intent, 4);
             }
         });
     }

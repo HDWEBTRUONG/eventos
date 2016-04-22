@@ -41,7 +41,7 @@ public class WebAppInterface {
 
     @JavascriptInterface
     public void addNavigationBarButton(String fileName, String url){
-        ((Contents)context).buttonBar();
+//        ((Contents)context).buttonBar(fileName, url);
     }
 
     @JavascriptInterface

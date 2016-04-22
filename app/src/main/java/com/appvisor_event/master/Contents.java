@@ -3,10 +3,9 @@ package com.appvisor_event.master;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,25 +22,20 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
 import com.appvisor_event.master.modules.WebAppInterface;
-import com.google.zxing.Result;
-import com.google.zxing.qrcode.encoder.QRCode;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
-import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
@@ -50,7 +44,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Contents extends Activity implements BeaconConsumer {
+public class Contents extends Activity implements BeaconConsumer, AppPermission.Interface {
 
     private WebView myWebView;
     private static final String TAG = "TAG";
@@ -73,6 +67,19 @@ public class Contents extends Activity implements BeaconConsumer {
     private double latitude;
     private GPSManager gps;
     private ArrayList<Region> regionB;
+
+    private static final String[] needPermissions = {
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        AppPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -218,13 +225,19 @@ public class Contents extends Activity implements BeaconConsumer {
     }
 
     public void startQR(){
-        gps = new GPSManager(this);
-        if(gps.canGetLocation){
-            Intent intent = new Intent(this,QrCodeActivity.class);
-            startActivityForResult(intent,3);
-        }else{
-            gps.showSettingsAlert();
+        if (AppPermission.checkPermission(this, needPermissions))
+        {
+            startQRCodeScanner();
         }
+        else {
+            AppPermission.requestPermissions(this, needPermissions);
+        }
+    }
+
+    private void startQRCodeScanner()
+    {
+        Intent intent = new Intent(this, QrCodeActivity.class);
+        startActivityForResult(intent, 3);
     }
 
     public void startBeacon(String data){
@@ -277,8 +290,8 @@ public class Contents extends Activity implements BeaconConsumer {
             if (myWebView.canGoBack() == true) {
 //                if(myWebView.copyBackForwardList().getItemAtIndex(-1).getUrl().indexOf(Constants.FAVORITE_URL) != -1){
 //                    extraHeaders.put("user-id", device_id);
-                  myWebView.goBack();
-                  Log.d("getUrl", myWebView.getUrl());
+                myWebView.goBack();
+                Log.d("getUrl", myWebView.getUrl());
 //                    myWebView.loadUrl(myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl(), extraHeaders);
 //                }
 //                myWebView.goBack();
@@ -545,5 +558,45 @@ public class Contents extends Activity implements BeaconConsumer {
                 beaconManager.startRangingBeaconsInRegion(r);
             }
         }catch (RemoteException e){}
+    }
+
+    @Override
+    public Boolean isRequirePermission(String permission) {
+        AppPermission.log(String.format("isRequirePermission: %s", permission));
+
+        Boolean isRequirePermission = false;
+
+        switch (permission)
+        {
+            case android.Manifest.permission.CAMERA:
+            case android.Manifest.permission.ACCESS_FINE_LOCATION:
+            case android.Manifest.permission.ACCESS_COARSE_LOCATION:
+                isRequirePermission = true;
+                break;
+        }
+
+        return isRequirePermission;
+    }
+
+    @Override
+    public void showErrorDialog() {
+        AppPermission.log(String.format("showErrorDialog"));
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.permission_dialog_title))
+                .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        AppPermission.openSettings(Contents.this);
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    @Override
+    public void allRequiredPermissions() {
+        startQRCodeScanner();
     }
 }

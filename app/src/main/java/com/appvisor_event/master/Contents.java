@@ -516,6 +516,15 @@ public class Contents extends Activity implements BeaconConsumer {
         return new AssetsManager(this).loadStringFromFile("ajax_handler.js");
     }
 
+    public void sendBeacon(final String re,final String ui,final String ma,final String min){
+        myWebView.post(new Runnable() {
+            @Override
+            public void run() {
+                myWebView.loadUrl("javascript:detectBeacon('"+device_id+"','"+re+"','"+ui+"','"+ma+"','"+min+"')");
+            }
+        });
+    }
+
     @Override
     public void onBeaconServiceConnect() {
         beaconManager.setRangeNotifier(new RangeNotifier() {
@@ -526,7 +535,7 @@ public class Contents extends Activity implements BeaconConsumer {
                         if(beacons.iterator().next().getIdentifier(0).equals(regionB.get(i).getIdentifier(0))
                                 && beacons.iterator().next().getIdentifier(1).equals(regionB.get(i).getIdentifier(1))
                                 && beacons.iterator().next().getIdentifier(2).equals(regionB.get(i).getIdentifier(2))){
-                            //myWebView.loadUrl("javascript:detectBeacon('"+device_id+"','"+regId.get(i)+"','"+String.valueOf(regionB.get(i).getIdentifier(0))+"','"+String.valueOf(regionB.get(i).getIdentifier(1))+"','"+String.valueOf(regionB.get(i).getIdentifier(2))+"')");
+                            sendBeacon(regId.get(i),String.valueOf(regionB.get(i).getIdentifier(0)),String.valueOf(regionB.get(i).getIdentifier(1)),String.valueOf(regionB.get(i).getIdentifier(2)));
                             Log.d("TAGG", "javascript:detectBeacon('"+device_id+"','"+regId.get(i)+"','"+String.valueOf(regionB.get(i).getIdentifier(0))+"','"+String.valueOf(regionB.get(i).getIdentifier(1))+"','"+String.valueOf(regionB.get(i).getIdentifier(2))+"')");
                         }
                     }

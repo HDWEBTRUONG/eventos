@@ -48,6 +48,7 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        location = getLocation();
         mScannerView = new ZXingScannerView(this);   // Programmatically initialize the scanner view
         setContentView(mScannerView);
         formats = new ArrayList<BarcodeFormat>();
@@ -55,7 +56,6 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
         mScannerView.setFormats(formats);
         mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
         mScannerView.startCamera();
-        location = getLocation();
     }
 
     private final Runnable delayFunc= new Runnable() {
@@ -88,6 +88,7 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
         Log.e("handler", rawResult.getText()); // Prints scan results
         Log.e("handler", rawResult.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
         result = rawResult;
+        Log.d("TAG",longitude +"-" + latitude);
         new Handler().postDelayed(delayFunc, 2500);
 
     }
@@ -120,11 +121,9 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
                     }
                 }
                 if (isGPSEnabled) {
-                    if (location == null) {
                         Log.d("TAG1", "GPS");
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_UPDT, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    }
                 }
             }
         } catch (Exception e) {
@@ -137,6 +136,8 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     public void onLocationChanged(Location location) {
         this.latitude = location.getLatitude();
         this.longitude = location.getLongitude();
+
+        Log.d("TAG",longitude +"-" + latitude);
     }
 
     public boolean canGetLocation() {

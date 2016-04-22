@@ -268,7 +268,7 @@ public class MainActivity extends Activity {
                     // インテントのインスタンス生成
                     Intent intent = new Intent(MainActivity.this, Contents.class);
                     // URLを表示
-                    intent.putExtra("key.url", active_url);
+                    intent.putExtra("key.url", "http://ota.dev.vc/tto/event/test.html");
                     // サブ画面の呼び出し
                     startActivity(intent);
                 }

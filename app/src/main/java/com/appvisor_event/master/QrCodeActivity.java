@@ -1,7 +1,5 @@
 package com.appvisor_event.master;
 
-import android.*;
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,7 +7,6 @@ import android.app.Instrumentation;
 import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,7 +15,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,38 +41,21 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     private Location location;
     private Result result;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; //1 meter
-    private static final long MIN_TIME_UPDT = 10 * 60;
+    private static final long MIN_TIME_UPDT = 10 * 30;
 
     protected LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (checkPermission())
-        {
-            mScannerView = new ZXingScannerView(this);   // Programmatically initialize the scanner view
-            setContentView(mScannerView);
-            formats = new ArrayList<BarcodeFormat>();
-            formats.add(BarcodeFormat.QR_CODE);
-            mScannerView.setFormats(formats);
-            mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
-            mScannerView.startCamera();
-            location = getLocation();
-        }
-        else {
-            requestPermissions();
-        }
-    }
-
-    private Boolean checkPermission()
-    {
-        return (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA));
-    }
-
-    private void requestPermissions()
-    {
-
+        location = getLocation();
+        mScannerView = new ZXingScannerView(this);   // Programmatically initialize the scanner view
+        setContentView(mScannerView);
+        formats = new ArrayList<BarcodeFormat>();
+        formats.add(BarcodeFormat.QR_CODE);
+        mScannerView.setFormats(formats);
+        mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
+        mScannerView.startCamera();
     }
 
     private final Runnable delayFunc= new Runnable() {
@@ -109,6 +88,7 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
         Log.e("handler", rawResult.getText()); // Prints scan results
         Log.e("handler", rawResult.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
         result = rawResult;
+        Log.d("TAG",longitude +"-" + latitude);
         new Handler().postDelayed(delayFunc, 2500);
 
     }
@@ -141,11 +121,9 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
                     }
                 }
                 if (isGPSEnabled) {
-                    if (location == null) {
                         Log.d("TAG1", "GPS");
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_UPDT, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    }
                 }
             }
         } catch (Exception e) {
@@ -158,6 +136,8 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     public void onLocationChanged(Location location) {
         this.latitude = location.getLatitude();
         this.longitude = location.getLongitude();
+
+        Log.d("TAG",longitude +"-" + latitude);
     }
 
     public boolean canGetLocation() {

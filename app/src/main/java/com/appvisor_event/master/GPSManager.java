@@ -30,9 +30,6 @@ public class GPSManager extends Service implements LocationListener {
 
     Location location;
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; //10 meter
-    private static final long MIN_TIME_UPDT = 1000 * 60; //1分
-
     protected LocationManager locationManager;
 
     public GPSManager(Context context) {

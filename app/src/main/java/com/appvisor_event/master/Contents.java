@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -12,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -20,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JsResult;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -39,21 +36,21 @@ import com.appvisor_event.master.modules.WebAppInterface;
 import com.google.zxing.Result;
 import com.google.zxing.qrcode.encoder.QRCode;
 
+import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Contents extends Activity implements BeaconConsumer {
-
-    private Uri m_uri;
-    private static final String TYPE_IMAGE = "image/*";
-    private ValueCallback<Uri> mUploadMessage;
-    private ValueCallback<Uri[]> mFilePathCallback;
 
     private WebView myWebView;
     private static final String TAG = "TAG";
@@ -71,9 +68,11 @@ public class Contents extends Activity implements BeaconConsumer {
     private String mayor;
     private String UUID;
     private String region;
+    private ArrayList<String> regId;
     private double longitude;
     private double latitude;
     private GPSManager gps;
+    private ArrayList<Region> regionB;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -86,7 +85,6 @@ public class Contents extends Activity implements BeaconConsumer {
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
-        gps = new GPSManager(this);
         //タイトルバーを非表示
         findViewById(R.id.title_bar).setVisibility(View.GONE);
         //レイアウトで指定したWebViewのIDを指定する。
@@ -122,6 +120,12 @@ public class Contents extends Activity implements BeaconConsumer {
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setBuiltInZoomControls(true);
         myWebView.getSettings().setSupportZoom(true);
+        myWebView.setWebChromeClient(new WebChromeClient() {
+            @Override public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            /* Do whatever you need here */
+                return super.onJsAlert(view, url, message, result);
+            }
+        });
 
         myWebView.getSettings().setLoadWithOverviewMode(true);
         myWebView.getSettings().setUseWideViewPort(true);
@@ -196,7 +200,7 @@ public class Contents extends Activity implements BeaconConsumer {
         }
     }
 
-    public void buttonBar(String fileName, String url){
+    public void buttonBar(){
         ViewGroup linearLayout = (ViewGroup) findViewById(R.id.title_bar);
         View view = (View)linearLayout.findViewById(R.id.menu_buttom);
         view.setVisibility(View.GONE);
@@ -214,6 +218,7 @@ public class Contents extends Activity implements BeaconConsumer {
     }
 
     public void startQR(){
+        gps = new GPSManager(this);
         if(gps.canGetLocation){
             Intent intent = new Intent(this,QrCodeActivity.class);
             startActivityForResult(intent,3);
@@ -222,7 +227,25 @@ public class Contents extends Activity implements BeaconConsumer {
         }
     }
 
-    public void startBeacon(){
+    public void startBeacon(String data){
+        regionB = new ArrayList<Region>();
+        regId = new ArrayList<String>();
+        String[] param = data.split("/", -1);
+        for (int i = 0 ; i < param.length ; i++){
+            String[] beac = param[i].split("\\.",-1);
+            region= beac[0];
+            UUID = beac[1];
+            minor= beac[3];
+            mayor= beac[2];
+            regId.add(region);
+            Identifier may = Identifier.parse(mayor);
+            Identifier min = Identifier.parse(minor);
+            Identifier uui = Identifier.parse(UUID);
+            Region reg = new Region(region, uui, may, min);
+            regionB.add(reg);
+        }
+
+        Log.d("TAG",String.valueOf(regionB.get(0).getIdentifier(0)));
         beaconManager = BeaconManager.getInstanceForApplication(this);
         bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
         if(!bluetoothAdapter.isEnabled()){
@@ -232,8 +255,6 @@ public class Contents extends Activity implements BeaconConsumer {
             beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
             beaconManager.bind(this);
             beaconManager.setBackgroundMode(true);
-        }else{
-            Toast.makeText(this,"iBeacon is not supported on this device",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -308,37 +329,8 @@ public class Contents extends Activity implements BeaconConsumer {
                     String code = bundle.getString("data");
                     latitude = bundle.getDouble("lat");
                     longitude = bundle.getDouble("lon");
-                    Toast.makeText(Contents.this, code+"  "+latitude+"-"+longitude, Toast.LENGTH_SHORT).show();
-                    myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + code + latitude + longitude + "')");
-                }
-            case 4:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (mFilePathCallback == null) {
-                        super.onActivityResult(requestCode, resultCode, data);
-                        return;
-                    }
-                    Uri[] results = null;
-                    if (resultCode == RESULT_OK) {
-                        String dataString = data.getDataString();
-                        if (dataString != null) {
-                            results = new Uri[]{Uri.parse(dataString)};
-                        }
-                    }
-                    mFilePathCallback.onReceiveValue(results);
-                    mFilePathCallback = null;
-                } else {
-                    if (mUploadMessage == null) {
-                        super.onActivityResult(requestCode, resultCode, data);
-                        return;
-                    }
-                    Uri result = null;
-                    if (resultCode == RESULT_OK) {
-                        if (data != null) {
-                            result = data.getData();
-                        }
-                    }
-                    mUploadMessage.onReceiveValue(result);
-                    mUploadMessage = null;
+                    myWebView.loadUrl("javascript:scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
+                    Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                 }
                 break;
             default:
@@ -385,11 +377,11 @@ public class Contents extends Activity implements BeaconConsumer {
         public void onPageFinished(WebView view, String url) {
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
+            myWebView.loadUrl("javascript:NavigationSearchButton.run()");
             // ajax通信をキャッチしてレスポンスを受け取れるように準備する
             Contents.this.setupJavascriptHandler();
 
             super.onPageFinished(view, url);
-            myWebView.loadUrl("javascript:NavigationSearchButton.run()");
             if(url.equals(Constants.ERROR_URL)){
                 mIsFailure = true;
             }
@@ -490,87 +482,18 @@ public class Contents extends Activity implements BeaconConsumer {
         this.setupJavascriptManager();
     }
 
-    private void setupWebChromeClient() {
+    private void setupWebChromeClient()
+    {
         this.myWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                if (JavascriptManager.getInstance().onJsAlert(message)) {
+                if (JavascriptManager.getInstance().onJsAlert(message))
+                {
                     result.cancel();
                     return true;
                 }
 
                 return super.onJsAlert(view, url, message, result);
-            }
-
-            // For Android < 3.0
-            public void openFileChooser(ValueCallback<Uri> uploadFile) {
-                openFileChooser(uploadFile, "");
-            }
-
-            // For 3.0 <= Android < 4.1
-            public void openFileChooser(ValueCallback<Uri> uploadFile, String acceptType) {
-                openFileChooser(uploadFile, acceptType, "");
-            }
-
-            // For 4.1 <= Android < 5.0
-            public void openFileChooser(ValueCallback<Uri> uploadFile, String acceptType, String capture) {
-                if (mUploadMessage != null) {
-                    mUploadMessage.onReceiveValue(null);
-                }
-                mUploadMessage = uploadFile;
-
-//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                intent.addCategory(Intent.CATEGORY_OPENABLE);
-//                intent.setType(TYPE_IMAGE);
-//
-//                startActivityForResult(intent, 4);
-                openIntent();
-            }
-
-            // For Android 5.0+
-            @Override
-            public boolean onShowFileChooser(WebView webView,
-                                             ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-                if (mFilePathCallback != null) {
-                    mFilePathCallback.onReceiveValue(null);
-                }
-                mFilePathCallback = filePathCallback;
-
-//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                intent.addCategory(Intent.CATEGORY_OPENABLE);
-//                intent.setType(TYPE_IMAGE);
-//                startActivityForResult(intent, 4);
-                openIntent();
-
-                return true;
-            }
-
-            private void openIntent()
-            {
-                //カメラの起動Intentの用意
-                String photoName = System.currentTimeMillis() + ".jpg";
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(MediaStore.Images.Media.TITLE, photoName);
-                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-                m_uri = getContentResolver()
-                        .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-
-                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, m_uri);
-
-                // ギャラリー用のIntent作成
-                Intent intentGallery;
-                if (Build.VERSION.SDK_INT < 19) {
-                    intentGallery = new Intent(Intent.ACTION_GET_CONTENT);
-                    intentGallery.setType("image/*");
-                } else {
-                    intentGallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intentGallery.addCategory(Intent.CATEGORY_OPENABLE);
-                    intentGallery.setType("image/jpeg");
-                }
-                Intent intent = Intent.createChooser(intentCamera, "画像の選択");
-                intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intentGallery});
-                startActivityForResult(intent, 4);
             }
         });
     }
@@ -590,33 +513,37 @@ public class Contents extends Activity implements BeaconConsumer {
         return new AssetsManager(this).loadStringFromFile("ajax_handler.js");
     }
 
+    public void sendBeacon(final String re,final String ui,final String ma,final String min){
+        myWebView.post(new Runnable() {
+            @Override
+            public void run() {
+                myWebView.loadUrl("javascript:detectBeacon('"+device_id+"','"+re+"','"+ui+"','"+ma+"','"+min+"')");
+            }
+        });
+    }
+
     @Override
     public void onBeaconServiceConnect() {
-        beaconManager.setMonitorNotifier(new MonitorNotifier() {
-
+        beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
-            public void didEnterRegion(Region region) {
-                myWebView.loadUrl("javascript:CheckIn.detectBeacon('" + device_id + region + UUID + mayor + minor + "')");
-                Log.i(TAG, "I just saw a Beacon");
-            }
-
-            @Override
-            public void didExitRegion(Region region) {
-                Log.i(TAG, "I no longer see a Beacon");
-            }
-
-            @Override
-            public void didDetermineStateForRegion(int i, Region region) {
-                Log.i(TAG, "I switched  from seeing to not seeing beacons: ");
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                if (beacons.size() > 0) {
+                    for(int i = 0 ; i < regionB.size() ; i++){
+                        if(beacons.iterator().next().getIdentifier(0).equals(regionB.get(i).getIdentifier(0))
+                                && beacons.iterator().next().getIdentifier(1).equals(regionB.get(i).getIdentifier(1))
+                                && beacons.iterator().next().getIdentifier(2).equals(regionB.get(i).getIdentifier(2))){
+                            sendBeacon(regId.get(i),String.valueOf(regionB.get(i).getIdentifier(0)),String.valueOf(regionB.get(i).getIdentifier(1)),String.valueOf(regionB.get(i).getIdentifier(2)));
+                            Log.d("TAGG", "javascript:detectBeacon('"+device_id+"','"+regId.get(i)+"','"+String.valueOf(regionB.get(i).getIdentifier(0))+"','"+String.valueOf(regionB.get(i).getIdentifier(1))+"','"+String.valueOf(regionB.get(i).getIdentifier(2))+"')");
+                        }
+                    }
+                }
             }
         });
 
         try {
-            mayor = "0.0";
-            minor = "0.0";
-            UUID = "ASVBRGBr";
-            region= "number1";
-            beaconManager.startMonitoringBeaconsInRegion(new Region("UniqueId",null,null,null));
+            for(Region r : regionB) {
+                beaconManager.startRangingBeaconsInRegion(r);
+            }
         }catch (RemoteException e){}
     }
 }

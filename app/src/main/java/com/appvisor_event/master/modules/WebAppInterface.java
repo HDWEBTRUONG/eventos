@@ -30,8 +30,7 @@ public class WebAppInterface {
 
     @JavascriptInterface
     public void beacons(String data){
-        String[] param = data.split("/", -1);
-        ((Contents)context).startBeacon();
+        ((Contents)context).startBeacon(data);
     }
 
     @JavascriptInterface

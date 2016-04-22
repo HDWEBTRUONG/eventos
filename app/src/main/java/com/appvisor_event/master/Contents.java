@@ -36,13 +36,17 @@ import com.appvisor_event.master.modules.WebAppInterface;
 import com.google.zxing.Result;
 import com.google.zxing.qrcode.encoder.QRCode;
 
+import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,9 +68,11 @@ public class Contents extends Activity implements BeaconConsumer {
     private String mayor;
     private String UUID;
     private String region;
+    private ArrayList<String> regId;
     private double longitude;
     private double latitude;
     private GPSManager gps;
+    private ArrayList<Region> regionB;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -79,7 +85,6 @@ public class Contents extends Activity implements BeaconConsumer {
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
-        gps = new GPSManager(this);
         //タイトルバーを非表示
         findViewById(R.id.title_bar).setVisibility(View.GONE);
         //レイアウトで指定したWebViewのIDを指定する。
@@ -115,6 +120,12 @@ public class Contents extends Activity implements BeaconConsumer {
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setBuiltInZoomControls(true);
         myWebView.getSettings().setSupportZoom(true);
+        myWebView.setWebChromeClient(new WebChromeClient() {
+            @Override public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            /* Do whatever you need here */
+                return super.onJsAlert(view, url, message, result);
+            }
+        });
 
         myWebView.getSettings().setLoadWithOverviewMode(true);
         myWebView.getSettings().setUseWideViewPort(true);
@@ -207,6 +218,7 @@ public class Contents extends Activity implements BeaconConsumer {
     }
 
     public void startQR(){
+        gps = new GPSManager(this);
         if(gps.canGetLocation){
             Intent intent = new Intent(this,QrCodeActivity.class);
             startActivityForResult(intent,3);
@@ -216,15 +228,24 @@ public class Contents extends Activity implements BeaconConsumer {
     }
 
     public void startBeacon(String data){
+        regionB = new ArrayList<Region>();
+        regId = new ArrayList<String>();
         String[] param = data.split("/", -1);
-        String[] beac = new String[4];
         for (int i = 0 ; i < param.length ; i++){
-            beac = param[i].split(".",-1);
+            String[] beac = param[i].split("\\.",-1);
+            region= beac[0];
+            UUID = beac[1];
+            minor= beac[3];
+            mayor= beac[2];
+            regId.add(region);
+            Identifier may = Identifier.parse(mayor);
+            Identifier min = Identifier.parse(minor);
+            Identifier uui = Identifier.parse(UUID);
+            Region reg = new Region(region, uui, may, min);
+            regionB.add(reg);
         }
-        region= beac[0];
-        UUID = beac[1];
-        minor= beac[3];
-        mayor= beac[2];
+
+        Log.d("TAG",String.valueOf(regionB.get(0).getIdentifier(0)));
         beaconManager = BeaconManager.getInstanceForApplication(this);
         bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
         if(!bluetoothAdapter.isEnabled()){
@@ -311,7 +332,8 @@ public class Contents extends Activity implements BeaconConsumer {
                     latitude = bundle.getDouble("lat");
                     longitude = bundle.getDouble("lon");
                     Toast.makeText(Contents.this, code+"  "+latitude+"-"+longitude, Toast.LENGTH_SHORT).show();
-                    myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + code + latitude + longitude + "')");
+                    myWebView.loadUrl("javascript:scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
+                    Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                 }
                 break;
             default:
@@ -496,31 +518,26 @@ public class Contents extends Activity implements BeaconConsumer {
 
     @Override
     public void onBeaconServiceConnect() {
-        beaconManager.setMonitorNotifier(new MonitorNotifier() {
-
+        beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
-            public void didEnterRegion(Region region) {
-                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+region+UUID+mayor+minor+"')");
-                Log.i(TAG, "I just saw a Beacon");
-            }
-
-            @Override
-            public void didExitRegion(Region region) {
-                Log.i(TAG,"I no longer see a Beacon");
-            }
-
-            @Override
-            public void didDetermineStateForRegion(int i, Region region) {
-                Log.i(TAG,"I switched  from seeing to not seeing beacons: ");
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                if (beacons.size() > 0) {
+                    for(int i = 0 ; i < regionB.size() ; i++){
+                        if(beacons.iterator().next().getIdentifier(0).equals(regionB.get(i).getIdentifier(0))
+                                && beacons.iterator().next().getIdentifier(1).equals(regionB.get(i).getIdentifier(1))
+                                && beacons.iterator().next().getIdentifier(2).equals(regionB.get(i).getIdentifier(2))){
+                            //myWebView.loadUrl("javascript:detectBeacon('"+device_id+"','"+regId.get(i)+"','"+String.valueOf(regionB.get(i).getIdentifier(0))+"','"+String.valueOf(regionB.get(i).getIdentifier(1))+"','"+String.valueOf(regionB.get(i).getIdentifier(2))+"')");
+                            Log.d("TAGG", "javascript:detectBeacon('"+device_id+"','"+regId.get(i)+"','"+String.valueOf(regionB.get(i).getIdentifier(0))+"','"+String.valueOf(regionB.get(i).getIdentifier(1))+"','"+String.valueOf(regionB.get(i).getIdentifier(2))+"')");
+                        }
+                    }
+                }
             }
         });
 
         try {
-            Identifier may = Identifier.parse(mayor);
-            Identifier min = Identifier.parse(minor);
-            Identifier uui = Identifier.parse(UUID);
-            region= "number1";
-            beaconManager.startMonitoringBeaconsInRegion(new Region(region,uui,may,min));
+            for(Region r : regionB) {
+                beaconManager.startRangingBeaconsInRegion(r);
+            }
         }catch (RemoteException e){}
     }
 }

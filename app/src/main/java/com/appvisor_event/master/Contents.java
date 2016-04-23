@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JsResult;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -67,6 +68,11 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private double latitude;
     private GPSManager gps;
     private ArrayList<Region> regionB;
+
+    private ValueCallback<Uri> mUploadMessage;
+    private ValueCallback<Uri[]> mFilePathCallback;
+    private static final String TYPE_IMAGE = "image/*";
+    private static final int INPUT_FILE_REQUEST_CODE = 10;
 
     private static final String[] needPermissions = {
             android.Manifest.permission.CAMERA,
@@ -307,7 +313,10 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     protected void onResume() {
         super.onResume();
 
-        myWebView.reload();
+        if (-1 != myWebView.getUrl().indexOf("checkin"))
+        {
+            myWebView.reload();
+        }
     }
 
     @Override
@@ -383,6 +392,44 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     longitude = bundle.getDouble("lon");
                     myWebView.loadUrl("javascript:scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                     Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
+                }
+                break;
+            case INPUT_FILE_REQUEST_CODE:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (mFilePathCallback == null) {
+                        super.onActivityResult(requestCode, resultCode, data);
+                        return;
+                    }
+                    Uri[] results = null;
+
+                    // Check that the response is a good one
+                    if (resultCode == RESULT_OK) {
+                        String dataString = data.getDataString();
+                        if (dataString != null) {
+
+                            Log.d("INPUT_FILE_REQUEST_CODE", "dataString: " + dataString);
+                            results = new Uri[] { Uri.parse(dataString) };
+                        }
+                    }
+
+                    mFilePathCallback.onReceiveValue(results);
+                    mFilePathCallback = null;
+                } else {
+                    if (mUploadMessage == null) {
+                        super.onActivityResult(requestCode, resultCode, data);
+                        return;
+                    }
+
+                    Uri result = null;
+
+                    if (resultCode == RESULT_OK) {
+                        if (data != null) {
+                            result = data.getData();
+                        }
+                    }
+
+                    mUploadMessage.onReceiveValue(result);
+                    mUploadMessage = null;
                 }
                 break;
             default:
@@ -551,6 +598,47 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 }
 
                 return super.onJsAlert(view, url, message, result);
+            }
+
+            // For Android < 3.0
+            public void openFileChooser(ValueCallback<Uri> uploadFile) {
+                openFileChooser(uploadFile, "");
+            }
+
+            // For 3.0 <= Android < 4.1
+            public void openFileChooser(ValueCallback<Uri> uploadFile, String acceptType) {
+                openFileChooser(uploadFile, acceptType, "");
+            }
+
+            // For 4.1 <= Android < 5.0
+            public void openFileChooser(ValueCallback<Uri> uploadFile, String acceptType, String capture) {
+                if(mUploadMessage != null){
+                    mUploadMessage.onReceiveValue(null);
+                }
+                mUploadMessage = uploadFile;
+
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType(TYPE_IMAGE);
+
+                startActivityForResult(intent, INPUT_FILE_REQUEST_CODE);
+            }
+
+            // For Android 5.0+
+            @Override public boolean onShowFileChooser(WebView webView,
+                                                       ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+                if (mFilePathCallback != null) {
+                    mFilePathCallback.onReceiveValue(null);
+                }
+                mFilePathCallback = filePathCallback;
+
+                Log.d("onShowFileChooser", "filePathCallback: " + filePathCallback.toString());
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType(TYPE_IMAGE);
+                startActivityForResult(intent, INPUT_FILE_REQUEST_CODE);
+
+                return true;
             }
         });
     }

@@ -78,18 +78,24 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private static final int INPUT_FILE_REQUEST_CODE = 10;
     private Uri m_uri;
 
-    private static final String[] needPermissions = {
-            Manifest.permission.CAMERA,
+    private static final String[] beaconDetectionRequiredPermissions = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
-    private static final int needPermissionsRequestCode = 100;
+    private static final int beaconDetectionRequiredPermissionsRequestCode = 100;
 
     private static final String[] imageUploadRequiredPermissions = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
     };
     private static final int imageUploadRequiredPermissionsRequestCode = 101;
+
+    private static final String[] qrcodeScannerRequiredPermissions = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+    private static final int qrcodeScannerRequiredPermissionsRequestCode = 102;
 
     private String beaconData;
 
@@ -326,12 +332,12 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
             return;
         }
 
-        if (AppPermission.checkPermission(this, needPermissions))
+        if (AppPermission.checkPermission(this, qrcodeScannerRequiredPermissions))
         {
             startQRCodeScanner();
         }
         else {
-            AppPermission.requestPermissions(this, needPermissionsRequestCode, needPermissions);
+            AppPermission.requestPermissions(this, qrcodeScannerRequiredPermissionsRequestCode, qrcodeScannerRequiredPermissions);
         }
     }
 
@@ -341,42 +347,59 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         startActivityForResult(intent, 3);
     }
 
-    public void startBeacon(String data){
+    public void startBeacon(String data)
+    {
         beaconData = data;
 
         gps = new GPSManager(this);
-        if(gps.canGetLocation) {
-            regionB = new ArrayList<Region>();
-            regId = new ArrayList<String>();
-            String[] param = data.split("/", -1);
-            for (int i = 0; i < param.length; i++) {
-                String[] beac = param[i].split("\\.", -1);
-                region = beac[0];
-                UUID = beac[1];
-                minor = beac[3];
-                mayor = beac[2];
-                regId.add(region);
-                Identifier may = Identifier.parse(mayor);
-                Identifier min = Identifier.parse(minor);
-                Identifier uui = Identifier.parse(UUID);
-                Region reg = new Region(region, uui, may, min);
-                regionB.add(reg);
-            }
+        if(!gps.canGetLocation)
+        {
+            gps.showSettingsAlert();
+        }
 
-            Log.d("TAG", String.valueOf(regionB.get(0).getIdentifier(0)));
-            beaconManager = BeaconManager.getInstanceForApplication(this);
-            bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
-            if (!bluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, 2);
-            } else if (beaconManager.checkAvailability()) {
-                beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
-                beaconManager.bind(this);
-                beaconManager.setBackgroundMode(true);
-            }
+        if (AppPermission.checkPermission(this, beaconDetectionRequiredPermissions))
+        {
+            startBeaconDetection(data);
         }
         else {
-            gps.showSettingsAlert();
+            AppPermission.requestPermissions(this, beaconDetectionRequiredPermissionsRequestCode, beaconDetectionRequiredPermissions);
+        }
+    }
+
+    private void startBeaconDetection(String data)
+    {
+        if (null == data)
+        {
+            return;
+        }
+
+        regionB = new ArrayList<Region>();
+        regId = new ArrayList<String>();
+        String[] param = data.split("/", -1);
+        for (int i = 0; i < param.length; i++) {
+            String[] beac = param[i].split("\\.", -1);
+            region = beac[0];
+            UUID = beac[1];
+            minor = beac[3];
+            mayor = beac[2];
+            regId.add(region);
+            Identifier may = Identifier.parse(mayor);
+            Identifier min = Identifier.parse(minor);
+            Identifier uui = Identifier.parse(UUID);
+            Region reg = new Region(region, uui, may, min);
+            regionB.add(reg);
+        }
+
+        Log.d("TAG", String.valueOf(regionB.get(0).getIdentifier(0)));
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 2);
+        } else if (beaconManager.checkAvailability()) {
+            beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+            beaconManager.bind(this);
+            beaconManager.setBackgroundMode(true);
         }
     }
 
@@ -384,10 +407,11 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     protected void onResume() {
         super.onResume();
 
-        if (null != beaconData)
-        {
-            startBeacon(beaconData);
-        }
+        // 許可しないにすると無限ループに陥るので辞める。
+//        if (null != beaconData)
+//        {
+//            startBeacon(beaconData);
+//        }
     }
 
     @Override
@@ -765,7 +789,17 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
         switch (requestCode)
         {
-            case needPermissionsRequestCode:
+            case imageUploadRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case Manifest.permission.READ_EXTERNAL_STORAGE:
+                    case Manifest.permission.CAMERA:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
+
+            case qrcodeScannerRequiredPermissionsRequestCode:
                 switch (permission)
                 {
                     case Manifest.permission.CAMERA:
@@ -776,11 +810,11 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 }
                 break;
 
-            case imageUploadRequiredPermissionsRequestCode:
+            case beaconDetectionRequiredPermissionsRequestCode:
                 switch (permission)
                 {
-                    case Manifest.permission.READ_EXTERNAL_STORAGE:
-                    case Manifest.permission.CAMERA:
+                    case Manifest.permission.ACCESS_FINE_LOCATION:
+                    case Manifest.permission.ACCESS_COARSE_LOCATION:
                         isRequirePermission = true;
                         break;
                 }
@@ -797,7 +831,21 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
         switch (requestCode)
         {
-            case needPermissionsRequestCode:
+            case imageUploadRequiredPermissionsRequestCode:
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.permission_dialog_title))
+                        .setMessage(getString(R.string.permission_dialog_message_camera_and_storage))
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                AppPermission.openSettings(Contents.this);
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
+
+            case qrcodeScannerRequiredPermissionsRequestCode:
                 new AlertDialog.Builder(this)
                         .setTitle(getString(R.string.permission_dialog_title))
                         .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
@@ -811,10 +859,10 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                         .show();
                 break;
 
-            case imageUploadRequiredPermissionsRequestCode:
+            case beaconDetectionRequiredPermissionsRequestCode:
                 new AlertDialog.Builder(this)
                         .setTitle(getString(R.string.permission_dialog_title))
-                        .setMessage(getString(R.string.permission_dialog_message_camera_and_storage))
+                        .setMessage(getString(R.string.permission_dialog_message_location))
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -831,12 +879,16 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     public void allRequiredPermissions(int requestCode, String[] permissions) {
         switch (requestCode)
         {
-            case needPermissionsRequestCode:
+            case imageUploadRequiredPermissionsRequestCode:
+                openGallery();
+                break;
+
+            case qrcodeScannerRequiredPermissionsRequestCode:
                 startQRCodeScanner();
                 break;
 
-            case imageUploadRequiredPermissionsRequestCode:
-                openGallery();
+            case beaconDetectionRequiredPermissionsRequestCode:
+                startBeaconDetection(beaconData);
                 break;
         }
     }

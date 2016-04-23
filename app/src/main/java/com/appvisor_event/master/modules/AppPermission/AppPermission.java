@@ -15,12 +15,10 @@ import android.util.Log;
  */
 public class AppPermission
 {
-    public static final int PERMISSION_REQUEST_CODE = 1;
-
     public interface Interface {
-        Boolean isRequirePermission(String permission);
-        void showErrorDialog();
-        void allRequiredPermissions(String[] permissions);
+        Boolean isRequirePermission(int requestCode, String permission);
+        void showErrorDialog(int requestCode);
+        void allRequiredPermissions(int requestCode, String[] permissions);
     }
 
     public static Boolean checkPermission(Activity activity, String[] permissions)
@@ -40,10 +38,10 @@ public class AppPermission
         return false;
     }
 
-    public static void requestPermissions(Activity activity, String[] permissions)
+    public static void requestPermissions(Activity activity, int requestCode, String[] permissions)
     {
         log("requestPermissions");
-        ActivityCompat.requestPermissions(activity, permissions, PERMISSION_REQUEST_CODE);
+        ActivityCompat.requestPermissions(activity, permissions, requestCode);
     }
 
     public static void openSettings(Activity activity)
@@ -81,21 +79,16 @@ public class AppPermission
 
     public static void onRequestPermissionsResult(AppPermission.Interface appPermissionInterface, int requestCode, String[] permissions, int[] grantResults)
     {
-        switch (requestCode)
+        if (!checkGrantPermissions(appPermissionInterface, requestCode, permissions, grantResults))
         {
-            case AppPermission.PERMISSION_REQUEST_CODE:
-                if (!checkGrantPermissions(appPermissionInterface, permissions, grantResults))
-                {
-                    appPermissionInterface.showErrorDialog();
-                    return;
-                }
-
-                appPermissionInterface.allRequiredPermissions(permissions);
-                break;
+            appPermissionInterface.showErrorDialog(requestCode);
+            return;
         }
+
+        appPermissionInterface.allRequiredPermissions(requestCode, permissions);
     }
 
-    private static Boolean checkGrantPermissions(AppPermission.Interface appPermissionInterface, String[] permissions, int[] grantResults)
+    private static Boolean checkGrantPermissions(AppPermission.Interface appPermissionInterface, int requestCode, String[] permissions, int[] grantResults)
     {
         AppPermission.log("confirmGrantPermissions");
 
@@ -104,7 +97,7 @@ public class AppPermission
         {
             if (PackageManager.PERMISSION_GRANTED != grantResult)
             {
-                if (appPermissionInterface.isRequirePermission(permissions[i]))
+                if (appPermissionInterface.isRequirePermission(requestCode, permissions[i]))
                 {
                     return false;
                 }
@@ -114,21 +107,5 @@ public class AppPermission
         }
 
         return true;
-    }
-
-    private static void logPermissions (String[] permissions)
-    {
-        for (String permission : permissions)
-        {
-            log(String.format("permission: %s", permission));
-        }
-    }
-
-    private static void logGrantResults (int[] grantResults)
-    {
-        for (int grantResult : grantResults)
-        {
-            log(String.format("grantResult: %d, %b", grantResult, (PackageManager.PERMISSION_GRANTED == grantResult)));
-        }
     }
 }

@@ -83,11 +83,13 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
+    private static final int needPermissionsRequestCode = 100;
 
     private static final String[] imageUploadRequiredPermissions = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
     };
+    private static final int imageUploadRequiredPermissionsRequestCode = 101;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
@@ -208,7 +210,19 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
             openGallery();
         }
         else {
-            AppPermission.requestPermissions(this, imageUploadRequiredPermissions);
+            if (null != mFilePathCallback)
+            {
+                mFilePathCallback.onReceiveValue(null);
+            }
+            mFilePathCallback = null;
+
+            if (null != mUploadMessage)
+            {
+                mUploadMessage.onReceiveValue(null);
+            }
+            mUploadMessage = null;
+
+            AppPermission.requestPermissions(this, imageUploadRequiredPermissionsRequestCode, imageUploadRequiredPermissions);
         }
     }
 
@@ -308,7 +322,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
             startQRCodeScanner();
         }
         else {
-            AppPermission.requestPermissions(this, needPermissions);
+            AppPermission.requestPermissions(this, needPermissionsRequestCode, needPermissions);
         }
     }
 
@@ -467,8 +481,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     }
 
                     if (resultCode != RESULT_OK) {
-                        mFilePathCallback.onReceiveValue(null);
-                        mFilePathCallback = null;
+                        mUploadMessage.onReceiveValue(null);
+                        mUploadMessage = null;
                         return;
                     }
 
@@ -731,18 +745,32 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     @Override
-    public Boolean isRequirePermission(String permission) {
+    public Boolean isRequirePermission(int requestCode, String permission) {
         AppPermission.log(String.format("isRequirePermission: %s", permission));
 
         Boolean isRequirePermission = false;
 
-        switch (permission)
+        switch (requestCode)
         {
-            case Manifest.permission.READ_EXTERNAL_STORAGE:
-            case Manifest.permission.CAMERA:
-            case Manifest.permission.ACCESS_FINE_LOCATION:
-            case Manifest.permission.ACCESS_COARSE_LOCATION:
-                isRequirePermission = true;
+            case needPermissionsRequestCode:
+                switch (permission)
+                {
+                    case Manifest.permission.CAMERA:
+                    case Manifest.permission.ACCESS_FINE_LOCATION:
+                    case Manifest.permission.ACCESS_COARSE_LOCATION:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
+
+            case imageUploadRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case Manifest.permission.READ_EXTERNAL_STORAGE:
+                    case Manifest.permission.CAMERA:
+                        isRequirePermission = true;
+                        break;
+                }
                 break;
         }
 
@@ -750,31 +778,53 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     @Override
-    public void showErrorDialog() {
+    public void showErrorDialog(int requestCode) {
+
         AppPermission.log(String.format("showErrorDialog"));
 
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.permission_dialog_title))
-                .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        AppPermission.openSettings(Contents.this);
-                    }
-                })
-                .create()
-                .show();
+        switch (requestCode)
+        {
+            case needPermissionsRequestCode:
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.permission_dialog_title))
+                        .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                AppPermission.openSettings(Contents.this);
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
+
+            case imageUploadRequiredPermissionsRequestCode:
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.permission_dialog_title))
+                        .setMessage(getString(R.string.permission_dialog_message_camera_and_storage))
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                AppPermission.openSettings(Contents.this);
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
+        }
     }
 
     @Override
-    public void allRequiredPermissions(String[] permissions) {
-        if (needPermissions.equals(permissions)) {
-            startQRCodeScanner();
-        }
-
-        if (imageUploadRequiredPermissions.equals(permissions))
+    public void allRequiredPermissions(int requestCode, String[] permissions) {
+        switch (requestCode)
         {
-            openGallery();
+            case needPermissionsRequestCode:
+                startQRCodeScanner();
+                break;
+
+            case imageUploadRequiredPermissionsRequestCode:
+                openGallery();
+                break;
         }
     }
 }

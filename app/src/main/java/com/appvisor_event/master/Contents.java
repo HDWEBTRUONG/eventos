@@ -319,6 +319,13 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     public void startQR(){
+        gps = new GPSManager(this);
+        if (!gps.canGetLocation)
+        {
+            gps.showSettingsAlert();
+            return;
+        }
+
         if (AppPermission.checkPermission(this, needPermissions))
         {
             startQRCodeScanner();

@@ -91,6 +91,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     };
     private static final int imageUploadRequiredPermissionsRequestCode = 101;
 
+    private String beaconData;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
@@ -333,6 +335,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     public void startBeacon(String data){
+        beaconData = data;
+
         gps = new GPSManager(this);
         if(gps.canGetLocation) {
             regionB = new ArrayList<Region>();
@@ -373,9 +377,9 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     protected void onResume() {
         super.onResume();
 
-        if (-1 != myWebView.getUrl().indexOf("checkin"))
+        if (null != beaconData)
         {
-            myWebView.reload();
+            startBeacon(beaconData);
         }
     }
 
@@ -518,6 +522,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            beaconData = null;
 
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {

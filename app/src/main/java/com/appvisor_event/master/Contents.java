@@ -448,6 +448,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     }
 
                     if (resultCode != RESULT_OK) {
+                        mFilePathCallback.onReceiveValue(null);
+                        mFilePathCallback = null;
                         return;
                     }
 
@@ -465,6 +467,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     }
 
                     if (resultCode != RESULT_OK) {
+                        mFilePathCallback.onReceiveValue(null);
+                        mFilePathCallback = null;
                         return;
                     }
 

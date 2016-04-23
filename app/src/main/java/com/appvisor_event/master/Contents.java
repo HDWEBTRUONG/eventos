@@ -3,6 +3,7 @@ package com.appvisor_event.master;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -73,6 +75,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private ValueCallback<Uri[]> mFilePathCallback;
     private static final String TYPE_IMAGE = "image/*";
     private static final int INPUT_FILE_REQUEST_CODE = 10;
+    private Uri m_uri;
 
     private static final String[] needPermissions = {
             android.Manifest.permission.CAMERA,
@@ -191,6 +194,33 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
         // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
         this.setupFavoritSeminarAlarm();
+    }
+
+    private void showGallery() {
+        //カメラの起動Intentの用意
+        String photoName = System.currentTimeMillis() + ".jpg";
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.TITLE, photoName);
+        contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        m_uri = getContentResolver()
+                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
+        Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, m_uri);
+
+        // ギャラリー用のIntent作成
+        Intent intentGallery;
+        if (Build.VERSION.SDK_INT < 19) {
+            intentGallery = new Intent(Intent.ACTION_GET_CONTENT);
+            intentGallery.setType("image/*");
+        } else {
+            intentGallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intentGallery.addCategory(Intent.CATEGORY_OPENABLE);
+            intentGallery.setType("image/jpeg");
+        }
+        Intent intent = Intent.createChooser(intentCamera, "画像の選択");
+        intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intentGallery});
+        startActivityForResult(intent, INPUT_FILE_REQUEST_CODE);
     }
 
     public void onClickSearch(View view){
@@ -400,17 +430,15 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                         super.onActivityResult(requestCode, resultCode, data);
                         return;
                     }
-                    Uri[] results = null;
 
-                    // Check that the response is a good one
-                    if (resultCode == RESULT_OK) {
-                        String dataString = data.getDataString();
-                        if (dataString != null) {
-
-                            Log.d("INPUT_FILE_REQUEST_CODE", "dataString: " + dataString);
-                            results = new Uri[] { Uri.parse(dataString) };
-                        }
+                    if (resultCode != RESULT_OK) {
+                        return;
                     }
+
+                    String dataString = data.getDataString();
+                    Uri[] results = new Uri[] {
+                            (dataString != null) ? Uri.parse(dataString) : m_uri
+                    };
 
                     mFilePathCallback.onReceiveValue(results);
                     mFilePathCallback = null;
@@ -420,13 +448,11 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                         return;
                     }
 
-                    Uri result = null;
-
-                    if (resultCode == RESULT_OK) {
-                        if (data != null) {
-                            result = data.getData();
-                        }
+                    if (resultCode != RESULT_OK) {
+                        return;
                     }
+
+                    Uri result = (data != null) ? data.getData() : m_uri;
 
                     mUploadMessage.onReceiveValue(result);
                     mUploadMessage = null;
@@ -617,11 +643,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 }
                 mUploadMessage = uploadFile;
 
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType(TYPE_IMAGE);
-
-                startActivityForResult(intent, INPUT_FILE_REQUEST_CODE);
+                showGallery();
             }
 
             // For Android 5.0+
@@ -632,11 +654,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 }
                 mFilePathCallback = filePathCallback;
 
-                Log.d("onShowFileChooser", "filePathCallback: " + filePathCallback.toString());
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType(TYPE_IMAGE);
-                startActivityForResult(intent, INPUT_FILE_REQUEST_CODE);
+                showGallery();
 
                 return true;
             }

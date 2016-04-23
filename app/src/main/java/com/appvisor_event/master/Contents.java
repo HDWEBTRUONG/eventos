@@ -1,5 +1,6 @@
 package com.appvisor_event.master;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -78,9 +79,14 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private Uri m_uri;
 
     private static final String[] needPermissions = {
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+
+    private static final String[] imageUploadRequiredPermissions = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
     };
 
     @Override
@@ -197,6 +203,16 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     private void showGallery() {
+        if (AppPermission.checkPermission(this, imageUploadRequiredPermissions))
+        {
+            openGallery();
+        }
+        else {
+            AppPermission.requestPermissions(this, imageUploadRequiredPermissions);
+        }
+    }
+
+    private void openGallery() {
         //カメラの起動Intentの用意
         String photoName = System.currentTimeMillis() + ".jpg";
         ContentValues contentValues = new ContentValues();
@@ -718,9 +734,10 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
         switch (permission)
         {
-            case android.Manifest.permission.CAMERA:
-            case android.Manifest.permission.ACCESS_FINE_LOCATION:
-            case android.Manifest.permission.ACCESS_COARSE_LOCATION:
+            case Manifest.permission.READ_EXTERNAL_STORAGE:
+            case Manifest.permission.CAMERA:
+            case Manifest.permission.ACCESS_FINE_LOCATION:
+            case Manifest.permission.ACCESS_COARSE_LOCATION:
                 isRequirePermission = true;
                 break;
         }
@@ -746,7 +763,14 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     @Override
-    public void allRequiredPermissions() {
-        startQRCodeScanner();
+    public void allRequiredPermissions(String[] permissions) {
+        if (needPermissions.equals(permissions)) {
+            startQRCodeScanner();
+        }
+
+        if (imageUploadRequiredPermissions.equals(permissions))
+        {
+            openGallery();
+        }
     }
 }

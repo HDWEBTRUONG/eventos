@@ -20,7 +20,7 @@ public class AppPermission
     public interface Interface {
         Boolean isRequirePermission(String permission);
         void showErrorDialog();
-        void allRequiredPermissions();
+        void allRequiredPermissions(String[] permissions);
     }
 
     public static Boolean checkPermission(Activity activity, String[] permissions)
@@ -90,7 +90,7 @@ public class AppPermission
                     return;
                 }
 
-                appPermissionInterface.allRequiredPermissions();
+                appPermissionInterface.allRequiredPermissions(permissions);
                 break;
         }
     }

@@ -461,7 +461,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     String code = bundle.getString("data");
                     latitude = bundle.getDouble("lat");
                     longitude = bundle.getDouble("lon");
-                    myWebView.loadUrl("javascript:scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
+                    myWebView.loadUrl("javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                     Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                 }
                 break;

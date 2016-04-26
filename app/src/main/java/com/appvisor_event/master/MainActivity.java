@@ -349,13 +349,18 @@ public class MainActivity extends Activity {
         if (null != link)
         {
             final String linkOpenType = extras.getString("link_open_type", null);
-            if (linkOpenType.equals("internal"))
+            if (null != linkOpenType && linkOpenType.equals("internal"))
             {
-                GcmClient gcmClient = new GcmClient(MainActivity.this.getApplicationContext());
+                dialog.setNegativeButton("開く", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        GcmClient gcmClient = new GcmClient(MainActivity.this.getApplicationContext());
 
-                Intent intent = new Intent(MainActivity.this, Contents.class);
-                intent.putExtra("key.url", gcmClient.getLink(linkId));
-                startActivity(intent);
+                        Intent intent = new Intent(MainActivity.this, Contents.class);
+                        intent.putExtra("key.url", gcmClient.getLink(linkId));
+                        startActivity(intent);
+                    }
+                });
             }
             else
             {

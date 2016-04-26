@@ -81,6 +81,11 @@ public class GcmClient
         return true;
     }
 
+    public String getLink(int link)
+    {
+        return REDIRECT_URL + "?link=" + link;
+    }
+
     public void openLink(int link)
     {
         Uri uri = Uri.parse(REDIRECT_URL + "?link=" + link);

@@ -344,17 +344,29 @@ public class MainActivity extends Activity {
                 });
 
         final String link = extras.getString("link", null);
+        final int linkId = Integer.parseInt(link);
+
         if (null != link)
         {
-            dialog.setNegativeButton("開く", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    final int linkId = Integer.parseInt(link);
+            final String linkOpenType = extras.getString("link_open_type", null);
+            if (linkOpenType.equals("internal"))
+            {
+                GcmClient gcmClient = new GcmClient(MainActivity.this.getApplicationContext());
 
-                    GcmClient gcmClient = new GcmClient(MainActivity.this.getApplicationContext());
-                    gcmClient.openLink(linkId);
-                }
-            });
+                Intent intent = new Intent(MainActivity.this, Contents.class);
+                intent.putExtra("key.url", gcmClient.getLink(linkId));
+                startActivity(intent);
+            }
+            else
+            {
+                dialog.setNegativeButton("開く", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        GcmClient gcmClient = new GcmClient(MainActivity.this.getApplicationContext());
+                        gcmClient.openLink(linkId);
+                    }
+                });
+            }
         }
 
         dialog.create().show();

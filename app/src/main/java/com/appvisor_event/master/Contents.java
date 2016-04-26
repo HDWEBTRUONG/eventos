@@ -626,10 +626,12 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     // IDからTextViewインスタンスを取得
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
-                    if(myWebView.getTitle().length() >= 10){
-                        textView.setText(myWebView.getTitle().substring(0,10) + "...");
-                    }else{
-                        textView.setText(myWebView.getTitle());
+                    if(myWebView.getTitle() != null) {
+                        if (myWebView.getTitle().length() >= 15) {
+                            textView.setText(myWebView.getTitle().substring(0, 15) + "...");
+                        } else {
+                            textView.setText(myWebView.getTitle());
+                        }
                     }
                 } else {
                     active_url = url;
@@ -646,10 +648,12 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     // IDからTextViewインスタンスを取得
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
-                    if(myWebView.getTitle().length() >= 15){
-                        textView.setText(myWebView.getTitle().substring(0,15) + "...");
-                    }else{
-                        textView.setText(myWebView.getTitle());
+                    if(myWebView.getTitle() != null) {
+                        if (myWebView.getTitle().length() >= 15) {
+                            textView.setText(myWebView.getTitle().substring(0, 15) + "...");
+                        } else {
+                            textView.setText(myWebView.getTitle());
+                        }
                     }
                 }
                 // 0.2秒待機

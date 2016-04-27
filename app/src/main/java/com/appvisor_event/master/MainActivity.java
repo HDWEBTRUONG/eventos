@@ -176,7 +176,7 @@ public class MainActivity extends Activity {
     protected void onRestart(){
         Log.d("RESTART","mainActivityに戻った");
         super.onRestart();
-        this.recreate();
+//        this.recreate();
     }
 
     @Override
@@ -354,6 +354,7 @@ public class MainActivity extends Activity {
                 dialog.setNegativeButton("開く", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
                         GcmClient gcmClient = new GcmClient(MainActivity.this.getApplicationContext());
 
                         Intent intent = new Intent(MainActivity.this, Contents.class);

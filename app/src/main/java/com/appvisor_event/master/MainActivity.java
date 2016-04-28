@@ -344,10 +344,11 @@ public class MainActivity extends Activity {
                 });
 
         final String link = extras.getString("link", null);
-        final int linkId = Integer.parseInt(link);
 
         if (null != link)
         {
+            final int linkId = Integer.parseInt(link);
+
             final String linkOpenType = extras.getString("link_open_type", null);
             if (null != linkOpenType && linkOpenType.equals("internal"))
             {

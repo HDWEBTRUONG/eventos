@@ -33,6 +33,6 @@ dependencies {
 //    compile 'com.github.chrisbanes.actionbarpulltorefresh:library:+'
     compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     compile 'org.altbeacon:android-beacon-library:2+'
-    compile 'me.dm7.barcodescanner:zxing:1.8.4'
+    compile 'me.dm7.barcodescanner:zxing:1.5'
     compile "com.google.android.gms:play-services-gcm:8.3.0"
 }

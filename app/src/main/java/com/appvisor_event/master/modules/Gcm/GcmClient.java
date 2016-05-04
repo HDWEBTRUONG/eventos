@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
@@ -30,7 +31,7 @@ public class GcmClient
         public void onFailed();
     }
 
-    private static final String BASE_URL                         = Constants.GCM_BASE_URL;
+    private static final String BASE_URL                         = Constants.GCM_BASE_URL + Constants.Event;
     private static final String REGISTRATION_URL                 = BASE_URL + "/registration.php";
     private static final String SETTINGS_URL                     = BASE_URL + "/settings.php";
     private static final String REDIRECT_URL                     = BASE_URL + "/redirect.php";
@@ -176,6 +177,7 @@ public class GcmClient
         httpConnection.addParam("mobileId", AppUUID.get(this.context.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<",""));
         httpConnection.addParam("platform", "android");
         httpConnection.addParam("token", GcmClient.this.registrationId);
+        httpConnection.addParam("osVersion", Build.VERSION.RELEASE);
         httpConnection.asyncPost(REGISTRATION_URL);
     }
 

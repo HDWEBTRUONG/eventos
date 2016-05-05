@@ -7,18 +7,24 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JsResult;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -41,6 +47,9 @@ import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -72,10 +81,6 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private GPSManager gps;
     private ArrayList<Region> regionB;
 
-    private ValueCallback<Uri> mUploadMessage;
-    private ValueCallback<Uri[]> mFilePathCallback;
-    private static final String TYPE_IMAGE = "image/*";
-    private static final int INPUT_FILE_REQUEST_CODE = 10;
     private Uri m_uri;
 
     private static final String[] beaconDetectionRequiredPermissions = {
@@ -98,6 +103,13 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private static final int qrcodeScannerRequiredPermissionsRequestCode = 102;
 
     private String beaconData;
+
+    private String inputId = null;
+    private int width  = 0;
+    private int height = 0;
+    public String encodedString = "";
+
+    private static final int ShowGalleryChooserRequestCode = 200;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
@@ -124,6 +136,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
+        // ファイルアクセスを許可する
+        myWebView.getSettings().setAllowFileAccess(true);
 
         //CATHEを使用する
         myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
@@ -212,36 +226,26 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         this.setupFavoritSeminarAlarm();
     }
 
-    private void showGallery() {
+    private void showGallery()
+    {
         if (AppPermission.checkPermission(this, imageUploadRequiredPermissions))
         {
             openGallery();
         }
-        else {
-            if (null != mFilePathCallback)
-            {
-                mFilePathCallback.onReceiveValue(null);
-            }
-            mFilePathCallback = null;
-
-            if (null != mUploadMessage)
-            {
-                mUploadMessage.onReceiveValue(null);
-            }
-            mUploadMessage = null;
-
+        else
+        {
             AppPermission.requestPermissions(this, imageUploadRequiredPermissionsRequestCode, imageUploadRequiredPermissions);
         }
     }
 
-    private void openGallery() {
+    private void openGallery()
+    {
         //カメラの起動Intentの用意
         String photoName = System.currentTimeMillis() + ".jpg";
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.Images.Media.TITLE, photoName);
         contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        m_uri = getContentResolver()
-                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+        m_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
 
         Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, m_uri);
@@ -258,7 +262,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         }
         Intent intent = Intent.createChooser(intentCamera, "画像の選択");
         intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intentGallery});
-        startActivityForResult(intent, INPUT_FILE_REQUEST_CODE);
+        startActivityForResult(intent, ShowGalleryChooserRequestCode);
     }
 
     public void onClickSearch(View view){
@@ -339,6 +343,15 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         else {
             AppPermission.requestPermissions(this, qrcodeScannerRequiredPermissionsRequestCode, qrcodeScannerRequiredPermissions);
         }
+    }
+
+    public void showGalleryChooser(String inputId, int width, int height)
+    {
+        this.inputId = inputId;
+        this.width   = width;
+        this.height  = height;
+
+        showGallery();
     }
 
     private void startQRCodeScanner()
@@ -489,44 +502,25 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                 }
                 break;
-            case INPUT_FILE_REQUEST_CODE:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (mFilePathCallback == null) {
-                        super.onActivityResult(requestCode, resultCode, data);
-                        return;
+            case ShowGalleryChooserRequestCode:
+                if (resultCode == RESULT_OK)
+                {
+                    Uri uri;
+
+                    if (Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT)
+                    {
+                        String dataString = data.getDataString();
+                        uri = (dataString != null) ? Uri.parse(dataString) : m_uri;
+                    }
+                    else
+                    {
+                        uri = (data != null) ? data.getData() : m_uri;
                     }
 
-                    if (resultCode != RESULT_OK) {
-                        mFilePathCallback.onReceiveValue(null);
-                        mFilePathCallback = null;
-                        return;
-                    }
-
-                    String dataString = data.getDataString();
-                    Uri[] results = new Uri[] {
-                            (dataString != null) ? Uri.parse(dataString) : m_uri
-                    };
-
-                    mFilePathCallback.onReceiveValue(results);
-                    mFilePathCallback = null;
-                } else {
-                    if (mUploadMessage == null) {
-                        super.onActivityResult(requestCode, resultCode, data);
-                        return;
-                    }
-
-                    if (resultCode != RESULT_OK) {
-                        mUploadMessage.onReceiveValue(null);
-                        mUploadMessage = null;
-                        return;
-                    }
-
-                    Uri result = (data != null) ? data.getData() : m_uri;
-
-                    mUploadMessage.onReceiveValue(result);
-                    mUploadMessage = null;
+                    encodeImagetoString(uri);
                 }
                 break;
+
             default:
                 break;
         }
@@ -700,39 +694,6 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
                 return super.onJsAlert(view, url, message, result);
             }
-
-            // For Android < 3.0
-            public void openFileChooser(ValueCallback<Uri> uploadFile) {
-                openFileChooser(uploadFile, "");
-            }
-
-            // For 3.0 <= Android < 4.1
-            public void openFileChooser(ValueCallback<Uri> uploadFile, String acceptType) {
-                openFileChooser(uploadFile, acceptType, "");
-            }
-
-            // For 4.1 <= Android < 5.0
-            public void openFileChooser(ValueCallback<Uri> uploadFile, String acceptType, String capture) {
-                if(mUploadMessage != null){
-                    mUploadMessage.onReceiveValue(null);
-                }
-                mUploadMessage = uploadFile;
-
-                showGallery();
-            }
-
-            // For Android 5.0+
-            @Override public boolean onShowFileChooser(WebView webView,
-                                                       ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-                if (mFilePathCallback != null) {
-                    mFilePathCallback.onReceiveValue(null);
-                }
-                mFilePathCallback = filePathCallback;
-
-                showGallery();
-
-                return true;
-            }
         });
     }
 
@@ -895,5 +856,132 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 startBeaconDetection(beaconData);
                 break;
         }
+    }
+
+    private void encodeImagetoString(final Uri uri)
+    {
+        new AsyncTask<Void, Void , String>() {
+            @Override
+            protected String doInBackground(Void... params){
+                String encodedString = "";
+
+                try
+                {
+                    Bitmap bitmap = getBitmapFromUri(uri);
+                    if (null != bitmap)
+                    {
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                        byte[] byte_arr = stream.toByteArray();
+                        encodedString = "data:image/png;base64," + Base64.encodeToString(byte_arr, Base64.NO_WRAP);
+                    }
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return encodedString;
+            }
+
+            @Override
+            protected void onPostExecute(String imageDataURL)
+            {
+                myWebView.loadUrl(String.format("javascript:ImageDataReceiver.init('%s');", inputId));
+
+                int splitLength = 200;
+                while (true)
+                {
+                    int length = splitLength < imageDataURL.length() ? splitLength : imageDataURL.length();
+                    myWebView.loadUrl(String.format("javascript:ImageDataReceiver.appendData('%s');", imageDataURL.substring(0, length)));
+
+                    if (length == imageDataURL.length())
+                    {
+                        break;
+                    }
+
+                    imageDataURL = imageDataURL.substring(length);
+                }
+
+                myWebView.loadUrl("javascript:ImageDataReceiver.complete();");
+            }
+        }.execute(null, null, null);
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        Matrix matrix = new Matrix();
+        matrix = setMatrixRotation(matrix, uri);
+
+        ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+
+        options.inSampleSize = calculateInSampleSize(options);
+        options.inJustDecodeBounds = false;
+        Bitmap tmpImage = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+        parcelFileDescriptor.close();
+
+        Bitmap image = Bitmap.createBitmap(tmpImage, 0, 0, tmpImage.getWidth(), tmpImage.getHeight(), matrix, true);
+
+        Log.d("tto", String.format("width: %d, height: %d", image.getWidth(), image.getHeight()));
+        return image;
+    }
+
+    private Matrix setMatrixRotation(Matrix matrix, Uri uri) throws IOException {
+        ExifInterface exifInterface = new ExifInterface(uri.getPath());
+
+        int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_UNDEFINED:
+                break;
+            case ExifInterface.ORIENTATION_NORMAL:
+                break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.postScale(-1f, 1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180f);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.postRotate(-90f);
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.postRotate(90f);
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(-90f);
+                break;
+        }
+
+        return matrix;
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options)
+    {
+        int rawHeight = options.outHeight;
+        int rawWidth  = options.outWidth;
+
+        int inSampleSize = 1;
+        if (rawHeight > height || rawWidth > width)
+        {
+            if (rawWidth > rawHeight)
+            {
+                inSampleSize = Math.round((float)rawHeight / (float)height);
+            }
+            else {
+                inSampleSize = Math.round((float)rawHeight / (float)width);
+            }
+        }
+
+        return inSampleSize;
     }
 }

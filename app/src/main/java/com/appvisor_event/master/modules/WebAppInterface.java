@@ -42,4 +42,10 @@ public class WebAppInterface {
         ClipData clip = ClipData.newPlainText("number",txt);
         clipboard.setPrimaryClip(clip);
     }
+
+    @JavascriptInterface
+    public void showGallery(String inputId, int width, int height)
+    {
+        ((Contents)context).showGalleryChooser(inputId, width, height);
+    }
 }

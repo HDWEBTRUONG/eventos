@@ -509,15 +509,25 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
                     if (Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT)
                     {
-                        String dataString = data.getDataString();
-                        uri = (dataString != null) ? Uri.parse(dataString) : m_uri;
+                        if (null == data)
+                        {
+                            uri = m_uri;
+                        }
+                        else
+                        {
+                            String dataString = data.getDataString();
+                            uri = (dataString != null) ? Uri.parse(dataString) : m_uri;
+                        }
                     }
                     else
                     {
                         uri = (data != null) ? data.getData() : m_uri;
                     }
 
-                    encodeImagetoString(uri);
+                    if (null != uri)
+                    {
+                        encodeImagetoString(uri);
+                    }
                 }
                 break;
 

@@ -4,9 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -258,7 +260,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         } else {
             intentGallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intentGallery.addCategory(Intent.CATEGORY_OPENABLE);
-            intentGallery.setType("image/jpeg");
+            intentGallery.setType("image/*");
         }
         Intent intent = Intent.createChooser(intentCamera, "画像の選択");
         intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intentGallery});
@@ -939,7 +941,13 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     }
 
     private Matrix setMatrixRotation(Matrix matrix, Uri uri) throws IOException {
-        ExifInterface exifInterface = new ExifInterface(uri.getPath());
+        String filePath = getPathFromUri(uri);
+        if (null == filePath)
+        {
+            return matrix;
+        }
+
+        ExifInterface exifInterface = new ExifInterface(filePath);
 
         int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
         switch (orientation) {
@@ -973,6 +981,27 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         }
 
         return matrix;
+    }
+
+    private String getPathFromUri(Uri uri)
+    {
+        if (null == uri)
+        {
+            return null;
+        }
+
+        if (uri.getScheme().equals("file"))
+        {
+            return uri.getPath();
+        }
+
+        ContentResolver contentResolver = this.getContentResolver();
+        Cursor cursor = contentResolver.query(uri, new String[] {MediaStore.Images.Media.DATA}, null, null, null);
+        cursor.moveToFirst();
+        String path = cursor.getString(0);
+        cursor.close();
+
+        return path;
     }
 
     private int calculateInSampleSize(BitmapFactory.Options options)

@@ -3,6 +3,7 @@ package com.appvisor_event.master.modules;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
@@ -23,7 +24,9 @@ public class WebAppInterface {
 
     @JavascriptInterface
     public void beacons(String data){
-        ((Contents)context).startBeacon(data);
+        if (Build.VERSION.SDK_INT > 17) {
+            ((Contents) context).startBeacon(data);
+        }
     }
 
     @JavascriptInterface

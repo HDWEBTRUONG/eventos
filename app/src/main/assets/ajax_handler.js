@@ -19,7 +19,7 @@ XMLHttpRequest.prototype.send = function(a,b) {
 
   var xhr = this;
   var onload = function() {
-    alert(xhr.responseText);
+    alert('ajax-handler:' + xhr.responseText);
   };
   xhr.addEventListener("load", onload, false);
 

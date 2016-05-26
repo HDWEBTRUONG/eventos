@@ -22,6 +22,7 @@ public class MyHttpSender extends Thread {
 
     // フィールド変数の設定
     String mData;  // 送信用の文字列をここに格納
+    String mLanguage;  // 送信用の文字列をここに格納
     String mResponse;  // 送信結果を受け取る変数
     String mUrl;  // 送信先のURL
 
@@ -35,7 +36,7 @@ public class MyHttpSender extends Thread {
     public void run () {
 
         // 送信用のデータが格納されていなければreturn
-        if ( mData == null ) {
+        if ( mData == null & mLanguage == null) {
             return;
         }
 
@@ -52,7 +53,8 @@ public class MyHttpSender extends Thread {
             // 送るデータをnameとvalueの組にし、ArrayListに格納する。
             ArrayList<NameValuePair> nameValuePairs = new ArrayList < NameValuePair > () ;
             nameValuePairs.add ( new BasicNameValuePair( "device_id", mData ) );
-            Log.d("mData",mData);
+            nameValuePairs.add(new BasicNameValuePair("language", mLanguage));
+            Log.d("mData", mData);
 
             // ArrayListをセットする。
             request.setEntity ( new UrlEncodedFormEntity( nameValuePairs ) );

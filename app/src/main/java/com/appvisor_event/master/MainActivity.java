@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -71,6 +72,14 @@ public class MainActivity extends Activity {
         {
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
+        //端末の言語設定を取得
+        String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
+
+
 
         // UUIDが取得できていれば、URLをロードする。
         if(!mIsFailure){
@@ -177,6 +186,8 @@ public class MainActivity extends Activity {
         Log.d("RESTART","mainActivityに戻った");
         super.onRestart();
 //        this.recreate();
+        myWebView.reload();
+
     }
 
     @Override

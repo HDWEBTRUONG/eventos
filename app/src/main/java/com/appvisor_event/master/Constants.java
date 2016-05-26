@@ -5,9 +5,9 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "passport";
+    public static final String Event = "scaj";
     //ベースURL
-    public static final String BASE_URL = "https://tamiya-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -35,6 +35,6 @@ public class Constants {
     // device_tokenのためのAPI
     public static final String DEVICE_TOKEN_API_URL = BASE_URL + Event + "/api/users/update.json";
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "https://tamiya-push.appvisor-event.com/";
-    public static final String GCM_SENDER_ID = "724575925650";
+    public static final String GCM_BASE_URL = "";
+    public static final String GCM_SENDER_ID = "";
 }

@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 23
@@ -19,8 +19,8 @@ android {
         }
     }
     productFlavors {
-        passport{
-            applicationId = "com.appvisor_event.scaj"
+        richotest{
+            applicationId = "com.appvisor_event.richotest20150525"
             versionCode 2016052601
             versionName "0.0.1"
         }

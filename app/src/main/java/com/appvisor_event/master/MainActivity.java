@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,10 +19,14 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.text.format.Time;
 
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.google.android.gcm.GCMRegistrar;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +47,10 @@ public class MainActivity extends Activity {
     private DeviceTokenSender myJsonDeviceTokenSender;
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
+    private static MainActivity sInstance;
+    private int preset_flg = 0;
+    private int script_flg = 0;
+    private String local;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -73,19 +82,17 @@ public class MainActivity extends Activity {
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
         //端末の言語設定を取得
-        String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
+        local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
 
-
-
         // UUIDが取得できていれば、URLをロードする。
         if(!mIsFailure){
             if (device_id != null){
                 //最初にホーム画面のページを表示する。
-                myWebView.loadUrl(active_url,extraHeaders);
+                myWebView.loadUrl(active_url+"?language="+local,extraHeaders);
             }
         }
 
@@ -115,7 +122,7 @@ public class MainActivity extends Activity {
                 myWebView.setWebViewClient(mWebViewClient);
                 //URLを表示する
                 extraHeaders.put("user-id", device_id);
-                myWebView.loadUrl(active_url,extraHeaders);
+                myWebView.loadUrl(active_url+"?language="+local,extraHeaders);
             }
         });
 
@@ -173,6 +180,7 @@ public class MainActivity extends Activity {
 
         this.initGCM();
         this.checkGCMNotification();
+        sInstance = this;
     }
 
     @Override
@@ -245,14 +253,34 @@ public class MainActivity extends Activity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             active_url = url;
+            String passcode;
+            String checkPasscode = "?passcode=";
+            int passcode_index = url.indexOf(checkPasscode);
+
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
-                MainActivity.this.myWebView.stopLoading();
+                if(passcode_index != -1) {
+                    passcode = url.substring(passcode_index+10,url.length());
+                    SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("passcode", passcode);
+                    editor.apply();
+                }else {
+                    MainActivity.this.myWebView.stopLoading();
+                }
                 return false;
             }else{
+                if (url.indexOf("app-api://") != -1){
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Passcode Error")
+                            .setMessage("Please re-enter the passcode")
+                            .setPositiveButton("OK", null)
+                            .show();
+
+                    return true;
+                }
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
-
         }
         /**
          * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
@@ -272,7 +300,7 @@ public class MainActivity extends Activity {
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
             }else {
-                if (url.equals(Constants.HOME_URL)) {
+                if (url.indexOf(Constants.HOME_URL) != -1 || url.indexOf("?passcode=") != -1) {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
                     mSwipeRefreshLayout.setEnabled(true);
@@ -299,6 +327,21 @@ public class MainActivity extends Activity {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             mSwipeRefreshLayout.setRefreshing(false);
+            if (preset_flg != 0 || script_flg == 1) {
+                SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+                String passcode = data.getString("passcode","");
+                if (!passcode.equals("")){
+                    view.loadUrl("javascript:setPasscode('"+passcode+"');");
+                    script_flg = 1;
+                }
+                if (preset_flg == 0 && script_flg == 1){
+                    script_flg = 0;
+                }
+                preset_flg = 0;
+            }
+            if (!view.getUrl().equals(url)) {
+                view.loadUrl(url);
+            }
         }
 
         @Override
@@ -389,5 +432,45 @@ public class MainActivity extends Activity {
         }
 
         dialog.create().show();
+    }
+
+    public static synchronized MainActivity getInstance() {
+        return sInstance;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+        SharedPreferences.Editor editor = data.edit();
+        DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date(System.currentTimeMillis());
+        editor.putString("time", String.valueOf(date.getTime()));
+        editor.putInt("background_flg", 1);
+        editor.apply();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+        String passcode = data.getString("passcode","");
+        Date date = new Date(System.currentTimeMillis());
+        String time = data.getString("time","");
+        int background_flg = data.getInt("background_flg",0);
+        if (!passcode.equals("")) {
+            if (background_flg == 1) {
+                long old_time = Long.parseLong(time);
+                long current_time = date.getTime();
+                long deff = (current_time - old_time) / 1000;
+                if (deff > 5) {
+                    MainActivity.this.myWebView.loadUrl(Constants.HOME_URL+"?language="+local);
+                    preset_flg = 1;
+                }
+            }
+        }
+        SharedPreferences.Editor editor = data.edit();
+        editor.putInt("background_flg", 0);
+        editor.apply();
     }
 }

@@ -35,6 +35,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
@@ -708,7 +709,18 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
                 if (0 == url.indexOf(Constants.SETTING_URL))
                 {
-                    myWebView.reload();
+                    if (0 == message.indexOf("language:"))
+                    {
+                        String language = message.replace("language:", "");
+                        language = language.equals("ja") ? "en" : "ja";
+                        AppLanguage.setLanguageWithStringValue(Contents.this.getApplicationContext(), language);
+
+                        myWebView.reload();
+                    }
+                    else
+                    {
+                        myWebView.loadUrl("javascript:alert('ajax-handler:language:' + $('#language').children('option[selected]')[0].value)");
+                    }
                 }
 
                 result.cancel();

@@ -7,9 +7,9 @@
     <string name="normal_button">aaaa</string>
     <string name="title_bar_name"></string>
     <string name="infoButton">情報</string>
-    <string name="error_message_data_access">データにアクセスできません</string>
-    <string name="error_message">ネットワークに繋がっていない \n可能性があります。\n通信環境の良い場所へ \n移動して下さい。</string>
-    <string name="update_button_message">更新する</string>
+    <string name="error_message_data_access">Network Error</string>
+    <string name="error_message">It failed to communicate with the server.\nPlease try again</string>
+    <string name="update_button_message">OK</string>
 
     <string name="permission_dialog_title">この操作に必要な権限がありません</string>
     <string name="permission_dialog_message_camera_and_location">アプリ設定 > 権限 から\nカメラと位置情報を許可してください。</string>

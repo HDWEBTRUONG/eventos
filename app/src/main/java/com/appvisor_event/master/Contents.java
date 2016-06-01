@@ -633,7 +633,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     if(myWebView.getTitle() != null) {
-                        if (myWebView.getTitle().length() >= 15) {
+                        if (myWebView.getTitle().length() >= 16) {
                             textView.setText(myWebView.getTitle().substring(0, 15) + "...");
                         } else {
                             textView.setText(myWebView.getTitle());
@@ -655,7 +655,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     if(myWebView.getTitle() != null) {
-                        if (myWebView.getTitle().length() >= 15) {
+                        if (myWebView.getTitle().length() >= 16) {
                             textView.setText(myWebView.getTitle().substring(0, 15) + "...");
                         } else {
                             textView.setText(myWebView.getTitle());

@@ -24,6 +24,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 
 import com.appvisor_event.master.modules.BeaconService;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.google.android.gcm.GCMRegistrar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -108,6 +109,7 @@ public class MainActivity extends Activity {
         }
         //端末の言語設定を取得
         String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
+        AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);

@@ -326,6 +326,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         // インテントのインスタンス生成
         view.setBackgroundColor(getResources().getColor(R.color.selected_color));
         Intent intent = new Intent(Contents.this, SubMenu.class);
+        intent.putExtra("key.url", active_url);
         int requestCode = 1;
         startActivityForResult(intent, requestCode);
 

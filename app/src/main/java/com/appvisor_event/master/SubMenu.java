@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -14,6 +16,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.content.Intent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +38,16 @@ public class SubMenu extends Activity {
          //メニューリストを表示
          setContentView(R.layout.menu_list);
 
+        //どの管理画面を見ているか判定する。
+        // インテントを取得
+        Intent intent = getIntent();
+        String active_url = intent.getStringExtra("key.url");
+        active_url = active_url.replaceAll(Constants.BASE_URL, "");
+        int index = active_url.indexOf("/");
+        Constants.Event = active_url.substring(0,index);
+
+        Log.d("メニューのURL", active_url.substring(0,index));
+
          extraHeaders = new HashMap<String, String>();
          extraHeaders.put("user-id", device_id);
 
@@ -45,7 +58,7 @@ public class SubMenu extends Activity {
          // JS利用を許可する
          myWebView.getSettings().setJavaScriptEnabled(true);
          // ドロワー画面のページを表示する。
-         myWebView.loadUrl(Constants.SUB_MENU_URL, extraHeaders);
+         myWebView.loadUrl(Constants.BASE_URL + Constants.Event + "/menu", extraHeaders);
          //CATHEを使用する
          myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
@@ -77,7 +90,7 @@ public class SubMenu extends Activity {
                 mIsFailure = false;
                 //URLを表示する
                 extraHeaders.put("user-id", device_id);
-                myWebView.loadUrl(Constants.SUB_MENU_URL);
+                myWebView.loadUrl(Constants.BASE_URL + Constants.Event + "/menu");
             }
         });
         // SwipeRefreshLayoutの設定
@@ -128,7 +141,7 @@ public class SubMenu extends Activity {
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.GONE);
 
-                if (url.equals(Constants.SUB_MENU_URL)) {
+                if (url.equals(Constants.BASE_URL + Constants.Event + "/menu")) {
 
                 } else if(url.indexOf(Constants.EXHIBITER_DOMAIN) != -1){
                     Intent intent = new Intent();

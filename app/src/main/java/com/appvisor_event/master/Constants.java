@@ -5,9 +5,11 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "ricoh-test";
+//    public static final String Event = "ricoh-test";
+    public static final String Event = "ricoh_passcode/passcode";
     //ベースURL
-    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
+//    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "http://dev-api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL

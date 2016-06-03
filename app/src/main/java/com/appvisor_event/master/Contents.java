@@ -2,12 +2,15 @@ package com.appvisor_event.master;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -55,8 +58,11 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -301,6 +307,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
         }else{
             view .setBackgroundColor(getResources().getColor(R.color.selected_color));
+            // 端末のホーム画面に戻る
             Contents.this.finish();
         }
     }
@@ -575,11 +582,20 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
             }
         }
 
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            if (url.equals(Constants.BASE_URL + Constants.Event)) {
+                finish();
+            }
+        }
+
         /**
          * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
          */
         @Override
         public void onPageFinished(WebView view, String url) {
+
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
 

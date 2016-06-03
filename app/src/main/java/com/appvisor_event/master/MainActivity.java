@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
     private static MainActivity sInstance;
-    private int preset_flg = 0;
+    public static int preset_flg = 0;
     private int script_flg = 0;
     private String local;
 
@@ -340,9 +340,11 @@ public class MainActivity extends Activity {
                     script_flg = 0;
                 }
                 preset_flg = 0;
-            }
-            if (!view.getUrl().equals(url)) {
-                view.loadUrl(url);
+                if (view.getUrl() != null) {
+                    if (!view.getUrl().equals(url)) {
+                        view.loadUrl(url);
+                    }
+                }
             }
         }
 
@@ -445,7 +447,6 @@ public class MainActivity extends Activity {
         super.onStop();
         SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
         SharedPreferences.Editor editor = data.edit();
-        DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
         editor.putString("time", String.valueOf(date.getTime()));
         editor.putInt("background_flg", 1);
@@ -464,8 +465,8 @@ public class MainActivity extends Activity {
             if (background_flg == 1) {
                 long old_time = Long.parseLong(time);
                 long current_time = date.getTime();
-                long deff = (current_time - old_time) / 1000;
-                if (deff > 5) {
+                long deff = (current_time - old_time) / (1000*60*60);
+                if (deff > 72) {
                     MainActivity.this.myWebView.loadUrl(Constants.HOME_URL+"?language="+local);
                     preset_flg = 1;
                 }

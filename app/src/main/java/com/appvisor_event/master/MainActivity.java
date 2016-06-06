@@ -468,7 +468,10 @@ public class MainActivity extends Activity {
                 long current_time = date.getTime();
                 long deff = (current_time - old_time) / (1000*60*60);
                 if (deff > 72) {
-                    MainActivity.this.myWebView.loadUrl(Constants.HOME_URL+"?language="+local);
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+//                    MainActivity.this.myWebView.loadUrl(Constants.HOME_URL+"?language="+local);
                     preset_flg = 1;
                 }
             }

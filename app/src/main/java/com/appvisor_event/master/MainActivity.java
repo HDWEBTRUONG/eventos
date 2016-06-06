@@ -207,6 +207,9 @@ public class MainActivity extends Activity {
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (myWebView.canGoBack() == true) {
+                if (!myWebView.canGoBackOrForward(2)) {
+                    preset_flg = 1;
+                }
                 myWebView.goBack();
                 return true;
             }

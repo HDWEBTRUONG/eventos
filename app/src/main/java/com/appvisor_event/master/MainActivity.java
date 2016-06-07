@@ -476,6 +476,10 @@ public class MainActivity extends Activity {
                     startActivity(intent);
 //                    MainActivity.this.myWebView.loadUrl(Constants.HOME_URL+"?language="+local);
                     preset_flg = 1;
+                }else{
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("time", String.valueOf(current_time));
+                    editor.apply();
                 }
             }
         }

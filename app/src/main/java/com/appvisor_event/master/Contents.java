@@ -1073,7 +1073,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 long old_time = Long.parseLong(time);
                 long current_time = date.getTime();
                 long deff = (current_time - old_time) / (1000*60*60);
-                if (deff > 72) {
+                if (deff > 71) {
                     finish();
                 }
             }

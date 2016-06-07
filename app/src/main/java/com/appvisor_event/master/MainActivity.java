@@ -470,7 +470,7 @@ public class MainActivity extends Activity {
                 long old_time = Long.parseLong(time);
                 long current_time = date.getTime();
                 long deff = (current_time - old_time) / (1000*60*60);
-                if (deff > 72) {
+                if (deff > 71) {
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);

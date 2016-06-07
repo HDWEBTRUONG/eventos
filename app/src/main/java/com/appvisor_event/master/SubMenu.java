@@ -207,7 +207,7 @@ public class SubMenu extends Activity {
                 long old_time = Long.parseLong(time);
                 long current_time = date.getTime();
                 long deff = (current_time - old_time) / (1000*60*60);
-                if (deff > 71) {
+                if (deff > 72) {
                     finish();
                 }
             }

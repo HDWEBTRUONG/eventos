@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preset_flg = 1;
+
         //UUIDの取得
         device_id = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         //DEVICE_TOKENの取得
@@ -68,6 +68,12 @@ public class MainActivity extends Activity {
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main);
+
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", this.MODE_PRIVATE);
+        String passcode = data.getString("passcode","");
+        if (!passcode.equals("")){
+            preset_flg = 1;
+        }
 
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
@@ -208,7 +214,9 @@ public class MainActivity extends Activity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (myWebView.canGoBack() == true) {
                 if (!myWebView.canGoBackOrForward(2)) {
-                    preset_flg = 1;
+                    if (myWebView.getUrl().indexOf(Constants.HOME_URL) == -1) {
+                        preset_flg = 1;
+                    }
                 }
                 myWebView.goBack();
                 return true;

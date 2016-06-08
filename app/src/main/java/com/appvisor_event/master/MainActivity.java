@@ -337,16 +337,22 @@ public class MainActivity extends Activity {
                 SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
                 String passcode = data.getString("passcode","");
                 if (!passcode.equals("")){
-                    view.loadUrl("javascript:setPasscode('"+passcode+"');");
-                    script_flg = 1;
-                }
-                if (preset_flg == 0 && script_flg == 1){
-                    script_flg = 0;
-                }
-                preset_flg = 0;
-                if (view.getUrl() != null) {
-                    if (!view.getUrl().equals(url)) {
-                        view.loadUrl(url);
+                    if (view.getUrl().indexOf(Constants.HOME_URL) != -1){
+                        view.loadUrl("javascript:setPasscode('"+passcode+"');");
+                        script_flg = 1;
+                    }
+                    if (preset_flg == 0 && script_flg == 1){
+                        script_flg = 0;
+                    }
+                    if (view.getUrl().indexOf(Constants.HOME_URL) != -1) {
+                        preset_flg = 0;
+                    }else{
+                        view.loadUrl(Constants.HOME_URL);
+                    }
+                    if (view.getUrl() != null) {
+                        if (!view.getUrl().equals(url)) {
+                            view.loadUrl(url);
+                        }
                     }
                 }
             }
@@ -476,6 +482,10 @@ public class MainActivity extends Activity {
                     startActivity(intent);
 //                    MainActivity.this.myWebView.loadUrl(Constants.HOME_URL+"?language="+local);
                     preset_flg = 1;
+                }else{
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("time", String.valueOf(current_time));
+                    editor.apply();
                 }
             }
         }

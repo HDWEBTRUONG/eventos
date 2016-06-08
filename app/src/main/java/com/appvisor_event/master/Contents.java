@@ -1075,6 +1075,10 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 long deff = (current_time - old_time) / (1000*60*60);
                 if (deff > 72) {
                     finish();
+                }else{
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("time", String.valueOf(current_time));
+                    editor.apply();
                 }
             }
         }

@@ -6,21 +6,21 @@ public class Constants {
     private Constants(){}
     //ホームのURL
 //    public static final String Event = "ricoh-test";
-    public static  String Event = "ricoh_passcode/passcode";
+    public static final String Event = "ricoh_passcode/passcode";
     //ベースURL
-    public static  String BASE_URL = "http://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
     //ホームのURL
-    public static  String HOME_URL = BASE_URL + Event;
+    public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
-    public static  String SUB_MENU_URL = BASE_URL + Event + "/menu";
+    public static final String SUB_MENU_URL = BASE_URL + Event + "/menu";
     //ブースのURL
-    public static  String BOOTH = "/booths/";
+    public static final String BOOTH = "/booths/";
     //会場案内図のURL
-    public static  String HALL_URL = BASE_URL + Event + "/hall/maps";
+    public static final String HALL_URL = BASE_URL + Event + "/hall/maps";
     //お気に入りのURL
-    public static  String FAVORITE_URL = BASE_URL + Event + "/favorites";
+    public static final String FAVORITE_URL = BASE_URL + Event + "/favorites";
     //設定画面のURL
-    public static  String SETTING_URL = BASE_URL + Event + "/settings";
+    public static final String SETTING_URL = BASE_URL + Event + "/settings";
     //ERRORのURL
     public static final String ERROR_URL = "data:text/html,chromewebdata";
     //アプリ内に表示させるドメイン

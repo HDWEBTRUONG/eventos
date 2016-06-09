@@ -43,12 +43,6 @@ public class SubMenu extends Activity {
         //どの管理画面を見ているか判定する。
         // インテントを取得
         Intent intent = getIntent();
-        String active_url = intent.getStringExtra("key.url");
-        active_url = active_url.replaceAll(Constants.BASE_URL, "");
-        int index = active_url.indexOf("/");
-        Constants.Event = active_url.substring(0,index);
-
-        Log.d("メニューのURL", active_url.substring(0,index));
 
          extraHeaders = new HashMap<String, String>();
          extraHeaders.put("user-id", device_id);
@@ -60,7 +54,7 @@ public class SubMenu extends Activity {
          // JS利用を許可する
          myWebView.getSettings().setJavaScriptEnabled(true);
          // ドロワー画面のページを表示する。
-         myWebView.loadUrl(Constants.BASE_URL + Constants.Event + "/menu", extraHeaders);
+         myWebView.loadUrl(Constants.SUB_MENU_URL, extraHeaders);
          //CATHEを使用する
          myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
@@ -92,7 +86,7 @@ public class SubMenu extends Activity {
                 mIsFailure = false;
                 //URLを表示する
                 extraHeaders.put("user-id", device_id);
-                myWebView.loadUrl(Constants.BASE_URL + Constants.Event + "/menu");
+                myWebView.loadUrl(Constants.SUB_MENU_URL);
             }
         });
         // SwipeRefreshLayoutの設定
@@ -143,7 +137,7 @@ public class SubMenu extends Activity {
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.GONE);
 
-                if (url.equals(Constants.BASE_URL + Constants.Event + "/menu")) {
+                if (url.equals(Constants.SUB_MENU_URL)) {
 
                 } else if(url.indexOf(Constants.EXHIBITER_DOMAIN) != -1){
                     Intent intent = new Intent();

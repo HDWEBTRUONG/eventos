@@ -7,6 +7,7 @@ public class Constants {
     //ホームのURL
 //    public static final String Event = "ricoh-test";
     public static final String Event = "ricoh_passcode/passcode";
+    public static String CurrentSlug = Event;
     //ベースURL
     public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
     //ホームのURL
@@ -38,4 +39,16 @@ public class Constants {
     //PUSHの設定値
     public static final String GCM_BASE_URL = "";
     public static final String GCM_SENDER_ID = "";
+
+    public static String SubMenuUrl()
+    {
+        return SUB_MENU_URL.replace(Event, CurrentSlug);
+    }
+
+    public static void UpdateSlug(String url)
+    {
+        String path = url.replaceAll(Constants.BASE_URL, "");
+        int index = (-1 != path.indexOf("?")) ? path.indexOf("?") : path.indexOf("/");
+        CurrentSlug = path.substring(0, index);
+    }
 }

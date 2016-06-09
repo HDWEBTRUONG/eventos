@@ -278,6 +278,8 @@ public class MainActivity extends Activity {
                     SharedPreferences.Editor editor = data.edit();
                     editor.putString("passcode", passcode);
                     editor.apply();
+
+                    Constants.UpdateSlug(url);
                 }else {
                     MainActivity.this.myWebView.stopLoading();
                 }

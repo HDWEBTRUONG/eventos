@@ -719,7 +719,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 message = message.replace("ajax-handler:", "");
                 JavascriptManager.getInstance().onJsAlert(message);
 
-                if (0 == url.indexOf(Constants.SETTING_URL))
+                if (0 == url.indexOf(Constants.SettingUrl()))
                 {
                     if (0 == message.indexOf("language:"))
                     {

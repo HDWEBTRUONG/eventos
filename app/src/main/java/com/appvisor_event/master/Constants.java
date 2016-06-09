@@ -45,6 +45,11 @@ public class Constants {
         return SUB_MENU_URL.replace(Event, CurrentSlug);
     }
 
+    public static String SettingUrl()
+    {
+        return SETTING_URL.replace(Event, CurrentSlug);
+    }
+
     public static void UpdateSlug(String url)
     {
         String path = url.replaceAll(Constants.BASE_URL, "");

@@ -580,7 +580,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            if (url.equals(Constants.BASE_URL + Constants.Event)) {
+            if (url.equals(Constants.BASE_URL + Constants.CurrentSlug)) {
                 finish();
             }
         }

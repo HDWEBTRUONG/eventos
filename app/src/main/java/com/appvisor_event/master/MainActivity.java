@@ -19,14 +19,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.text.format.Time;
 
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.google.android.gcm.GCMRegistrar;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -316,7 +313,8 @@ public class MainActivity extends Activity {
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
             }else {
-                if (url.indexOf(Constants.HOME_URL) != -1 || url.indexOf("?passcode=") != -1) {
+                String nonQueryUrl = (-1 == url.indexOf("?")) ? url : url.substring(0, url.indexOf("?"));
+                if (nonQueryUrl.equals(Constants.HOME_URL) || nonQueryUrl.equals(Constants.HomeUrl()) || url.indexOf("?passcode=") != -1) {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
                     mSwipeRefreshLayout.setEnabled(true);

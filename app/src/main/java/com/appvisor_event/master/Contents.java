@@ -482,7 +482,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     active_url = bundle.getString("key.url", "");
-                    if(active_url.equals(Constants.HOME_URL)){
+                    if(active_url.equals(Constants.HomeUrl())){
                         finish();
                     }
 
@@ -580,7 +580,9 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            if (url.equals(Constants.BASE_URL + Constants.CurrentSlug)) {
+
+            String nonQueryUrl = (-1 == url.indexOf("?")) ? url : url.substring(0, url.indexOf("?"));
+            if (nonQueryUrl.equals(Constants.HOME_URL) || nonQueryUrl.equals(Constants.HomeUrl())) {
                 finish();
             }
         }
@@ -615,7 +617,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
             }else {
-                if (url.equals(Constants.HOME_URL)) {
+                String nonQueryUrl = (-1 == url.indexOf("?")) ? url : url.substring(0, url.indexOf("?"));
+                if (nonQueryUrl.equals(Constants.HOME_URL) || nonQueryUrl.equals(Constants.HomeUrl())) {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
                     mSwipeRefreshLayout.setEnabled(true);

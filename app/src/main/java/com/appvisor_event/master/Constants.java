@@ -40,6 +40,11 @@ public class Constants {
     public static final String GCM_BASE_URL = "";
     public static final String GCM_SENDER_ID = "";
 
+    public static String HomeUrl()
+    {
+        return HOME_URL.replace(Event, CurrentSlug);
+    }
+
     public static String SubMenuUrl()
     {
         return SUB_MENU_URL.replace(Event, CurrentSlug);

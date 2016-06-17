@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "724575925650",
-    "project_id": "tamiya-passport"
+    "project_number": "358563145173",
+    "project_id": "imposing-bee-687"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:724575925650:android:12f1fee5ae01eff1",
+        "mobilesdk_app_id": "1:358563145173:android:fdb5d909d9f3d0d9",
         "android_client_info": {
-          "package_name": "com.appvisor_event.scaj"
+          "package_name": "com.appvisor_event.richo_stg"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCbRWJTIXn0ZFZyk8uvrCb9RocjcGzSdGM"
+          "current_key": "AIzaSyDqR8pZq8E3akaT9pP3RUVhZqKCvr2TfrA"
         }
       ],
       "services": {

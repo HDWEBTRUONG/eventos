@@ -24,6 +24,11 @@ android {
             versionCode 2016052601
             versionName "0.0.1"
         }
+        richo_pro{
+            applicationId = "com.appvisor_event.richo_pro"
+            versionCode 2016061401
+            versionName "0.0.2"
+        }
     }
 }
 

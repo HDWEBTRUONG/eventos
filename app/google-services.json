@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "358563145173",
-    "project_id": "imposing-bee-687"
+    "project_number": "562203017443",
+    "project_id": "ricoh-event-app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:358563145173:android:fdb5d909d9f3d0d9",
+        "mobilesdk_app_id": "1:562203017443:android:9dd70cf264cd41e4",
         "android_client_info": {
-          "package_name": "com.appvisor_event.richo_stg"
+          "package_name": "jp.co.ricoh.eventapp"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDqR8pZq8E3akaT9pP3RUVhZqKCvr2TfrA"
+          "current_key": "AIzaSyBYSvYhKLunpU8CM1bxIqaq1sM1KBUEcgw"
         }
       ],
       "services": {

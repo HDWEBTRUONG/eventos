@@ -9,7 +9,7 @@ public class Constants {
     public static final String Event = "ricoh_passcode/passcode";
     public static String CurrentSlug = Event;
     //ベースURL
-    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -37,8 +37,8 @@ public class Constants {
     // device_tokenのためのAPI
     public static final String DEVICE_TOKEN_API_URL = BASE_URL + Event + "/api/users/update.json";
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
-    public static final String GCM_SENDER_ID = "358563145173";
+    public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
+    public static final String GCM_SENDER_ID = "562203017443";
 
     public static String HomeUrl()
     {

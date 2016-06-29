@@ -1,25 +1,28 @@
 {
   "project_info": {
-    "project_number": "724575925650",
-    "project_id": "tamiya-passport"
+    "project_number": "909884164442",
+    "project_id": "api-project-909884164442"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:724575925650:android:12f1fee5ae01eff1",
+        "mobilesdk_app_id": "1:909884164442:android:171beaa7a124a850",
         "android_client_info": {
-          "package_name": "com.appvisor_event.scaj"
+          "package_name": "com.appvisor_event.sap_forum"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCbRWJTIXn0ZFZyk8uvrCb9RocjcGzSdGM"
+          "current_key": "AIzaSyDbxKcOFh5Ud2MfBo2ZAJ9lIjYG7z9CG9c"
         }
       ],
       "services": {
         "analytics_service": {
-          "status": 1
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-79779439-1"
+          }
         },
         "appinvite_service": {
           "status": 1,

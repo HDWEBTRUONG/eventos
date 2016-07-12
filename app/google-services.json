@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "562203017443",
-    "project_id": "ricoh-event-app"
+    "project_number": "485246024931",
+    "project_id": "api-project-485246024931"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:562203017443:android:9dd70cf264cd41e4",
+        "mobilesdk_app_id": "1:485246024931:android:bb570df58173633c",
         "android_client_info": {
-          "package_name": "jp.co.ricoh.eventapp"
+          "package_name": "com.appvisor_event.richo_stg"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBYSvYhKLunpU8CM1bxIqaq1sM1KBUEcgw"
+          "current_key": "AIzaSyDzBBAPm_eCXiF-CCGieo59L70Ksc0AR6s"
         }
       ],
       "services": {

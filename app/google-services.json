@@ -1,12 +1,12 @@
 {
   "project_info": {
-    "project_number": "909884164442",
-    "project_id": "api-project-909884164442"
+    "project_number": "350861218902",
+    "project_id": "ivory-antler-89408"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:909884164442:android:171beaa7a124a850",
+        "mobilesdk_app_id": "1:350861218902:android:171beaa7a124a850",
         "android_client_info": {
           "package_name": "com.appvisor_event.sap_forum"
         }
@@ -14,15 +14,12 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDbxKcOFh5Ud2MfBo2ZAJ9lIjYG7z9CG9c"
+          "current_key": "AIzaSyA6iXb9Q7xdJzqlV9qOkEnSDU3M8_fEaJ8"
         }
       ],
       "services": {
         "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-79779439-1"
-          }
+          "status": 1
         },
         "appinvite_service": {
           "status": 1,

@@ -20,6 +20,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 
 import com.appvisor_event.master.modules.Gcm.GcmClient;
+import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.google.android.gcm.GCMRegistrar;
 
 import java.util.HashMap;
@@ -172,6 +173,8 @@ public class MainActivity extends Activity {
 
         this.initGCM();
         this.checkGCMNotification();
+
+        StartupAd.setShown(false);
     }
 
     @Override
@@ -298,6 +301,8 @@ public class MainActivity extends Activity {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             mSwipeRefreshLayout.setRefreshing(false);
+
+            showStartupAd();
         }
 
         @Override
@@ -388,5 +393,26 @@ public class MainActivity extends Activity {
         }
 
         dialog.create().show();
+    }
+
+    /**
+     * 起動時広告を表示する。
+     * ただし一度表示したら一度バックグラウンドに遷移しない限り表示しない。
+     */
+    private void showStartupAd()
+    {
+        if (null == myWebView)
+        {
+            return;
+        }
+
+        if (StartupAd.isAlreadyShown())
+        {
+            return;
+        }
+
+        myWebView.loadUrl("javascript:showAd();");
+
+        StartupAd.setShown(true);
     }
 }

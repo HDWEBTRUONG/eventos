@@ -282,14 +282,14 @@ public class MainActivity extends Activity {
                     //エラーページを非表示にする
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
                 } else {
-//                    active_url = url;
-//                    // TODO Auto-generated method stub
-//                    // インテントのインスタンス生成
-//                    Intent intent = new Intent(MainActivity.this, Contents.class);
-//                    // URLを表示
-//                    intent.putExtra("key.url", active_url);
-//                    // サブ画面の呼び出し
-//                    startActivity(intent);
+                    active_url = url;
+                    // TODO Auto-generated method stub
+                    // インテントのインスタンス生成
+                    Intent intent = new Intent(MainActivity.this, Contents.class);
+                    // URLを表示
+                    intent.putExtra("key.url", active_url);
+                    // サブ画面の呼び出し
+                    startActivity(intent);
                     //テストFOR Unity
 
                 }

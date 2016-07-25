@@ -1,28 +1,25 @@
 {
   "project_info": {
-    "project_number": "909884164442",
-    "project_id": "api-project-909884164442"
+    "project_number": "800785308038",
+    "project_id": "tgs2016-1379"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:909884164442:android:171beaa7a124a850",
+        "mobilesdk_app_id": "1:800785308038:android:974207bfe6d5bb2b",
         "android_client_info": {
-          "package_name": "com.appvisor_event.sap_forum"
+          "package_name": "jp.co.nikkeibp.tgs2016"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDbxKcOFh5Ud2MfBo2ZAJ9lIjYG7z9CG9c"
+          "current_key": "AIzaSyCYUC4ss0gFgHNhh8BDA7stz3PmdnFYzyI"
         }
       ],
       "services": {
         "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-79779439-1"
-          }
+          "status": 1
         },
         "appinvite_service": {
           "status": 1,

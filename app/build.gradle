@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 23
@@ -20,8 +20,8 @@ android {
     }
     productFlavors {
         sap_forum {
-            applicationId = "com.appvisor_event.sap_forum"
-            versionCode 2016063001
+            applicationId = "jp.co.nikkeibp.tgs2016"
+            versionCode 2016072501
             versionName "1.0.0"
         }
     }

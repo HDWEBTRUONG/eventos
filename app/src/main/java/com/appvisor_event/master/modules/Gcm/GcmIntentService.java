@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.appvisor_event.master.MainActivity;
@@ -91,6 +92,7 @@ public class GcmIntentService extends IntentService
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         {
             builder.setSmallIcon(R.drawable.ic_status);
+            builder.setColor(ContextCompat.getColor(this, R.color.ic_status_color));
         }
 
         builder.setContentIntent(contentIntent);

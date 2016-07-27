@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.provider.MediaStore;
@@ -33,6 +34,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
@@ -40,6 +42,8 @@ import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
 import com.appvisor_event.master.modules.WebAppInterface;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -48,6 +52,8 @@ import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
@@ -82,8 +88,9 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private double latitude;
     private GPSManager gps;
     private ArrayList<Region> regionB;
-
     private Uri m_uri;
+
+    static boolean isMultAdShow = false;
 
     private static final String[] beaconDetectionRequiredPermissions = {
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -113,6 +120,13 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
     private static final int ShowGalleryChooserRequestCode = 200;
 
+    //広告関連内容
+    private ImageLoader imageLoader = null;
+    //広告表示
+    private final Handler ad_handler = new Handler();
+    private String ad_image = null;
+    private String ad_link = null;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
@@ -127,7 +141,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
-        Log.d("device_token", device_id);
+//        Log.d("device_token", device_id);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
@@ -154,7 +168,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         Intent intent = getIntent();
         // インテントに保存されたデータを取得
         active_url = intent.getStringExtra("key.url");
-        Log.d("active_url_contents",active_url);
+//        Log.d("active_url_contents",active_url);
 
         if(!mIsFailure){
             if (device_id != null){
@@ -220,12 +234,120 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         } catch ( InterruptedException e ) {
 
             e.printStackTrace ();
-            Log.i ( "JSON", e.toString () );
 
         }
 
         // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
         this.setupFavoritSeminarAlarm();
+
+        //広告表示と非表示などコントロール
+        if(MainActivity.adloaded&&MainActivity.adSec>0)
+        {
+
+            findViewById(R.id.adview).setVisibility(View.VISIBLE);
+            int sc_width = getResources().getDisplayMetrics().widthPixels;
+            int sc_height = getResources().getDisplayMetrics().heightPixels;
+            float sc_density = getResources().getDisplayMetrics().density;
+            int ad_width = sc_width;
+            int ad_height = (int)(ad_width*MainActivity.ad_ratio);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (sc_height - 44 * sc_density - ad_height));
+            findViewById(R.id.swipe_refresh_layout).setLayoutParams(layoutParams);
+
+            final ImageLoader imageLoader = ImageLoader.getInstance();
+            if(MainActivity.adsList.length()>1)
+            {
+                isMultAdShow = true;
+                final Runnable adRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try
+                        {
+                            if(!isMultAdShow)
+                            {
+                                return;
+                            }
+                            JSONObject adJson = MainActivity.adsList.getJSONObject(MainActivity.ad_index);
+                            ad_image = adJson.getString("imageurl");
+                            ad_link = adJson.getString("url");
+                            imageLoader.loadImage(ad_image, new SimpleImageLoadingListener() {
+                                @Override
+                                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                                    int ad_width = loadedImage.getWidth();
+                                    int ad_height = loadedImage.getHeight();
+                                    int sc_width = getResources().getDisplayMetrics().widthPixels;
+                                    ad_height = (int) ((float) sc_width / (float) ad_width * ad_height);
+                                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ad_height);
+                                    ImageView adimageview = ((ImageView) findViewById(R.id.ad));
+                                    adimageview.setLayoutParams(layoutParams);
+
+                                    adimageview.setImageBitmap(loadedImage);
+                                    adimageview.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ad_link)));
+                                        }
+                                    });
+                                }
+                            });
+
+                            ad_handler.postDelayed(this,MainActivity.adSec*1000);
+                            MainActivity.ad_index++;
+                            if(MainActivity.ad_index>=MainActivity.adsList.length())
+                            {
+                                MainActivity.ad_index=0;
+                            }
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                ad_handler.post(adRunnable);
+            }
+            else {
+
+                try
+                {
+                    JSONObject adJson = MainActivity.adsList.getJSONObject(MainActivity.ad_index);
+                    ad_image = adJson.getString("imageurl");
+                    ad_link = adJson.getString("url");
+
+                    imageLoader.loadImage(ad_image, new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            int ad_width = loadedImage.getWidth();
+                            int ad_height = loadedImage.getHeight();
+                            int sc_width = getResources().getDisplayMetrics().widthPixels;
+                            ad_height = (int) ((float) sc_width / (float) ad_width * ad_height);
+                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ad_height);
+                            ImageView adimageview = ((ImageView) findViewById(R.id.ad));
+                            adimageview.setLayoutParams(layoutParams);
+
+                            adimageview.setImageBitmap(loadedImage);
+                            adimageview.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ad_link)));
+                                }
+                            });
+                        }
+                    });
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else
+        {
+            findViewById(R.id.adview).setVisibility(View.GONE);
+        }
+
+
     }
 
     private void showGallery()
@@ -467,6 +589,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         if(beaconManager!=null) {
             if (beaconManager.isBound(this)) beaconManager.unbind(this);
         }
+        isMultAdShow = false;
     }
 
     @Override
@@ -1031,4 +1154,6 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
         return inSampleSize;
     }
+
+
 }

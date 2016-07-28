@@ -24,6 +24,11 @@ android {
             versionCode 2016071501
             versionName "1.0.0"
         }
+        sap_forum_staging {
+            applicationId = "com.appvisor_event.sap_forum_staging"
+            versionCode 2016071501
+            versionName "1.0.0"
+        }
     }
 }
 

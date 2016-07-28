@@ -7,7 +7,7 @@ public class Constants {
     //ホームのURL
     public static final String Event = "sap-forum";
     //ベースURL
-    public static final String BASE_URL = "https://api.appvisor-event.com/";
+    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -35,6 +35,6 @@ public class Constants {
     // device_tokenのためのAPI
     public static final String DEVICE_TOKEN_API_URL = BASE_URL + Event + "/api/users/update.json";
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
-    public static final String GCM_SENDER_ID = "350861218902";
+    public static final String GCM_BASE_URL = "http://stg-push.appvisor-event.com/";
+    public static final String GCM_SENDER_ID = "485246024931";
 }

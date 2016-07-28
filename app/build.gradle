@@ -19,14 +19,14 @@ android {
         }
     }
     productFlavors {
-        sap_forum {
-            applicationId = "com.appvisor_event.sap_forum"
-            versionCode 2016071501
+        scaj {
+            applicationId = "com.appvisor_event.EventConventionHouse"
+            versionCode 1
             versionName "1.0.0"
         }
-        sap_forum_staging {
-            applicationId = "com.appvisor_event.sap_forum_staging"
-            versionCode 2016071501
+        scaj_staging {
+            applicationId = "com.appvisor_event.Event_and_convention_house_scaj"
+            versionCode 1
             versionName "1.0.0"
         }
     }

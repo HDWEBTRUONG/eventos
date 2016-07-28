@@ -8,12 +8,12 @@
     </facet>
     <facet type="android" name="Android">
       <configuration>
-        <option name="SELECTED_BUILD_VARIANT" value="sap_forumDebug" />
+        <option name="SELECTED_BUILD_VARIANT" value="scajDebug" />
         <option name="SELECTED_TEST_ARTIFACT" value="_android_test_" />
-        <option name="ASSEMBLE_TASK_NAME" value="assembleSap_forumDebug" />
-        <option name="COMPILE_JAVA_TASK_NAME" value="compileSap_forumDebugSources" />
+        <option name="ASSEMBLE_TASK_NAME" value="assembleScajDebug" />
+        <option name="COMPILE_JAVA_TASK_NAME" value="compileScajDebugSources" />
         <afterSyncTasks>
-          <task>generateSap_forumDebugSources</task>
+          <task>generateScajDebugSources</task>
         </afterSyncTasks>
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
@@ -24,62 +24,62 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/build/intermediates/classes/sap_forum/debug" />
-    <output-test url="file://$MODULE_DIR$/build/intermediates/classes/test/sap_forum/debug" />
+    <output url="file://$MODULE_DIR$/build/intermediates/classes/scaj/debug" />
+    <output-test url="file://$MODULE_DIR$/build/intermediates/classes/test/scaj/debug" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/sap_forum/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/sap_forum/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/sap_forum/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/sap_forum/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/sap_forum/debug" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/sap_forum/debug" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forumDebug/res" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forumDebug/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forumDebug/assets" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forumDebug/aidl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forumDebug/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forumDebug/jni" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forumDebug/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forumDebug/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forumDebug/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forumDebug/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forumDebug/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forumDebug/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forumDebug/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forumDebug/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forumDebug/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forumDebug/shaders" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/sap_forum/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/sap_forum/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/sap_forum/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/sap_forum/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/sap_forum/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/sap_forum/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/res" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/assets" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/aidl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/jni" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/shaders" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/scaj/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/scaj/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/scaj/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/scaj/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/scaj/debug" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/scaj/debug" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scajDebug/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scajDebug/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scajDebug/assets" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scajDebug/aidl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scajDebug/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scajDebug/jni" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scajDebug/rs" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scajDebug/shaders" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScajDebug/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScajDebug/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScajDebug/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScajDebug/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScajDebug/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScajDebug/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScajDebug/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScajDebug/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/scaj/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/scaj/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/scaj/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/scaj/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/scaj/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/scaj/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scaj/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scaj/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scaj/assets" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scaj/aidl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scaj/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scaj/jni" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scaj/rs" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/scaj/shaders" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScaj/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScaj/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScaj/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScaj/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScaj/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScaj/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScaj/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testScaj/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestScaj/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestScaj/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestScaj/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestScaj/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestScaj/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestScaj/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestScaj/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestScaj/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
@@ -122,7 +122,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
@@ -136,19 +135,14 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-measurement/8.3.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/me.dm7.barcodescanner/core/1.5/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/me.dm7.barcodescanner/zxing/1.5/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/org.altbeacon/android-beacon-library/2.8.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/org.altbeacon/android-beacon-library/2.9/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/pre-dexed" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
@@ -162,7 +156,7 @@
     <orderEntry type="library" exported="" name="org.jbundle.util.osgi.wrapped.org.apache.http.client-4.1.2" level="project" />
     <orderEntry type="library" exported="" name="gcm" level="project" />
     <orderEntry type="library" exported="" name="core-3.1.0" level="project" />
-    <orderEntry type="library" exported="" name="android-beacon-library-2.8.1" level="project" />
+    <orderEntry type="library" exported="" name="android-beacon-library-2.9" level="project" />
     <orderEntry type="library" exported="" name="play-services-measurement-8.3.0" level="project" />
     <orderEntry type="library" exported="" name="animated-vector-drawable-23.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.2.1" level="project" />

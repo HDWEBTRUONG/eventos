@@ -22,9 +22,9 @@ android {
         }
     }
     productFlavors {
-        sap_forum {
+        tgs {
             applicationId = "jp.co.nikkeibp.tgs2016"
-            versionCode 2016072501
+            versionCode 1
             versionName "1.0.0"
         }
     }

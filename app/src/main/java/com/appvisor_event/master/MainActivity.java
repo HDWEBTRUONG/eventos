@@ -131,7 +131,8 @@ public class MainActivity extends Activity {
 
             // 引数にサーバーのURLを入れる。
             myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
-            myJsonSender.mData = device_id ;
+            myJsonSender.mData = device_id;
+            myJsonSender.mLanguage = local;
             myJsonSender.start ();
             myJsonSender.join ();
 

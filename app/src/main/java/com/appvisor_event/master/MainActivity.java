@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -59,9 +61,10 @@ public class MainActivity extends Activity {
     static  JSONArray adsList = null;
     static  int adSec = -1;
     static  boolean adloaded = false;
-
     static  int ad_index = 0;
     static  float ad_ratio= 0.0f;
+
+    static  int status_bar_height=0;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -151,6 +154,7 @@ public class MainActivity extends Activity {
             // 引数にサーバーのURLを入れる。
             myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
             myJsonSender.mData = device_id ;
+            myJsonSender.mLanguage = local;
             myJsonSender.start ();
             myJsonSender.join ();
 
@@ -289,6 +293,15 @@ public class MainActivity extends Activity {
         adloaded = false;
         adsList = null;
         adSec = -1;
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        final Rect rect_status_bar = new Rect();
+        Window window = this.getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(rect_status_bar);
+        status_bar_height=rect_status_bar.top;
     }
 
     @Override

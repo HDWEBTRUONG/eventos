@@ -293,6 +293,7 @@ public class MainActivity extends Activity {
         adloaded = false;
         adsList = null;
         adSec = -1;
+        ad_index=0;
     }
 
     @Override

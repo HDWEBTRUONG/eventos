@@ -5,7 +5,7 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "scaj";
+    public static final String Event = "hcr";
     //ベースURL
     public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
     //ホームのURL
@@ -25,7 +25,9 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN = "XXXXX";
+    public static final String EXHIBITER_DOMAIN_1 = "www.hcr.or.jp";
+    public static final String EXHIBITER_DOMAIN_2 = "reg18.smp.ne.jp";
+    public static final String EXHIBITER_DOMAIN_3 = "area18.smp.ne.jp";
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL = "www.google.com/maps";
     // GoogleMapのURL

@@ -563,7 +563,10 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
             beaconData = null;
 
             active_url = url;
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)) {
                 extraHeaders.put("user-id", device_id);
                 Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
                 return false;
@@ -603,17 +606,19 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
             }else {
                 if (url.equals(Constants.HOME_URL)) {
-                    active_url = url;
-                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-                    mSwipeRefreshLayout.setEnabled(true);
-                    //ホームの場合はタイトルバーを非表示にする
-                    findViewById(R.id.title_bar).setVisibility(View.GONE);
-                    //SWIPEを表示にする。
-                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-                    //WEBVIEWを表示にする
-                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
-                    //エラーページを非表示にする
-                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
+                    finish();
+
+//                    active_url = url;
+//                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+//                    mSwipeRefreshLayout.setEnabled(true);
+//                    //ホームの場合はタイトルバーを非表示にする
+//                    findViewById(R.id.title_bar).setVisibility(View.GONE);
+//                    //SWIPEを表示にする。
+//                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
+//                    //WEBVIEWを表示にする
+//                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
+//                    //エラーページを非表示にする
+//                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
 
                 } else if ((url.indexOf(Constants.BOOTH) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
                     active_url = url;

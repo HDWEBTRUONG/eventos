@@ -97,7 +97,10 @@ public class SubMenu extends Activity {
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1)  || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)) {
                 extraHeaders.put("user-id", device_id);
                 SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
                 return false;
@@ -130,7 +133,9 @@ public class SubMenu extends Activity {
 
                 if (url.equals(Constants.SUB_MENU_URL)) {
 
-                } else if(url.indexOf(Constants.EXHIBITER_DOMAIN) != -1){
+                } else if(url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1
+                        || url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1
+                        || url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1){
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
                     bundle.putString("key.url",url);

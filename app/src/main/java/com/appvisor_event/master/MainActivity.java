@@ -253,7 +253,8 @@ public class MainActivity extends Activity {
                     || (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
-                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)) {
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1)) {
                 MainActivity.this.myWebView.stopLoading();
                 return false;
             }else{

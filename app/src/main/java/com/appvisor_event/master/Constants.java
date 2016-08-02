@@ -28,6 +28,7 @@ public class Constants {
     public static final String EXHIBITER_DOMAIN_1 = "www.hcr.or.jp";
     public static final String EXHIBITER_DOMAIN_2 = "reg18.smp.ne.jp";
     public static final String EXHIBITER_DOMAIN_3 = "area18.smp.ne.jp";
+    public static final String EXHIBITER_DOMAIN_4 = "153.150.114.64/comboard/digital";
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL = "www.google.com/maps";
     // GoogleMapのURL

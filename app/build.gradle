@@ -19,15 +19,15 @@ android {
         }
     }
     productFlavors {
-        scaj {
-            applicationId = "com.appvisor_event.EventConventionHouse"
-            versionCode 1
-            versionName "1.0.0"
+        hcr2016 {
+            applicationId = "com.appvisor_event.hcr"
+            versionCode 2016000001
+            versionName "2.0.0"
         }
-        scaj_staging {
-            applicationId = "com.appvisor_event.Event_and_convention_house_scaj"
-            versionCode 1
-            versionName "1.0.0"
+        hcr2016_staging {
+            applicationId = "com.appvisor_event.hcr_staging"
+            versionCode 2016000001
+            versionName "2.0.0"
         }
     }
 }

@@ -35,10 +35,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.appvisor_event.master.modules.AndroidSpiralETicketInterface;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
+import com.appvisor_event.master.modules.Spiral.ETicket.QRCodeScannerActivity;
 import com.appvisor_event.master.modules.WebAppInterface;
 
 import org.altbeacon.beacon.Beacon;
@@ -104,6 +106,11 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     };
     private static final int qrcodeScannerRequiredPermissionsRequestCode = 102;
 
+    private static final String[] spiralETicketQRCodeScannerRequiredPermissions = {
+            Manifest.permission.CAMERA
+    };
+    private static final int spiralETicketQRCodeScannerRequiredPermissionsRequestCode = 102;
+
     private String beaconData;
 
     private String inputId = null;
@@ -136,6 +143,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
         myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
+        myWebView.addJavascriptInterface(new AndroidSpiralETicketInterface(this),"AndroidSpiralETicketInterface");
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
         // ファイルアクセスを許可する
@@ -347,6 +355,17 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         }
     }
 
+    public void openSpiralETicketQRCodeScanner()
+    {
+        if (AppPermission.checkPermission(this, spiralETicketQRCodeScannerRequiredPermissions))
+        {
+            startSpiralETicketQRCodeScanner();
+        }
+        else {
+            AppPermission.requestPermissions(this, spiralETicketQRCodeScannerRequiredPermissionsRequestCode, spiralETicketQRCodeScannerRequiredPermissions);
+        }
+    }
+
     public void showGalleryChooser(String inputId, int width, int height)
     {
         this.inputId = inputId;
@@ -360,6 +379,12 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     {
         Intent intent = new Intent(this, QrCodeActivity.class);
         startActivityForResult(intent, 3);
+    }
+
+    private void startSpiralETicketQRCodeScanner()
+    {
+        Intent intent = new Intent(this, QRCodeScannerActivity.class);
+        startActivityForResult(intent, 4);
     }
 
     public void startBeacon(String data)
@@ -502,6 +527,15 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     longitude = bundle.getDouble("lon");
                     myWebView.loadUrl("javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
                     Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
+                }
+                break;
+            case 4:
+                if (RESULT_OK == resultCode)
+                {
+                    Bundle bundle = data.getExtras();
+                    String qrcode_data = bundle.getString("qrcode_data");
+                    String javaScript = String.format("javascript:SpiralETicket.qrcodeCheckIn('%s')", qrcode_data);
+                    myWebView.loadUrl(javaScript);
                 }
                 break;
             case ShowGalleryChooserRequestCode:

@@ -12,7 +12,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import java.util.HashMap;
@@ -101,7 +100,8 @@ public class SubMenu extends Activity {
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)
-                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1)) {
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1)
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)) {
                 extraHeaders.put("user-id", device_id);
                 SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
                 return false;
@@ -137,7 +137,8 @@ public class SubMenu extends Activity {
                 } else if(url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1
                         || url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1
                         || url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1
-                        || url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1){
+                        || url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1
+                        || url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1){
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
                     bundle.putString("key.url",url);

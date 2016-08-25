@@ -19,15 +19,15 @@ android {
         }
     }
     productFlavors {
-        hcr2016 {
-            applicationId = "com.appvisor_event.hcr"
+        mmc_demo {
+            applicationId = "com.appvisor_event.mmc_demo"
             versionCode 2016000001
-            versionName "2.0.0"
+            versionName "1.0.0"
         }
-        hcr2016_staging {
-            applicationId = "com.appvisor_event.hcr_staging"
+        mmc_demo_staging {
+            applicationId = "com.appvisor_event.mmc_demo_staging"
             versionCode 2016000001
-            versionName "2.0.0"
+            versionName "1.0.0"
         }
     }
 }

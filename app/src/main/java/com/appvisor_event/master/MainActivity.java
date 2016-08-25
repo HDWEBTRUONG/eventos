@@ -27,6 +27,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+//import com.unity3d.player.UnityPlayerActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +43,7 @@ public class MainActivity extends Activity {
     private GcmClient gcmClient = null;
 
     private WebView myWebView;
-//    private AppVisorPush appVisorPush;
+    //    private AppVisorPush appVisorPush;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String active_url = Constants.HOME_URL;
     private String device_id;
@@ -200,7 +201,7 @@ public class MainActivity extends Activity {
         if(!adloaded) {
             try {
                 DisplayImageOptions ad_defaultOptions = new DisplayImageOptions.Builder()
-                            .cacheInMemory(true).build();
+                        .cacheInMemory(true).build();
                 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
                         .defaultDisplayImageOptions(ad_defaultOptions)
                         .build();
@@ -225,25 +226,25 @@ public class MainActivity extends Activity {
                                 }
                                 for(int i = 0;i<MainActivity.adsList.length();i++)
                                 {
-                                     JSONObject adJson = MainActivity.adsList.getJSONObject(i);
-                                     String ad_image = adJson.getString("imageurl");
-                                        imageLoader.loadImage(ad_image, new SimpleImageLoadingListener() {
-                                            @Override
-                                            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                                                int ad_height = loadedImage.getHeight();
-                                                int ad_width = loadedImage.getWidth();
-                                                float compare_ratio=(float)ad_height/(float)ad_width;
-                                                if(ad_ratio<compare_ratio)
-                                                {
-                                                    ad_ratio = compare_ratio;
-                                                }
-                                                image_load_num++;
-                                                if(image_load_num==MainActivity.adsList.length())
-                                                {
-                                                    adloaded = true;
-                                                }
+                                    JSONObject adJson = MainActivity.adsList.getJSONObject(i);
+                                    String ad_image = adJson.getString("imageurl");
+                                    imageLoader.loadImage(ad_image, new SimpleImageLoadingListener() {
+                                        @Override
+                                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                                            int ad_height = loadedImage.getHeight();
+                                            int ad_width = loadedImage.getWidth();
+                                            float compare_ratio=(float)ad_height/(float)ad_width;
+                                            if(ad_ratio<compare_ratio)
+                                            {
+                                                ad_ratio = compare_ratio;
                                             }
-                                        });
+                                            image_load_num++;
+                                            if(image_load_num==MainActivity.adsList.length())
+                                            {
+                                                adloaded = true;
+                                            }
+                                        }
+                                    });
                                 }
                             } else {
                                 adloaded = true;
@@ -399,15 +400,22 @@ public class MainActivity extends Activity {
 
                 } else {
                     active_url = url;
-                    // TODO Auto-generated method stub
-                    // インテントのインスタンス生成
-                    Intent intent = new Intent(MainActivity.this, Contents.class);
-                    // URLを表示
-                    intent.putExtra("key.url", active_url);
-                    // サブ画面の呼び出し
-                    startActivity(intent);
-                    //テストFOR Unity
-
+                    Log.i(active_url+"::::::::",Constants.RegARFlag);
+                    if((active_url.indexOf(Constants.RegARFlag) != -1))
+                    {
+                        //テストFOR Unity
+//                        Intent intent = new Intent(MainActivity.this, UnityPlayerActivity.class);
+//
+//                        startActivity(intent);
+                    }
+                    else {
+                        // インテントのインスタンス生成
+                        Intent intent = new Intent(MainActivity.this, Contents.class);
+                        // URLを表示
+                        intent.putExtra("key.url", active_url);
+                        // サブ画面の呼び出し
+                        startActivity(intent);
+                    }
                 }
             }
         }

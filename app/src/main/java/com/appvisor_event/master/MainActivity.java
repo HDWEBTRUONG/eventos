@@ -27,7 +27,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-//import com.unity3d.player.UnityPlayerActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +34,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+//import com.unity3d.player.UnityPlayerActivity;
 
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
@@ -55,7 +56,7 @@ public class MainActivity extends Activity {
     private boolean mIsFailure = false;
 
     //全画面広告対応
-    private AdsGetter myJsonAds;
+    private InfosGetter myJsonAds;
 
     //全画面広告切り替え対応パラメーター
     private int image_load_num = 0;
@@ -208,7 +209,7 @@ public class MainActivity extends Activity {
                 ImageLoader.getInstance().init(config);
 
                 // 引数にサーバーのURLを入れる。
-                myJsonAds = new AdsGetter(Constants.ADS_API);
+                myJsonAds = new InfosGetter(Constants.ADS_API);
                 myJsonAds.start();
                 myJsonAds.join();
 
@@ -290,6 +291,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        Log.d("onDestroy","mainActivityに戻った");
         super.onDestroy();
         adloaded = false;
         adsList = null;
@@ -400,13 +402,12 @@ public class MainActivity extends Activity {
 
                 } else {
                     active_url = url;
-                    Log.i(active_url+"::::::::",Constants.RegARFlag);
                     if((active_url.indexOf(Constants.RegARFlag) != -1))
                     {
                         //テストFOR Unity
-//                        Intent intent = new Intent(MainActivity.this, UnityPlayerActivity.class);
-//
-//                        startActivity(intent);
+                        Intent intent = new Intent(MainActivity.this, TgsUnityActivity.class);
+
+                        startActivity(intent);
                     }
                     else {
                         // インテントのインスタンス生成

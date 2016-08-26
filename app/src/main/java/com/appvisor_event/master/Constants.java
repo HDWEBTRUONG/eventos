@@ -37,6 +37,10 @@ public class Constants {
     // 広告のAPI
     public static final String ADS_API = BASE_URL + Event +"/api/advertisements/get";
 
+    // ARのAPI
+//    public static final String AR_API = BASE_URL + Event +"/api/ar/download?androidversion=";
+    public static final String AR_API = BASE_URL + Event +"/api/ar/download?os=android&version=";
+
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://tgs-push.appvisor-event.com/";
 

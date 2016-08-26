@@ -37,11 +37,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.appvisor_event.master.modules.AndroidBeaconMapInterface;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
-import com.appvisor_event.master.modules.WebAppInterface;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class Contents extends Activity implements BeaconConsumer, AppPermission.Interface {
 
@@ -83,7 +84,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private String mayor;
     private String UUID;
     private String region;
-    private ArrayList<String> regId;
+//    private ArrayList<String> regId;
     private double longitude;
     private double latitude;
     private GPSManager gps;
@@ -149,7 +150,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         findViewById(R.id.title_bar).setVisibility(View.GONE);
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
-        myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
+        myWebView.addJavascriptInterface(new AndroidBeaconMapInterface(this),"AndroidBeaconMapInterface");
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
         // ファイルアクセスを許可する
@@ -487,6 +488,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
     public void startBeacon(String data)
     {
+
         beaconData = data;
 
         gps = new GPSManager(this);
@@ -512,24 +514,30 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         }
 
         regionB = new ArrayList<Region>();
-        regId = new ArrayList<String>();
-        String[] param = data.split("/", -1);
-        for (int i = 0; i < param.length; i++) {
-            String[] beac = param[i].split("\\.", -1);
-            region = beac[0];
-            UUID = beac[1];
-            minor = beac[3];
-            mayor = beac[2];
-            regId.add(region);
-            Identifier may = Identifier.parse(mayor);
-            Identifier min = Identifier.parse(minor);
-            Identifier uui = Identifier.parse(UUID);
-            Region reg = new Region(region, uui, may, min);
-            regionB.add(reg);
-        }
+//        regId = new ArrayList<String>();
+//        String[] param = data.split("/", -1);
+//        for (int i = 0; i < param.length; i++) {
+//            String[] beac = param[i].split("\\.", -1);
+//            region = beac[0];
+//            UUID = beac[1];
+////            minor = "0x"+beac[3];
+////            mayor = beac[2];
+//            regId.add(region);
+////            Identifier may = Identifier.parse(mayor);
+////            Identifier min = Identifier.parse(minor);
+//            Identifier uui = Identifier.parse(UUID);
+//            Region reg = new Region(region, uui, null, null);
+//
+////            Region reg = new Region(region, uui, null, null);
+//            regionB.add(reg);
+//        }
+        Region reg = new Region("1", Identifier.parse(data), null, null);
+        regionB.add(reg);
 
         Log.d("TAG", String.valueOf(regionB.get(0).getIdentifier(0)));
         beaconManager = BeaconManager.getInstanceForApplication(this);
+        beaconManager.setBackgroundScanPeriod(TimeUnit.SECONDS.toMillis(5));
+        beaconManager.setBackgroundBetweenScanPeriod(TimeUnit.SECONDS.toMillis(5));
         bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -860,13 +868,15 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         return new AssetsManager(this).loadStringFromFile("ajax_handler.js");
     }
 
-    public void sendBeacon(final String re,final String ui,final String ma,final String min){
+    public void sendBeacon(final String ui,final String ma,final String min){
         myWebView.post(new Runnable() {
             @Override
             public void run() {
-                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+"','"+re+"','"+ui+"','"+ma+"','"+min+"')");
+//                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+"','"+re+"','"+ui+"','"+ma+"','"+min+"')");
+                myWebView.loadUrl("javascript:BeaconMap.detectBeacon('"+ui+"','"+ma+"','"+min+"')");
             }
         });
+
     }
 
     @Override
@@ -874,19 +884,23 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                if (beacons.size() > 0) {
-                    for(int i = 0 ; i < regionB.size() ; i++){
-                        if(beacons.iterator().next().getIdentifier(0).equals(regionB.get(i).getIdentifier(0))
-                                && beacons.iterator().next().getIdentifier(1).equals(regionB.get(i).getIdentifier(1))
-                                && beacons.iterator().next().getIdentifier(2).equals(regionB.get(i).getIdentifier(2))){
-                            sendBeacon(regId.get(i),String.valueOf(regionB.get(i).getIdentifier(0)),String.valueOf(regionB.get(i).getIdentifier(1)),String.valueOf(regionB.get(i).getIdentifier(2)));
-                            Log.d("TAGG", "javascript:detectBeacon('"+device_id+"','"+regId.get(i)+"','"+String.valueOf(regionB.get(i).getIdentifier(0))+"','"+String.valueOf(regionB.get(i).getIdentifier(1))+"','"+String.valueOf(regionB.get(i).getIdentifier(2))+"')");
+                Object[] beaconlist=beacons.toArray();
+                if (beaconlist.length > 0) {
+                    Beacon nearestbeacon=(Beacon)beaconlist[0];
+                    for(int i = 0 ;i<beaconlist.length;i++) {
+
+                        Beacon beacon =(Beacon)beaconlist[i];
+                        if(nearestbeacon.getDistance()>beacon.getDistance())
+                        {
+                            nearestbeacon=beacon;
                         }
+                        Log.i("HHHH",String.valueOf(beacon.getIdentifier(2))+"::::"+beacon.getDistance());
                     }
+                    Log.i("ssssss",String.valueOf(nearestbeacon.getIdentifier(0))+"  "+String.valueOf(nearestbeacon.getIdentifier(1))+"  "+Integer.toHexString(Integer.parseInt(String.valueOf(nearestbeacon.getIdentifier(2)))));
+                    sendBeacon(String.valueOf(nearestbeacon.getIdentifier(0)), String.valueOf(nearestbeacon.getIdentifier(1)), Integer.toHexString(Integer.parseInt(String.valueOf(nearestbeacon.getIdentifier(2)))));
                 }
             }
         });
-
         try {
             for(Region r : regionB) {
                 beaconManager.startRangingBeaconsInRegion(r);

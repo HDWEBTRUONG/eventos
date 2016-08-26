@@ -141,15 +141,26 @@ public class SubMenu extends Activity {
                     finish();
                     overridePendingTransition(R.anim.nothing,R.anim.right_out);
                 }else {
-                    Intent intent = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("key.url",url);
 
-                    intent.putExtras(bundle);
-                    setResult(RESULT_OK, intent);
+                    if((url.indexOf(Constants.RegARFlag) != -1))
+                    {
+                        //テストFOR Unity
 
-                    finish();
-                    overridePendingTransition(R.anim.nothing,R.anim.right_out);
+
+                    }
+                    else {
+                        Intent intent = new Intent();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("key.url",url);
+
+                        intent.putExtras(bundle);
+                        setResult(RESULT_OK, intent);
+
+                        finish();
+                        overridePendingTransition(R.anim.nothing,R.anim.right_out);
+                    }
+
+
                 }
             }
         }

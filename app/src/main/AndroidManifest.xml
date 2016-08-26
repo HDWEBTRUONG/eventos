@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.appvisor_event.master"
     android:versionCode="1"
-    android:versionName="1.0"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:versionName="1.0">
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -47,7 +47,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         tools:replace="android:icon">
-
         <activity
             android:name=".SplashActivity"
             android:label="@string/app_name"
@@ -79,12 +78,12 @@
             android:name=".SubMenu"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.NoActionBar"></activity>
+            android:theme="@android:style/Theme.Holo.NoActionBar" />
         <activity
             android:name=".Contents"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.NoActionBar"></activity>
+            android:theme="@android:style/Theme.Holo.NoActionBar" />
 
         <receiver
             android:name=".modules.alarm.AlermBroadcastReceiver"
@@ -93,16 +92,20 @@
         <!-- Support Google Cloud Message -->
         <receiver
             android:name=".modules.Gcm.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
                 <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
+
         <service android:name=".modules.Gcm.GcmIntentService" />
 
-        <activity android:name=".QrCodeActivity"></activity>
-        <!--<activity android:name="com.unity3d.player.UnityPlayerActivity"/>-->
+        <activity android:name=".QrCodeActivity" />
+        <activity android:name="com.unity3d.player.UnityPlayerActivity" />
+        <activity android:name=".TgsUnityActivity" android:process=":UnityJustKillYourself"></activity>
+        <service android:name=".modules.DLAndUnzipService"/>
     </application>
 
 </manifest>

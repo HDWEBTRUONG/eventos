@@ -3,8 +3,10 @@ package com.appvisor_event.master;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -21,6 +23,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.google.android.gcm.GCMRegistrar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -68,9 +71,15 @@ public class MainActivity extends Activity {
 
     static  int status_bar_height=0;
 
+    //beaconメッセージ関連
+    private InfosGetter myJsonbeacon;
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         //UUIDの取得
         device_id = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         //DEVICE_TOKENの取得
@@ -90,7 +99,7 @@ public class MainActivity extends Activity {
         myWebView.getSettings().setJavaScriptEnabled(true);
 
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -271,6 +280,42 @@ public class MainActivity extends Activity {
 
             }
         }
+        try {
+            myJsonbeacon = new InfosGetter(Constants.Beacon_MESSAGE_API+getBeaconVersion());
+            myJsonbeacon.start();
+            myJsonbeacon.join();
+            if (myJsonbeacon.mResponse != null && myJsonbeacon.mResponse != "") {
+                JSONObject beaconjson = new JSONObject(myJsonbeacon.mResponse);
+                if (beaconjson.getInt("status") == 200) {
+
+                    //beaconサービス起動
+                    BeaconService.beaconobjs=beaconjson;
+                    setBeaconMessages(beaconjson.toString());
+                    setBeaconVersion(beaconjson.getString("version"));
+
+                }
+                else
+                {
+                    beaconjson = new JSONObject(getBeaconMessages());
+                    BeaconService.beaconobjs=beaconjson;
+                }
+
+                stopService(new Intent(MainActivity.this, BeaconService.class));
+                if(BeaconService.beaconobjs!=null&&BeaconService.beaconobjs.getJSONArray("beacons").length()>0)
+                {
+                    startService(new Intent(MainActivity.this, BeaconService.class));
+                }
+                else
+                {
+                    stopService(new Intent(MainActivity.this, BeaconService.class));
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        BeaconService.addActivity(this);
     }
 
     @Override
@@ -297,6 +342,7 @@ public class MainActivity extends Activity {
         adsList = null;
         adSec = -1;
         ad_index=0;
+        BeaconService.removeTopActivety(this);
     }
 
     @Override
@@ -516,4 +562,35 @@ public class MainActivity extends Activity {
 
         dialog.create().show();
     }
+
+    private String getBeaconVersion()
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
+        String version = sharedPreferences.getString("beaconVersion","-1" );
+        return  version;
+    }
+
+    private void setBeaconVersion(String curversion)
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("beaconVersion", curversion);
+        editor.apply();
+    }
+
+    private String getBeaconMessages()
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
+        String messages = sharedPreferences.getString("beaconmessages",null);
+        return  messages;
+    }
+
+    private void setBeaconMessages(String messages)
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("beaconmessages", messages);
+        editor.apply();
+    }
+
 }

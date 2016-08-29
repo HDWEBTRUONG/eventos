@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.appvisor_event.master.modules.BeaconService;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
@@ -56,6 +57,7 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
         mScannerView.setFormats(formats);
         mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
         mScannerView.startCamera();
+        BeaconService.addActivity(this);
     }
 
     private final Runnable delayFunc= new Runnable() {
@@ -80,6 +82,7 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     public void onDestroy(){
         super.onDestroy();
         mScannerView.stopCamera();
+        BeaconService.removeTopActivety(this);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

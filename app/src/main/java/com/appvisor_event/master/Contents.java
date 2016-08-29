@@ -2,12 +2,16 @@ package com.appvisor_event.master;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,7 +24,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Base64;
@@ -40,17 +43,13 @@ import android.widget.TextView;
 import com.appvisor_event.master.modules.AndroidBeaconMapInterface;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
+import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-import org.altbeacon.beacon.Beacon;
-import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
-import org.altbeacon.beacon.Identifier;
-import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,12 +60,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-public class Contents extends Activity implements BeaconConsumer, AppPermission.Interface {
+public class Contents extends Activity implements  AppPermission.Interface {
 
     private WebView myWebView;
     private static final String TAG = "TAG";
@@ -80,11 +77,6 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
     private String backurl = "#####";
-    private String minor;
-    private String mayor;
-    private String UUID;
-    private String region;
-//    private ArrayList<String> regId;
     private double longitude;
     private double latitude;
     private GPSManager gps;
@@ -128,6 +120,28 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
     private Runnable adRunnable;
 
+    BeaconContentsReceiver beaconContentsReceiver;
+    IntentFilter intentFilter;
+
+    //検知一番近いbeacon
+    class  BeaconContentsReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if(bundle.getBoolean("beaconON")) {
+                String uuid = bundle.getString("uuid");
+                String major = bundle.getString("major");
+                String minor = bundle.getString("minor");
+                sendBeacon(uuid, major, minor);
+            }else
+            {
+                clearBeacon();
+            }
+
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
@@ -142,7 +156,6 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
-//        Log.d("device_token", device_id);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
@@ -157,7 +170,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         myWebView.getSettings().setAllowFileAccess(true);
 
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -349,7 +362,12 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
             findViewById(R.id.adview).setVisibility(View.GONE);
         }
 
+        beaconContentsReceiver=new BeaconContentsReceiver();
+        intentFilter=new IntentFilter();
+        intentFilter.addAction("Beacon_Nearest");
+        registerReceiver(beaconContentsReceiver,intentFilter);
 
+        BeaconService.addActivity(this);
     }
 
     private void showGallery()
@@ -415,10 +433,6 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
         if (myWebView.canGoBack() == true) {
             Log.d("戻る前URL",(myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl()));
-//                        if (myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl().indexOf(Constants.FAVORITE_URL) != -1){
-//                            myWebView.goBack();
-//                            backurl = myWebView.getUrl();
-//                        }else{
             view .setBackgroundColor(getResources().getColor(R.color.selected_color));
             myWebView.goBack();
 
@@ -512,41 +526,28 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         {
             return;
         }
-
-        regionB = new ArrayList<Region>();
-//        regId = new ArrayList<String>();
-//        String[] param = data.split("/", -1);
-//        for (int i = 0; i < param.length; i++) {
-//            String[] beac = param[i].split("\\.", -1);
-//            region = beac[0];
-//            UUID = beac[1];
-////            minor = "0x"+beac[3];
-////            mayor = beac[2];
-//            regId.add(region);
-////            Identifier may = Identifier.parse(mayor);
-////            Identifier min = Identifier.parse(minor);
-//            Identifier uui = Identifier.parse(UUID);
-//            Region reg = new Region(region, uui, null, null);
-//
-////            Region reg = new Region(region, uui, null, null);
-//            regionB.add(reg);
-//        }
-        Region reg = new Region("1", Identifier.parse(data), null, null);
-        regionB.add(reg);
-
-        Log.d("TAG", String.valueOf(regionB.get(0).getIdentifier(0)));
-        beaconManager = BeaconManager.getInstanceForApplication(this);
-        beaconManager.setBackgroundScanPeriod(TimeUnit.SECONDS.toMillis(5));
-        beaconManager.setBackgroundBetweenScanPeriod(TimeUnit.SECONDS.toMillis(5));
+        BeaconService.beaconmap=data;
         bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, 2);
-        } else if (beaconManager.checkAvailability()) {
-            beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
-            beaconManager.bind(this);
-            beaconManager.setBackgroundMode(true);
+        } else {
+           if(isBeaconServiceRunning(BeaconService.class))
+           {
+               stopService(new Intent(Contents.this, BeaconService.class));
+           }
+            startService(new Intent(Contents.this, BeaconService.class));
         }
+    }
+
+    private boolean isBeaconServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -567,9 +568,9 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom);
         menu_buttom .setBackgroundColor(Color.TRANSPARENT);
         btn_back_button .setBackgroundColor(Color.TRANSPARENT);
-        if(beaconManager!=null) {
-            if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
-        }
+//        if(beaconManager!=null) {
+//            if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
+//        }
     }
 
     @Override
@@ -595,14 +596,14 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     @Override
     public void onDestroy(){
         super.onDestroy();
-        if(beaconManager!=null) {
-            if (beaconManager.isBound(this)) beaconManager.unbind(this);
-        }
         isMultAdShow = false;
         if(ad_handler != null&&adRunnable != null) {
 
             ad_handler.removeCallbacks(adRunnable);
         }
+        BeaconService.beaconmap=null;
+        unregisterReceiver(beaconContentsReceiver);
+        BeaconService.removeTopActivety(this);
     }
 
     @Override
@@ -683,9 +684,9 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         @Override
         public void onRefresh() {
             // 更新処理
-            if(beaconManager!=null) {
-                if (beaconManager.isBound(Contents.this)) beaconManager.unbind(Contents.this);
-            }
+//            if(beaconManager!=null) {
+//                if (beaconManager.isBound(Contents.this)) beaconManager.unbind(Contents.this);
+//            }
             extraHeaders.put("user-id", device_id);
             myWebView.loadUrl(active_url,extraHeaders);
         }
@@ -872,40 +873,19 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         myWebView.post(new Runnable() {
             @Override
             public void run() {
-//                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+"','"+re+"','"+ui+"','"+ma+"','"+min+"')");
                 myWebView.loadUrl("javascript:BeaconMap.detectBeacon('"+ui+"','"+ma+"','"+min+"')");
             }
         });
 
     }
-
-    @Override
-    public void onBeaconServiceConnect() {
-        beaconManager.setRangeNotifier(new RangeNotifier() {
+    public void clearBeacon(){
+        myWebView.post(new Runnable() {
             @Override
-            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                Object[] beaconlist=beacons.toArray();
-                if (beaconlist.length > 0) {
-                    Beacon nearestbeacon=(Beacon)beaconlist[0];
-                    for(int i = 0 ;i<beaconlist.length;i++) {
-
-                        Beacon beacon =(Beacon)beaconlist[i];
-                        if(nearestbeacon.getDistance()>beacon.getDistance())
-                        {
-                            nearestbeacon=beacon;
-                        }
-                        Log.i("HHHH",String.valueOf(beacon.getIdentifier(2))+"::::"+beacon.getDistance());
-                    }
-                    Log.i("ssssss",String.valueOf(nearestbeacon.getIdentifier(0))+"  "+String.valueOf(nearestbeacon.getIdentifier(1))+"  "+Integer.toHexString(Integer.parseInt(String.valueOf(nearestbeacon.getIdentifier(2)))));
-                    sendBeacon(String.valueOf(nearestbeacon.getIdentifier(0)), String.valueOf(nearestbeacon.getIdentifier(1)), Integer.toHexString(Integer.parseInt(String.valueOf(nearestbeacon.getIdentifier(2)))));
-                }
+            public void run() {
+                myWebView.loadUrl("javascript:BeaconMap.clearAllBeacon()");
             }
         });
-        try {
-            for(Region r : regionB) {
-                beaconManager.startRangingBeaconsInRegion(r);
-            }
-        }catch (RemoteException e){}
+
     }
 
     @Override

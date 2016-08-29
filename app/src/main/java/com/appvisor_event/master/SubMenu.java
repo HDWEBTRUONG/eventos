@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.appvisor_event.master.modules.BeaconService;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +49,7 @@ public class SubMenu extends Activity {
          // ドロワー画面のページを表示する。
          myWebView.loadUrl(Constants.SUB_MENU_URL, extraHeaders);
          //CATHEを使用する
-         myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+         myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
          overridePendingTransition(R.anim.right_in, R.anim.nothing);
 
@@ -84,6 +86,7 @@ public class SubMenu extends Activity {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
+        BeaconService.addActivity(this);
     }
 
     @Override
@@ -189,4 +192,10 @@ public class SubMenu extends Activity {
             myWebView.reload();
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        BeaconService.removeTopActivety(this);
+    }
 }

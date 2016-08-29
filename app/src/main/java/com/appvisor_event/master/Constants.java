@@ -41,6 +41,8 @@ public class Constants {
 //    public static final String AR_API = BASE_URL + Event +"/api/ar/download?androidversion=";
     public static final String AR_API = BASE_URL + Event +"/api/ar/download?os=android&version=";
 
+    public static final String Beacon_MESSAGE_API= BASE_URL+Event+"/api/beacon/messages/?version=";
+
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://tgs-push.appvisor-event.com/";
 

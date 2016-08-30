@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
-public class QrCodeActivity extends Activity implements ZXingScannerView.ResultHandler, LocationListener{
+public class QrCodeActivity extends BaseActivity implements ZXingScannerView.ResultHandler, LocationListener{
 
     private ZXingScannerView mScannerView;
     private ArrayList<BarcodeFormat> formats;
@@ -57,7 +57,6 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
         mScannerView.setFormats(formats);
         mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
         mScannerView.startCamera();
-        BeaconService.addActivity(this);
     }
 
     private final Runnable delayFunc= new Runnable() {
@@ -82,7 +81,6 @@ public class QrCodeActivity extends Activity implements ZXingScannerView.ResultH
     public void onDestroy(){
         super.onDestroy();
         mScannerView.stopCamera();
-        BeaconService.removeTopActivety(this);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

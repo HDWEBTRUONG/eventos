@@ -1,3 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="CustomDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <!-- The windowFrame Dialog box is not -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- Bleach now activity on -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- Translucent -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 </resources>

@@ -1,7 +1,8 @@
 package com.appvisor_event.master.modules;
 
-import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,7 +11,16 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.appvisor_event.master.AppUUID;
+import com.appvisor_event.master.BaseActivity;
+import com.appvisor_event.master.Constants;
+import com.appvisor_event.master.InfosGetter;
+import com.appvisor_event.master.MainActivity;
+import com.appvisor_event.master.R;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -46,7 +56,7 @@ public class BeaconService extends Service implements BeaconConsumer {
     public static JSONObject beaconobjs=null;
     public static String beaconmap=null;
 
-    public static ArrayList<Activity> activities=new ArrayList<Activity>();
+    public static ArrayList<BaseActivity> activities=new ArrayList<BaseActivity>();
 
     private ArrayList<Region> listregions=null;
     private Region mapRegion=null;
@@ -58,7 +68,10 @@ public class BeaconService extends Service implements BeaconConsumer {
     private Set<String> beaconSendedset;
     private SimpleDateFormat simpleDateFormat;
 
-    private boolean isJP=true;
+    public static boolean isJP=true;
+
+    public InfosGetter pushGetter;
+    private  String user_uuid;
 
 
     @Nullable
@@ -66,17 +79,17 @@ public class BeaconService extends Service implements BeaconConsumer {
     public IBinder onBind(Intent intent) {
         return null;
     }
-    //                region = new Region("1", Identifier.parse("99813696-8e94-4c20-acf0-8f874d18f4bd"), null, null);
     @Override
     public void onCreate() {
         super.onCreate();
-
-        Log.i("Test","Service onCreate!!!!");
 
         listregions = new ArrayList<Region>();
         beacons_inRegion=new ArrayList<String>();
         beacons_message =new HashMap<String,JSONArray>();
         beaconSendedset=getSendedMessageSet();
+        isJP= AppLanguage.isJapanese(this);
+        user_uuid= AppUUID.get(this);
+        Log.i("test user_uuid",user_uuid);
         simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN);
         SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
         String messages = sharedPreferences.getString("beaconmessages",null);
@@ -129,12 +142,12 @@ public class BeaconService extends Service implements BeaconConsumer {
     }
 
     //現在Active管理
-    static public  void addActivity(Activity activity)
+    static public  void addActivity(BaseActivity activity)
     {
         activities.add(activity);
     }
 
-    static public Activity getTopActivity()
+    static public BaseActivity getTopActivity()
     {
         if(activities.size()==0) {
             return  null;
@@ -145,7 +158,7 @@ public class BeaconService extends Service implements BeaconConsumer {
         }
     }
 
-    static  public  void removeTopActivety(Activity activity)
+    static  public  void removeTopActivety(BaseActivity activity)
     {
         activities.remove(activity);
     }
@@ -182,14 +195,11 @@ public class BeaconService extends Service implements BeaconConsumer {
                                 nearestbeacon = beacon;
                             }
                         }
-                        Log.i(TAG,String.valueOf(beacon.getIdentifier(2))+"::::"+beacon.getDistance());
-                        Log.d(TAG, "UUID:" + beacon.getId1() + ", major:" + beacon.getId2() + ", minor:" + beacon.getId3() + ", Distance:" + beacon.getDistance() + ",RSSI" + beacon.getRssi() + ", TxPower" + beacon.getTxPower());
                         String bkey=""+beacon.getId1()+beacon.getId2()+Integer.toHexString(Integer.parseInt(String.valueOf(beacon.getId3())));
                         beacons_inRegion.add(bkey);
 
                         if(beacons_message.get(bkey)!=null)
                         {
-                            Log.i(TAG,bkey);
                             try {
                             JSONArray beaconmessages=beacons_message.get(bkey);
                             for (int k =0;k<beaconmessages.length();k++)
@@ -202,11 +212,10 @@ public class BeaconService extends Service implements BeaconConsumer {
                                     //時間を判断
                                     String fromtime = period.getString("from");
                                     String endtime = period.getString("to");
-                                    Log.i("Message:::",fromtime+ "VV"+strnowtime.compareTo(fromtime)+"VV"+strnowtime+"VV"+strnowtime.compareTo(endtime)+"VV"+endtime);
                                     if(strnowtime.compareTo(fromtime)>=0&&strnowtime.compareTo(endtime)<=0)
                                     {
-//                                        beaconSendedset.add(messageid);
-//                                        setSendedMessageSet(beaconSendedset);
+                                        beaconSendedset.add(messageid);
+                                        setSendedMessageSet(beaconSendedset);
                                         //メッセージを表示
                                         JSONObject msgcontent = message.getJSONObject("message");
                                         if(msgcontent!=null)
@@ -214,18 +223,25 @@ public class BeaconService extends Service implements BeaconConsumer {
                                             String title="";
                                             String body="";
                                             String link="";
+                                            int isInternal=0;
                                             if(isJP)
                                             {
-                                                JSONObject jpmessage = msgcontent.getJSONObject("jp");
+                                                JSONObject jpmessage = msgcontent.getJSONObject("ja");
                                                 title=jpmessage.getString("title");
                                                 body=jpmessage.getString("body");
                                                 link=jpmessage.getString("link");
+                                                isInternal=jpmessage.getInt("isInternal");
                                             }
                                             else
                                             {
                                                 JSONObject enmessage = msgcontent.getJSONObject("en");
+                                                title=enmessage.getString("title");
+                                                body=enmessage.getString("body");
+                                                link=enmessage.getString("link");
+                                                isInternal=enmessage.getInt("isInternal");
+
                                             }
-//                                            showMessageDailog();
+                                            showMessageDailog(messageid,title,body,link,isInternal);
                                         }
 
                                     }
@@ -241,8 +257,7 @@ public class BeaconService extends Service implements BeaconConsumer {
 
                     }
                     if(beaconmap!=null) {
-                        //TO Send MAP set //TODO ①
-                        Log.i(TAG +"NEAR::", String.valueOf(nearestbeacon.getIdentifier(0)) + "  " + String.valueOf(nearestbeacon.getIdentifier(1)) + "  " + Integer.toHexString(Integer.parseInt(String.valueOf(nearestbeacon.getIdentifier(2)))));
+                        //TO Send MAP set
                         Intent broadcastIntent =new Intent();
                         broadcastIntent.putExtra("beaconON",true);
                         broadcastIntent.putExtra("uuid",String.valueOf(nearestbeacon.getIdentifier(0)));
@@ -254,8 +269,7 @@ public class BeaconService extends Service implements BeaconConsumer {
                 }
                 else
                 {
-                    Log.d(TAG,"no beacon data!!!");
-                    //TO clear MAP set  //TODO　②
+                    //TO clear MAP set
                     Intent broadcastIntent =new Intent();
                     broadcastIntent.putExtra("beaconON",false);
                     broadcastIntent.setAction("Beacon_Nearest");
@@ -293,34 +307,81 @@ public class BeaconService extends Service implements BeaconConsumer {
         editor.apply();
     }
 
-    private void showMessageDailog(String title,String message,String link)
+    private void showMessageDailog(String msgid,String title,String message,String link,int isWebview)
     {
-        Activity topactivity= getTopActivity();
+        BaseActivity topactivity = (BaseActivity) getTopActivity();
         if(topactivity!=null)
         {
             //アプリ起動中
             if(isRunningForeground())
             {
-                Log.i(TAG+" dailog:",message);
+                Intent broadcastIntent =new Intent();
+                broadcastIntent.setAction("Beacon_message");
+                broadcastIntent.putExtra("msgid",msgid);
+                broadcastIntent.putExtra("title",title);
+                broadcastIntent.putExtra("body",message);
+                broadcastIntent.putExtra("link",link);
+                broadcastIntent.putExtra("isInternal",isWebview);
+                broadcastIntent.putExtra("isNotification",false);
+                getBaseContext().sendBroadcast(broadcastIntent);
+                sendAPIInfo(user_uuid,msgid,"2");
             }
             else
             {
-                //push
-                Log.i(TAG+" push:",message);
+                NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationCompat.Builder mNotifyBuilder =  new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_status).setContentTitle(title).setContentText(message).setAutoCancel(true);
+                Intent resultIntent = new Intent(this, MainActivity.class);
+                resultIntent.putExtra("msgid",msgid);
+                resultIntent.putExtra("title",title);
+                resultIntent.putExtra("body",message);
+                resultIntent.putExtra("link",link);
+                resultIntent.putExtra("isInternal",isWebview);
+                resultIntent.putExtra("isNotification",true);
+                PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                mNotifyBuilder.setContentIntent(pi);
+                mNotificationManager.notify(Integer.parseInt(msgid), mNotifyBuilder.build());
+                sendAPIInfo(user_uuid,msgid,"0");
             }
         }
         else
         {
-            //push
-            Log.i(TAG+" push:",message);
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationCompat.Builder mNotifyBuilder =  new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_status).setContentTitle(title).setContentText(message).setAutoCancel(true);
+            Intent resultIntent = new Intent(this, MainActivity.class);
+            resultIntent.putExtra("msgid",msgid);
+            resultIntent.putExtra("title",title);
+            resultIntent.putExtra("body",message);
+            resultIntent.putExtra("link",link);
+            resultIntent.putExtra("isInternal",isWebview);
+            resultIntent.putExtra("isNotification",true);
+            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            mNotifyBuilder.setContentIntent(pi);
+
+            mNotificationManager.notify(Integer.parseInt(msgid), mNotifyBuilder.build());
+            sendAPIInfo(user_uuid,msgid,"0");
         }
     }
 
+    private void sendAPIInfo(String uuid,String msgid,String msgType)
+    {
+        try {
+            pushGetter = new InfosGetter(Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType); //new InfosGetter(Constants.Beacon_AGGREGATE_API);
+            pushGetter.start();
+            pushGetter.join();
+            if (pushGetter.mResponse != null && pushGetter.mResponse != "") {
+                Log.i("pushGetter",pushGetter.mResponse);
+                Log.i("pushGetter",Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     public boolean isRunningForeground(){
-        String packageName=getPackageName(getBaseContext());
-        String topActivityClassName=getTopActivityName(getBaseContext());
-        System.out.println("packageName="+packageName+",topActivityClassName="+topActivityClassName);
-        if (packageName!=null&&topActivityClassName!=null&&topActivityClassName.startsWith(packageName)) {
+        String topActivityClassName=getTopActivityName(this);
+        if (topActivityClassName!=null&&topActivityClassName.startsWith("com.appvisor_event.master")) {
 
             return true;
         } else {
@@ -340,11 +401,5 @@ public class BeaconService extends Service implements BeaconConsumer {
         }
         return topActivityClassName;
     }
-
-    public String getPackageName(Context context){
-        String packageName = context.getPackageName();
-        return packageName;
-    }
-
 
 }

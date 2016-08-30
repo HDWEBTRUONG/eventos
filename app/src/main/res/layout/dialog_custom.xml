@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/relative_custom_dialog_root">
+
+    <RelativeLayout
+        android:id="@+id/relative_custom_dialog_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:clickable="true"
+        android:background="@drawable/bg_custom_dialog">
+
+        <ImageView
+            android:id="@+id/img_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/btn_close"/>
+
+        <TextView
+            android:id="@+id/txt_custom_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/img_close"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:singleLine="true"
+            android:textSize="18sp"
+            android:textColor="@color/custom_dialog_blue"/>
+
+        <Button
+            android:id="@+id/btn_custom_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/custom_dialog_button"
+            android:textSize="16sp"
+            android:textColor="@color/white"/>
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txt_custom_dialog_title"
+            android:layout_above="@id/btn_custom_dialog"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+            <TextView
+                android:id="@+id/btn_custom_dialog_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"/>
+        </ScrollView>
+
+    </RelativeLayout>
+
+</RelativeLayout>

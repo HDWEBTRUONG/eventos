@@ -12,5 +12,8 @@
     <color name="gray">#636363</color>
     <!--アイコン色-->
     <color name="ic_status_color">#006aaf</color>
+    <!--custom_dialog-->
+    <color name="custom_dialog_blue">#006aae</color>
+
 
 </resources>

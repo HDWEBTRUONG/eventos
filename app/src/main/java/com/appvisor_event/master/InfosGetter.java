@@ -18,11 +18,11 @@ import java.net.URISyntaxException;
  */
 public class InfosGetter extends Thread {
 
-    String mResponse;  // 送信結果を受け取る変数
+    public String mResponse;  // 送信結果を受け取る変数
     String mUrl;  // 送信先のURL
 
     // コンストラクタの設定。
-    InfosGetter(String url ) {
+    public InfosGetter(String url ) {
         mUrl = url;
     }
 

@@ -28,6 +28,7 @@
     <!-- Keeps the processor from sleeping when a message is received. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <permission
         android:name="${applicationId}.permission.C2D_MESSAGE"
@@ -91,7 +92,6 @@
 
         <!-- Support Google Cloud Message -->
         <receiver
-
             android:name=".modules.Gcm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
@@ -104,10 +104,14 @@
         <service android:name=".modules.Gcm.GcmIntentService" />
 
         <activity android:name=".QrCodeActivity" />
-        <!--<activity android:name="com.unity3d.player.UnityPlayerActivity" />-->
-        <!--<activity android:name=".TgsUnityActivity" android:process=":UnityJustKillYourself"></activity>-->
-        <service android:name=".modules.DLAndUnzipService"/>
-        <service android:name=".modules.BeaconService" android:exported="false"/>
+        <!-- <activity android:name="com.unity3d.player.UnityPlayerActivity" /> -->
+        <!-- <activity android:name=".TgsUnityActivity" android:process=":UnityJustKillYourself"></activity> -->
+        <service android:name=".modules.DLAndUnzipService" />
+        <service
+            android:name=".modules.BeaconService"
+            android:exported="false" />
+
+        <activity android:name=".BaseActivity"></activity>
     </application>
 
 </manifest>

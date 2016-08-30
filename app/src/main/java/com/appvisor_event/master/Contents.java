@@ -18,6 +18,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -64,7 +65,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Contents extends Activity implements  AppPermission.Interface {
+public class Contents extends BaseActivity implements  AppPermission.Interface {
 
     private WebView myWebView;
     private static final String TAG = "TAG";
@@ -170,8 +171,12 @@ public class Contents extends Activity implements  AppPermission.Interface {
         // ファイルアクセスを許可する
         myWebView.getSettings().setAllowFileAccess(true);
 
-        //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        if(isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }else {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -368,7 +373,6 @@ public class Contents extends Activity implements  AppPermission.Interface {
         intentFilter.addAction("Beacon_Nearest");
         registerReceiver(beaconContentsReceiver,intentFilter);
 
-        BeaconService.addActivity(this);
     }
 
     private void showGallery()
@@ -554,7 +558,6 @@ public class Contents extends Activity implements  AppPermission.Interface {
     @Override
     protected void onResume() {
         super.onResume();
-
         // 許可しないにすると無限ループに陥るので辞める。
 //        if (null != beaconData)
 //        {
@@ -604,7 +607,6 @@ public class Contents extends Activity implements  AppPermission.Interface {
         }
         BeaconService.beaconmap=null;
         unregisterReceiver(beaconContentsReceiver);
-        BeaconService.removeTopActivety(this);
     }
 
     @Override
@@ -693,13 +695,23 @@ public class Contents extends Activity implements  AppPermission.Interface {
         }
     };
 
+    private boolean isCachePolicy()
+    {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+        if(cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected())
+        {
+            return false;
+        }else
+        {
+            return true;
+        }
+    }
+
     /** WebViewClientクラス */
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
             beaconData = null;
-
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
                 extraHeaders.put("user-id", device_id);
@@ -844,14 +856,14 @@ public class Contents extends Activity implements  AppPermission.Interface {
                 message = message.replace("ajax-handler:", "");
                 JavascriptManager.getInstance().onJsAlert(message);
 
-                if (0 == url.indexOf(Constants.SETTING_URL))
+                if (0 == view.getUrl().indexOf(Constants.SETTING_URL))
                 {
                     if (0 == message.indexOf("language:"))
                     {
                         String language = message.replace("language:", "");
                         language = language.equals("ja") ? "en" : "ja";
                         AppLanguage.setLanguageWithStringValue(Contents.this.getApplicationContext(), language);
-
+                        BeaconService.isJP=AppLanguage.isJapanese(getApplicationContext());
                         myWebView.reload();
                     }
                     else

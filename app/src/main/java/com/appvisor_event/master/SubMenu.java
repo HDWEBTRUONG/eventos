@@ -20,7 +20,7 @@ import com.appvisor_event.master.modules.BeaconService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubMenu extends Activity {
+public class SubMenu extends BaseActivity {
 
     private WebView myWebView;
     private boolean mIsFailure = false;
@@ -86,7 +86,6 @@ public class SubMenu extends Activity {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
-        BeaconService.addActivity(this);
     }
 
     @Override
@@ -196,6 +195,5 @@ public class SubMenu extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        BeaconService.removeTopActivety(this);
     }
 }

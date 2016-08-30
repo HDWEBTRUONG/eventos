@@ -43,6 +43,8 @@ public class Constants {
 
     public static final String Beacon_MESSAGE_API= BASE_URL+Event+"/api/beacon/messages/?version=";
 
+    public static final String Beacon_AGGREGATE_API= BASE_URL+Event+"/api/beacon/messages/push?";
+
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://tgs-push.appvisor-event.com/";
 

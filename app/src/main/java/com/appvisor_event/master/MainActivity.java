@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,8 +24,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
-import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.google.android.gcm.GCMRegistrar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -43,7 +44,7 @@ import java.util.Map;
 
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 
     private GcmClient gcmClient = null;
 
@@ -71,6 +72,7 @@ public class MainActivity extends Activity {
     static  float ad_ratio= 0.0f;
 
     static  int status_bar_height=0;
+    private InfosGetter pushGetter;
 
     //beaconメッセージ関連
     private InfosGetter myJsonbeacon;
@@ -87,6 +89,14 @@ public class MainActivity extends Activity {
         device_token = GCMRegistrar.getRegistrationId(this).replace("-","").replace(" ","").replace(">","").replace("<","");
         Log.d("device_token",device_token);
 
+        Intent mainintent = getIntent();
+        Bundle bundle = mainintent.getExtras();
+        if(bundle!=null)
+        {
+            showBeaconMeaasge(bundle.getString("title"),bundle.getString("body"),bundle.getString("link"),bundle.getInt("isInternal"));
+            sendAPIInfo(device_id,bundle.getString("msgid"),"1");
+        }
+
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
 
@@ -99,17 +109,30 @@ public class MainActivity extends Activity {
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
 
-        //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        if(isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }else {
+            //CATHEを使用する
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         {
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
-        //端末の言語設定を取得
-        String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
-        AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
+
+        String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
+        if(isFirstStart()) {
+            //端末の言語設定を取得
+            AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
+            setIsFirstStarts(false);
+        }
+        else
+        {
+            local=AppLanguage.getLanguageWithStringValue(this.getApplicationContext());
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
@@ -317,7 +340,6 @@ public class MainActivity extends Activity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        BeaconService.addActivity(this);
     }
 
     @Override
@@ -344,7 +366,6 @@ public class MainActivity extends Activity {
         adsList = null;
         adSec = -1;
         ad_index=0;
-        BeaconService.removeTopActivety(this);
     }
 
     @Override
@@ -405,6 +426,18 @@ public class MainActivity extends Activity {
         }
     };
 
+    private boolean isCachePolicy()
+    {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+        if(cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected())
+        {
+            return false;
+        }else
+        {
+            return true;
+        }
+    }
+
     /** WebViewClientクラス */
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
@@ -417,8 +450,8 @@ public class MainActivity extends Activity {
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
-
         }
+
         /**
          * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
          */
@@ -593,6 +626,36 @@ public class MainActivity extends Activity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("beaconmessages", messages);
         editor.apply();
+    }
+
+    private boolean isFirstStart()
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("appData", Context.MODE_PRIVATE);
+        boolean messages = sharedPreferences.getBoolean("isFirstStart",true);
+        return  messages;
+    }
+
+    private void setIsFirstStarts(Boolean started)
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("appData",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isFirstStart", started);
+        editor.apply();
+    }
+
+    private void sendAPIInfo(String uuid,String msgid,String msgType)
+    {
+        try {
+            pushGetter = new InfosGetter(Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType); //new InfosGetter(Constants.Beacon_AGGREGATE_API);
+            pushGetter.start();
+            pushGetter.join();
+            if (pushGetter.mResponse != null && pushGetter.mResponse != "") {
+                Log.i("pushGetter",pushGetter.mResponse);
+                Log.i("pushGetter",Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.BeaconService;
 
 public class BaseActivity extends Activity {
@@ -41,7 +42,7 @@ public class BaseActivity extends Activity {
                 new com.appvisor_event.master.CustomDialog.Builder(this)
                         .setTitle(title)
                         .setContent(message)
-                        .setButtonContent("リンク先へ移動する", link, com.appvisor_event.master.CustomDialog.LOAD_URL_VIA_BROWSER)
+                        .setButtonContent(AppLanguage.isJapanese(this)?"リンク先へ移動する":"MOVE TO LINK", link, com.appvisor_event.master.CustomDialog.LOAD_URL_VIA_BROWSER)
                         .setOnCustomDialogClickListener(new com.appvisor_event.master.CustomDialog.OnCustomDialogClickListener() {
                             @Override
                             public void onCancelClick() {
@@ -64,7 +65,7 @@ public class BaseActivity extends Activity {
                 new com.appvisor_event.master.CustomDialog.Builder(this)
                         .setTitle(title)
                         .setContent(message)
-                        .setButtonContent("リンク先へ移動する", link, com.appvisor_event.master.CustomDialog.LOAD_URL_VIA_WEBVIEW)
+                        .setButtonContent(AppLanguage.isJapanese(this)?"リンク先へ移動する":"MOVE TO LINK", link, com.appvisor_event.master.CustomDialog.LOAD_URL_VIA_WEBVIEW)
                         .setOnCustomDialogClickListener(new com.appvisor_event.master.CustomDialog.OnCustomDialogClickListener() {
                             @Override
                             public void onCancelClick() {

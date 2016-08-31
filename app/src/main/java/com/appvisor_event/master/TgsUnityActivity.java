@@ -55,6 +55,8 @@ public class TgsUnityActivity extends UnityPlayerActivity {
     private  int downloadversion=0;
     private String sharefilepath=null;
     private SimpleDateFormat simpleDateFormat;
+    private BeaconMessageUnityReceiver beaconMessageUnityReceiver;
+    private IntentFilter beaconMessageUnityintentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,6 @@ public class TgsUnityActivity extends UnityPlayerActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN);
         //言語設定　１英語　０日本語
         isJa=isJpLanguage();
@@ -87,7 +88,6 @@ public class TgsUnityActivity extends UnityPlayerActivity {
         }
 
         arPathdir=getFilesDir().toString()+"/data/";
-
         try {
             curversion=getARversion();
             Log.i("test url :",Constants.AR_API+curversion);
@@ -100,8 +100,6 @@ public class TgsUnityActivity extends UnityPlayerActivity {
                 try {
                     Date nowtime=new Date();
                     String strnowtime = simpleDateFormat.format(nowtime);
-
-                    Log.i("TGGGGG",arInfoGetter.mResponse);
                     JSONObject arinfojson = new JSONObject(arInfoGetter.mResponse);
                     if (arinfojson.getInt("status") == 200) {
                         //ARDownloadなど
@@ -135,7 +133,7 @@ public class TgsUnityActivity extends UnityPlayerActivity {
                             }
                             else
                             {
-                                showCloseAlter("can not be displayed because of the outside of the period!");
+                                showCloseAlter("The expiration date has passed");
                             }
                         }
                     }
@@ -181,7 +179,7 @@ public class TgsUnityActivity extends UnityPlayerActivity {
                                 }
                                 else
                                 {
-                                    showCloseAlter("can not be displayed because of the outside of the period!");
+                                    showCloseAlter("The expiration date has passed");
                                 }
                             }
                         }
@@ -194,7 +192,7 @@ public class TgsUnityActivity extends UnityPlayerActivity {
                         }
                         else
                         {
-                            showCloseAlter("can not be displayed because of the outside of the period!");
+                            showCloseAlter("The expiration date has passed");
                         }
                     }
                     else
@@ -205,7 +203,7 @@ public class TgsUnityActivity extends UnityPlayerActivity {
                         }
                         else
                         {
-                            showCloseAlter("error occurred!");
+                            showCloseAlter("An error occurred.");
                         }
                     }
 
@@ -233,6 +231,11 @@ public class TgsUnityActivity extends UnityPlayerActivity {
                 showCloseAlter("error occurred!");
             }
         }
+
+        beaconMessageUnityReceiver=new BeaconMessageUnityReceiver();
+        beaconMessageUnityintentFilter=new IntentFilter();
+        beaconMessageUnityintentFilter.addAction("Beacon_message_unity");
+        registerReceiver(beaconMessageUnityReceiver,beaconMessageUnityintentFilter);
     }
 
     @Nullable
@@ -326,24 +329,30 @@ public class TgsUnityActivity extends UnityPlayerActivity {
                 UnityPlayer.currentActivity.finish();
             }
         });
+        unregisterReceiver(beaconMessageUnityReceiver);
     }
 
     public void SharewithSNS (String modenames)
     {
         String sharesns[]=modenames.split(",");
         if(sharesns !=null && sharesns.length>0) {
-            String[] sharestext = readShareFile(sharesns[0]);
-            //シェア
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
-
-            if(isJa) {
-                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "#"+sharestext[1]+" "+sharestext[0]);
+            String snstext="";
+            for(int i=0;i<sharesns.length;i++) {
+                String[] sharestext = readShareFile(sharesns[i]);
+                if(sharestext!=null) {
+                    //シェア
+                    if (isJa) {
+                        snstext += (sharestext[0] + " #" + sharestext[1] + " ");
+                    } else {
+                        snstext += (sharestext[3] + " #" + sharestext[4] + " ");
+                    }
+                }
             }
-            else{
-                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "#"+sharestext[3]+" "+sharestext[2]);
+            if(snstext!="") {
+                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, snstext);
             }
-
             String imgPath = sharefilepath;
             File file = new File(imgPath);
             shareIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.fromFile(file));
@@ -531,13 +540,13 @@ public class TgsUnityActivity extends UnityPlayerActivity {
         File file =new File(arPathdir+filename+".txt");
         if(file.exists()&&file.isFile()) {
             BufferedReader reader = null;
-            arrayShare= new String[4];
+            arrayShare= new String[6];
             try {
                 reader = new BufferedReader(new FileReader(file));
                 String strline = null;
                 int index=0;
                 while ((strline = reader.readLine()) != null) {
-                    if(index>3)
+                    if(index>5)
                     {
                         break;
                     }
@@ -631,5 +640,86 @@ public class TgsUnityActivity extends UnityPlayerActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("arinfo", messages);
         editor.apply();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
+
+    class  BeaconMessageUnityReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            showBeaconMeaasge(bundle.getString("title"), bundle.getString("body"), bundle.getString("link"), bundle.getInt("isInternal"));
+        }
+    }
+
+    public void showBeaconMeaasge(String title, String message, final String link, final int isWebview)
+    {
+        if(link != null) {
+            if(isWebview==1) {
+                new com.appvisor_event.master.CustomDialog.Builder(this)
+                        .setTitle(title)
+                        .setContent(message)
+                        .setButtonContent(AppLanguage.isJapanese(this)?"リンク先へ移動する":"Move to the link", link, com.appvisor_event.master.CustomDialog.LOAD_URL_VIA_BROWSER)
+                        .setOnCustomDialogClickListener(new com.appvisor_event.master.CustomDialog.OnCustomDialogClickListener() {
+                            @Override
+                            public void onCancelClick() {
+
+                            }
+
+                            @Override
+                            public void onButtonClick() {
+                                Intent intent = new Intent(TgsUnityActivity.this, Contents.class);
+                                // URLを表示
+                                intent.putExtra("key.url", link);
+                                // サブ画面の呼び出し
+                                startActivity(intent);
+                            }
+                        })
+                        .build().show();
+            }
+            else
+            {
+                new com.appvisor_event.master.CustomDialog.Builder(this)
+                        .setTitle(title)
+                        .setContent(message)
+                        .setButtonContent(AppLanguage.isJapanese(this)?"リンク先へ移動する":"MOVE TO LINK", link, com.appvisor_event.master.CustomDialog.LOAD_URL_VIA_WEBVIEW)
+                        .setOnCustomDialogClickListener(new com.appvisor_event.master.CustomDialog.OnCustomDialogClickListener() {
+                            @Override
+                            public void onCancelClick() {
+
+                            }
+
+                            @Override
+                            public void onButtonClick() {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link)));
+                            }
+                        })
+                        .build().show();
+            }
+        }
+        else
+        {
+            new com.appvisor_event.master.CustomDialog.Builder(this)
+                    .setTitle(title)
+                    .setContent(message)
+                    .setOnCustomDialogClickListener(new com.appvisor_event.master.CustomDialog.OnCustomDialogClickListener() {
+                        @Override
+                        public void onCancelClick() {
+
+                        }
+
+                        @Override
+                        public void onButtonClick() {
+
+                        }
+                    })
+                    .build().show();
+        }
     }
 }

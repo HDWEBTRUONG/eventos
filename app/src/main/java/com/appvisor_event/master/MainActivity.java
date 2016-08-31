@@ -312,7 +312,6 @@ public class MainActivity extends BaseActivity {
             if (myJsonbeacon.mResponse != null && myJsonbeacon.mResponse != "") {
                 JSONObject beaconjson = new JSONObject(myJsonbeacon.mResponse);
                 if (beaconjson.getInt("status") == 200) {
-
                     //beaconサービス起動
                     BeaconService.beaconobjs=beaconjson;
                     setBeaconMessages(beaconjson.toString());
@@ -347,6 +346,7 @@ public class MainActivity extends BaseActivity {
         super.onResume();
 
         GcmClient.checkPlayServices(this);
+        BeaconService.isUnityService=false;
     }
 
     @Override
@@ -478,6 +478,7 @@ public class MainActivity extends BaseActivity {
                     if((active_url.indexOf(Constants.RegARFlag) != -1))
                     {
                         //テストFOR Unity
+                        BeaconService.isUnityService=true;
                         Intent intent = new Intent(MainActivity.this, TgsUnityActivity.class);
 
                         startActivity(intent);

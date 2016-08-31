@@ -55,6 +55,7 @@ public class BeaconService extends Service implements BeaconConsumer {
 
     public static JSONObject beaconobjs=null;
     public static String beaconmap=null;
+    public static boolean isUnityService=false;
 
     public static ArrayList<BaseActivity> activities=new ArrayList<BaseActivity>();
 
@@ -194,7 +195,8 @@ public class BeaconService extends Service implements BeaconConsumer {
                                 nearestbeacon = beacon;
                             }
                         }
-                        String bkey=""+beacon.getId1()+beacon.getId2()+Integer.toHexString(Integer.parseInt(String.valueOf(beacon.getId3())));
+                        String bkey=""+beacon.getId1()+Integer.toHexString(Integer.parseInt(String.valueOf(beacon.getId2())))+Integer.toHexString(Integer.parseInt(String.valueOf(beacon.getId3())));
+
                         beacons_inRegion.add(bkey);
 
                         if(beacons_message.get(bkey)!=null)
@@ -314,16 +316,31 @@ public class BeaconService extends Service implements BeaconConsumer {
             //アプリ起動中
             if(isRunningForeground())
             {
-                Intent broadcastIntent =new Intent();
-                broadcastIntent.setAction("Beacon_message");
-                broadcastIntent.putExtra("msgid",msgid);
-                broadcastIntent.putExtra("title",title);
-                broadcastIntent.putExtra("body",message);
-                broadcastIntent.putExtra("link",link);
-                broadcastIntent.putExtra("isInternal",isWebview);
-                broadcastIntent.putExtra("isNotification",false);
-                getBaseContext().sendBroadcast(broadcastIntent);
-                sendAPIInfo(user_uuid,msgid,"2");
+                if(isUnityService)
+                {
+                    Intent broadcastIntent = new Intent();
+                    broadcastIntent.setAction("Beacon_message_unity");
+                    broadcastIntent.putExtra("msgid", msgid);
+                    broadcastIntent.putExtra("title", title);
+                    broadcastIntent.putExtra("body", message);
+                    broadcastIntent.putExtra("link", link);
+                    broadcastIntent.putExtra("isInternal", isWebview);
+                    broadcastIntent.putExtra("isNotification", false);
+                    getBaseContext().sendBroadcast(broadcastIntent);
+                    sendAPIInfo(user_uuid, msgid, "2");
+                }
+                else {
+                    Intent broadcastIntent = new Intent();
+                    broadcastIntent.setAction("Beacon_message");
+                    broadcastIntent.putExtra("msgid", msgid);
+                    broadcastIntent.putExtra("title", title);
+                    broadcastIntent.putExtra("body", message);
+                    broadcastIntent.putExtra("link", link);
+                    broadcastIntent.putExtra("isInternal", isWebview);
+                    broadcastIntent.putExtra("isNotification", false);
+                    getBaseContext().sendBroadcast(broadcastIntent);
+                    sendAPIInfo(user_uuid, msgid, "2");
+                }
             }
             else
             {

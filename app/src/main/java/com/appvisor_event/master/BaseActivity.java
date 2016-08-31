@@ -42,7 +42,7 @@ public class BaseActivity extends Activity {
                 new com.appvisor_event.master.CustomDialog.Builder(this)
                         .setTitle(title)
                         .setContent(message)
-                        .setButtonContent(AppLanguage.isJapanese(this)?"リンク先へ移動する":"MOVE TO LINK", link, com.appvisor_event.master.CustomDialog.LOAD_URL_VIA_BROWSER)
+                        .setButtonContent(AppLanguage.isJapanese(this)?"リンク先へ移動する":"Move to the link", link, com.appvisor_event.master.CustomDialog.LOAD_URL_VIA_BROWSER)
                         .setOnCustomDialogClickListener(new com.appvisor_event.master.CustomDialog.OnCustomDialogClickListener() {
                             @Override
                             public void onCancelClick() {

@@ -147,7 +147,10 @@ public class SubMenu extends BaseActivity {
                     if((url.indexOf(Constants.RegARFlag) != -1))
                     {
                         //テストFOR Unity
+                        BeaconService.isUnityService=true;
+                        Intent intent = new Intent(SubMenu.this, TgsUnityActivity.class);
 
+                        startActivity(intent);
 
                     }
                     else {

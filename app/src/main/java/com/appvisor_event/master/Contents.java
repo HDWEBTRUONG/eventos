@@ -563,6 +563,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 //        {
 //            startBeacon(beaconData);
 //        }
+        BeaconService.isUnityService=false;
     }
 
     @Override

@@ -89,7 +89,6 @@ public class BeaconService extends Service implements BeaconConsumer {
         beaconSendedset=getSendedMessageSet();
         isJP= AppLanguage.isJapanese(this);
         user_uuid= AppUUID.get(this);
-        Log.i("test user_uuid",user_uuid);
         simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN);
         SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
         String messages = sharedPreferences.getString("beaconmessages",null);

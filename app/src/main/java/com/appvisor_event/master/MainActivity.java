@@ -415,14 +415,6 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onRefresh() {
             myWebView.reload();
-            // 3秒待機
-//            new Handler().postDelayed(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//
-//                }
-//            }, 10000);
         }
     };
 

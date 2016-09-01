@@ -215,8 +215,8 @@ public class BeaconService extends Service implements BeaconConsumer {
                                     String endtime = period.getString("to");
                                     if(strnowtime.compareTo(fromtime)>=0&&strnowtime.compareTo(endtime)<=0)
                                     {
-//                                        beaconSendedset.add(messageid);
-//                                        setSendedMessageSet(beaconSendedset);
+                                        beaconSendedset.add(messageid);
+                                        setSendedMessageSet(beaconSendedset);
                                         //メッセージを表示
                                         JSONObject msgcontent = message.getJSONObject("message");
                                         if(msgcontent!=null)

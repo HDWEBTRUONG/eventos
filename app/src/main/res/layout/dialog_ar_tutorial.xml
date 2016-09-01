@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:id="@+id/relative_ar_tutorial_root_view">
 
+
+
     <ImageView
         android:id="@+id/img_vr_tutorial"
         android:layout_width="wrap_content"
@@ -11,5 +13,14 @@
         android:layout_centerInParent="true"
         android:src="@drawable/ar_tutorial"/>
 
+    <ImageView
+        android:id="@+id/ar_guide_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/btn_close"/>
 
 </RelativeLayout>

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -136,22 +137,21 @@ public class SubMenu extends BaseActivity {
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
                     bundle.putString("key.url",url);
-
                     intent.putExtras(bundle);
                     setResult(RESULT_OK, intent);
-
                     finish();
                     overridePendingTransition(R.anim.nothing,R.anim.right_out);
                 }else {
 
                     if((url.indexOf(Constants.RegARFlag) != -1))
                     {
-                        //テストFOR Unity
-                        finish();
-                        BeaconService.isUnityService=true;
-                        Intent intent = new Intent(SubMenu.this, TgsUnityActivity.class);
-                        startActivity(intent);
-
+                        if(!BeaconService.isUnityService) {
+                            //テストFOR Unity
+                            finish();
+                            BeaconService.isUnityService = true;
+                            Intent intent = new Intent(SubMenu.this, TgsUnityActivity.class);
+                            startActivity(intent);
+                        }
                     }
                     else {
                         Intent intent = new Intent();

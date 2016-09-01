@@ -90,7 +90,6 @@ public class TgsUnityActivity extends UnityPlayerActivity {
         arPathdir=getFilesDir().toString()+"/data/";
         try {
             curversion=getARversion();
-            Log.i("test url :",Constants.AR_API+curversion);
             arInfoGetter = new InfosGetter(Constants.AR_API+curversion);
             arInfoGetter.start();
             arInfoGetter.join();

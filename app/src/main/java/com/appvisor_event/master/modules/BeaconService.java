@@ -215,8 +215,8 @@ public class BeaconService extends Service implements BeaconConsumer {
                                     String endtime = period.getString("to");
                                     if(strnowtime.compareTo(fromtime)>=0&&strnowtime.compareTo(endtime)<=0)
                                     {
-                                        beaconSendedset.add(messageid);
-                                        setSendedMessageSet(beaconSendedset);
+//                                        beaconSendedset.add(messageid);
+//                                        setSendedMessageSet(beaconSendedset);
                                         //メッセージを表示
                                         JSONObject msgcontent = message.getJSONObject("message");
                                         if(msgcontent!=null)
@@ -262,7 +262,7 @@ public class BeaconService extends Service implements BeaconConsumer {
                         Intent broadcastIntent =new Intent();
                         broadcastIntent.putExtra("beaconON",true);
                         broadcastIntent.putExtra("uuid",String.valueOf(nearestbeacon.getIdentifier(0)));
-                        broadcastIntent.putExtra("major",String.valueOf(nearestbeacon.getIdentifier(1)));
+                        broadcastIntent.putExtra("major",Integer.toHexString(Integer.parseInt(String.valueOf(nearestbeacon.getIdentifier(1)))));
                         broadcastIntent.putExtra("minor",Integer.toHexString(Integer.parseInt(String.valueOf(nearestbeacon.getIdentifier(2)))));
                         broadcastIntent.setAction("Beacon_Nearest");
                         getBaseContext().sendBroadcast(broadcastIntent);

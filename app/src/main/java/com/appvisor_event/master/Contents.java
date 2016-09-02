@@ -480,7 +480,13 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         gps = new GPSManager(this);
         if (!gps.canGetLocation)
         {
-            gps.showSettingsAlert();
+            if(AppLanguage.isJapanese(this)) {
+                gps.showSettingsAlert();
+            }
+            else
+            {
+                gps.showSettingsAlertEn();
+            }
             return;
         }
 
@@ -516,7 +522,13 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         gps = new GPSManager(this);
         if(!gps.canGetLocation)
         {
-            gps.showSettingsAlert();
+            if(AppLanguage.isJapanese(this)) {
+                gps.showSettingsAlert();
+            }
+            else
+            {
+                gps.showSettingsAlertEn();
+            }
         }
 
         if (AppPermission.checkPermission(this, beaconDetectionRequiredPermissions))
@@ -971,49 +983,96 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
         AppPermission.log(String.format("showErrorDialog"));
 
-        switch (requestCode)
+        if(AppLanguage.isJapanese(this)) {
+            switch (requestCode) {
+                case imageUploadRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_camera_and_storage))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
+
+                case qrcodeScannerRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
+
+                case beaconDetectionRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_location))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
+            }
+        }
+        else
         {
-            case imageUploadRequiredPermissionsRequestCode:
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.permission_dialog_title))
-                        .setMessage(getString(R.string.permission_dialog_message_camera_and_storage))
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                AppPermission.openSettings(Contents.this);
-                            }
-                        })
-                        .create()
-                        .show();
-                break;
+            switch (requestCode) {
+                case imageUploadRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_camera_and_storage_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
 
-            case qrcodeScannerRequiredPermissionsRequestCode:
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.permission_dialog_title))
-                        .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                AppPermission.openSettings(Contents.this);
-                            }
-                        })
-                        .create()
-                        .show();
-                break;
+                case qrcodeScannerRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_camera_and_location_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
 
-            case beaconDetectionRequiredPermissionsRequestCode:
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.permission_dialog_title))
-                        .setMessage(getString(R.string.permission_dialog_message_location))
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                AppPermission.openSettings(Contents.this);
-                            }
-                        })
-                        .create()
-                        .show();
-                break;
+                case beaconDetectionRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_location_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
+            }
         }
     }
 

@@ -25,6 +25,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.google.android.gcm.GCMRegistrar;
@@ -44,7 +45,7 @@ import java.util.Map;
 
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements AppPermission.Interface{
 
     private GcmClient gcmClient = null;
 
@@ -76,6 +77,22 @@ public class MainActivity extends BaseActivity {
 
     //beaconメッセージ関連
     private InfosGetter myJsonbeacon;
+
+    private GPSManager gps;
+
+    private static final String[] beaconDetectionRequiredPermissions = {
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+    private static final int beaconDetectionRequiredPermissionsRequestCode = 100;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        AppPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -328,7 +345,24 @@ public class MainActivity extends BaseActivity {
                 stopService(new Intent(MainActivity.this, BeaconService.class));
                 if(BeaconService.beaconobjs!=null&&BeaconService.beaconobjs.getJSONArray("beacons").length()>0)
                 {
-                    startService(new Intent(MainActivity.this, BeaconService.class));
+                    gps = new GPSManager(this);
+                    if(!gps.canGetLocation)
+                    {
+                        if(AppLanguage.isJapanese(this)) {
+                            gps.showSettingsAlert();
+                        }
+                        else
+                        {
+                            gps.showSettingsAlertEn();
+                        }
+                    }
+                    if (AppPermission.checkPermission(this, beaconDetectionRequiredPermissions))
+                    {
+                        startService(new Intent(MainActivity.this, BeaconService.class));
+                    }
+                    else {
+                        AppPermission.requestPermissions(this, beaconDetectionRequiredPermissionsRequestCode, beaconDetectionRequiredPermissions);
+                    }
                 }
                 else
                 {
@@ -339,6 +373,75 @@ public class MainActivity extends BaseActivity {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Boolean isRequirePermission(int requestCode, String permission) {
+        AppPermission.log(String.format("isRequirePermission: %s", permission));
+
+        Boolean isRequirePermission = false;
+        switch (requestCode)
+        {
+            case beaconDetectionRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case android.Manifest.permission.ACCESS_FINE_LOCATION:
+                    case android.Manifest.permission.ACCESS_COARSE_LOCATION:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
+        }
+
+        return isRequirePermission;
+    }
+
+    @Override
+    public void showErrorDialog(int requestCode) {
+        AppPermission.log(String.format("showErrorDialog"));
+        switch (requestCode)
+        {
+
+            case beaconDetectionRequiredPermissionsRequestCode:
+                if(AppLanguage.isJapanese(this)) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_location))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(MainActivity.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                }
+                else
+                {
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_location_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(MainActivity.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void allRequiredPermissions(int requestCode, String[] permissions) {
+        switch (requestCode)
+        {
+            case beaconDetectionRequiredPermissionsRequestCode:
+                startService(new Intent(MainActivity.this, BeaconService.class));
+                break;
         }
     }
 
@@ -386,26 +489,50 @@ public class MainActivity extends BaseActivity {
                 myWebView.goBack();
                 return true;
             }
-            new AlertDialog.Builder(this)
-                    .setTitle("アプリケーションの終了")
-                    .setMessage("アプリケーションを終了してよろしいですか？")
-                    .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+            if(AppLanguage.isJapanese(this)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("アプリケーションの終了")
+                        .setMessage("アプリケーションを終了してよろしいですか？")
+                        .setPositiveButton("はい", new DialogInterface.OnClickListener() {
 
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // TODO 自動生成されたメソッド・スタブ
-                            MainActivity.this.finish();
-                        }
-                    })
-                    .setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // TODO 自動生成されたメソッド・スタブ
+                                MainActivity.this.finish();
+                            }
+                        })
+                        .setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
 
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // TODO 自動生成されたメソッド・スタブ
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // TODO 自動生成されたメソッド・スタブ
 
-                        }
-                    })
-                    .show();
+                            }
+                        })
+                        .show();
+            }else
+            {
+                new AlertDialog.Builder(this)
+                        .setTitle("Exit the application")
+                        .setMessage("Are you sure you want to exit the application?")
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // TODO 自動生成されたメソッド・スタブ
+                                MainActivity.this.finish();
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // TODO 自動生成されたメソッド・スタブ
+
+                            }
+                        })
+                        .show();
+            }
 
             return true;
         }
@@ -547,7 +674,7 @@ public class MainActivity extends BaseActivity {
 
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                .setTitle("お知らせ")
+                .setTitle("Notice")
                 .setMessage(extras.getString("content", ""))
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -643,10 +770,10 @@ public class MainActivity extends BaseActivity {
             pushGetter = new InfosGetter(Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
             pushGetter.start();
             pushGetter.join();
-            if (pushGetter.mResponse != null && pushGetter.mResponse != "") {
-                Log.i("pushGetter",pushGetter.mResponse);
-                Log.i("pushGetter",Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
-            }
+//            if (pushGetter.mResponse != null && pushGetter.mResponse != "") {
+//                Log.d("pushGetter",pushGetter.mResponse);
+//                Log.d("pushGetter",Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
+//            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

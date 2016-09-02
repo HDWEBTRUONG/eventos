@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -50,7 +51,13 @@ public class SubMenu extends BaseActivity {
          // ドロワー画面のページを表示する。
          myWebView.loadUrl(Constants.SUB_MENU_URL, extraHeaders);
          //CATHEを使用する
-         myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        if(isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }else {
+            //CATHEを使用する
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
 
          overridePendingTransition(R.anim.right_in, R.anim.nothing);
 
@@ -87,6 +94,18 @@ public class SubMenu extends BaseActivity {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
+    }
+
+    private boolean isCachePolicy()
+    {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+        if(cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected())
+        {
+            return false;
+        }else
+        {
+            return true;
+        }
     }
 
     @Override

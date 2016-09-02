@@ -122,6 +122,8 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
     private Runnable adRunnable;
 
+    private boolean isFromMessage = false;
+
     BeaconContentsReceiver beaconContentsReceiver;
     IntentFilter intentFilter;
 
@@ -188,6 +190,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         Intent intent = getIntent();
         // インテントに保存されたデータを取得
         active_url = intent.getStringExtra("key.url");
+        isFromMessage = intent.getBooleanExtra("isMessagefrom",false);
 //        Log.d("active_url_contents",active_url);
 
         if(!mIsFailure){
@@ -248,7 +251,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
             // responseがあればログ出力する。
             if ( myJsonSender.mResponse != null ) {
-                Log.i ( "message", myJsonSender.mResponse );
+//                Log.i ( "message", myJsonSender.mResponse );
             }
 
         } catch ( InterruptedException e ) {
@@ -714,10 +717,17 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             beaconData = null;
             active_url = url;
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
-                extraHeaders.put("user-id", device_id);
-                Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
-                return false;
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)||isFromMessage) {
+               if(isFromMessage) {
+                   Contents.this.myWebView.loadUrl(url);
+                   return false;
+               }
+                else
+               {
+                   extraHeaders.put("user-id", device_id);
+                   Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
+                   return false;
+               }
             }else{
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;

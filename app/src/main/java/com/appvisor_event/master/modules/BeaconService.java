@@ -385,8 +385,8 @@ public class BeaconService extends Service implements BeaconConsumer {
             pushGetter.start();
             pushGetter.join();
             if (pushGetter.mResponse != null && pushGetter.mResponse != "") {
-                Log.i("pushGetter",pushGetter.mResponse);
-                Log.i("pushGetter",Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
+                Log.d("pushGetter",pushGetter.mResponse);
+                Log.d("pushGetter",Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

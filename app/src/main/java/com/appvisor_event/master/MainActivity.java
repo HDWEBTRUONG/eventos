@@ -197,13 +197,13 @@ public class MainActivity extends BaseActivity {
 
             // responseがあればログ出力する。
             if ( myJsonSender.mResponse != null ) {
-                Log.i ( "message", myJsonSender.mResponse );
+                Log.d ( "message", myJsonSender.mResponse );
             }
 
         } catch ( InterruptedException e ) {
 
             e.printStackTrace ();
-            Log.i ( "JSON", e.toString () );
+            Log.d ( "JSON", e.toString () );
 
         }
         Log.d("device_id",device_id);
@@ -220,7 +220,7 @@ public class MainActivity extends BaseActivity {
 
             // responseがあればログ出力する。
             if ( myJsonDeviceTokenSender.mResponse != null ) {
-                Log.i ( "message", myJsonDeviceTokenSender.mResponse );
+                Log.d ( "message", myJsonDeviceTokenSender.mResponse );
             }
 
         } catch ( InterruptedException e ) {
@@ -312,6 +312,7 @@ public class MainActivity extends BaseActivity {
             if (myJsonbeacon.mResponse != null && myJsonbeacon.mResponse != "") {
                 JSONObject beaconjson = new JSONObject(myJsonbeacon.mResponse);
                 if (beaconjson.getInt("status") == 200) {
+                    Log.d("Test josn",myJsonbeacon.mResponse);
                     //beaconサービス起動
                     BeaconService.beaconobjs=beaconjson;
                     setBeaconMessages(beaconjson.toString());

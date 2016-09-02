@@ -37,7 +37,8 @@ public class BaseActivity extends Activity {
 
     public void showBeaconMeaasge(String title, String message, final String link, final int isWebview)
     {
-        if(link != null) {
+
+        if(link != null&&!("".equals(link))&&link!=""&&link.length()!=0) {
             if(isWebview==1) {
                 new com.appvisor_event.master.CustomDialog.Builder(this)
                         .setTitle(title)
@@ -54,6 +55,7 @@ public class BaseActivity extends Activity {
                                     Intent intent = new Intent(BaseActivity.this, Contents.class);
                                     // URLを表示
                                     intent.putExtra("key.url", link);
+                                    intent.putExtra("isMessagefrom", true);
                                     // サブ画面の呼び出し
                                     startActivity(intent);
                             }

@@ -676,6 +676,7 @@ public class TgsUnityActivity extends UnityPlayerActivity {
                                 Intent intent = new Intent(TgsUnityActivity.this, Contents.class);
                                 // URLを表示
                                 intent.putExtra("key.url", link);
+                                intent.putExtra("isMessagefrom", true);
                                 // サブ画面の呼び出し
                                 startActivity(intent);
                             }

@@ -94,7 +94,7 @@ public class MainActivity extends BaseActivity {
         if(bundle!=null)
         {
             showBeaconMeaasge(bundle.getString("title"),bundle.getString("body"),bundle.getString("link"),bundle.getInt("isInternal"));
-            sendAPIInfo(device_id,bundle.getString("msgid"),"1");
+            sendAPIInfo(device_id,bundle.getString("msgid"),"2");
         }
 
         extraHeaders = new HashMap<String, String>();
@@ -640,7 +640,7 @@ public class MainActivity extends BaseActivity {
     private void sendAPIInfo(String uuid,String msgid,String msgType)
     {
         try {
-            pushGetter = new InfosGetter(Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType); //new InfosGetter(Constants.Beacon_AGGREGATE_API);
+            pushGetter = new InfosGetter(Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
             pushGetter.start();
             pushGetter.join();
             if (pushGetter.mResponse != null && pushGetter.mResponse != "") {

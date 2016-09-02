@@ -327,7 +327,7 @@ public class BeaconService extends Service implements BeaconConsumer {
                     broadcastIntent.putExtra("isInternal", isWebview);
                     broadcastIntent.putExtra("isNotification", false);
                     getBaseContext().sendBroadcast(broadcastIntent);
-                    sendAPIInfo(user_uuid, msgid, "2");
+                    sendAPIInfo(user_uuid, msgid, "1");
                 }
                 else {
                     Intent broadcastIntent = new Intent();
@@ -339,7 +339,7 @@ public class BeaconService extends Service implements BeaconConsumer {
                     broadcastIntent.putExtra("isInternal", isWebview);
                     broadcastIntent.putExtra("isNotification", false);
                     getBaseContext().sendBroadcast(broadcastIntent);
-                    sendAPIInfo(user_uuid, msgid, "2");
+                    sendAPIInfo(user_uuid, msgid, "1");
                 }
             }
             else

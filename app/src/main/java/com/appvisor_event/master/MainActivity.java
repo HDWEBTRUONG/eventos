@@ -326,8 +326,10 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             myJsonbeacon = new InfosGetter(Constants.Beacon_MESSAGE_API+getBeaconVersion());
             myJsonbeacon.start();
             myJsonbeacon.join();
+            Log.d("Test josn",Constants.Beacon_MESSAGE_API+getBeaconVersion());
             if (myJsonbeacon.mResponse != null && myJsonbeacon.mResponse != "") {
                 JSONObject beaconjson = new JSONObject(myJsonbeacon.mResponse);
+                Log.d("Test josn",myJsonbeacon.mResponse);
                 if (beaconjson.getInt("status") == 200) {
                     Log.d("Test josn",myJsonbeacon.mResponse);
                     //beaconサービス起動
@@ -338,8 +340,10 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                 }
                 else
                 {
-                    beaconjson = new JSONObject(getBeaconMessages());
-                    BeaconService.beaconobjs=beaconjson;
+                    if(getBeaconMessages()!=null) {
+                        beaconjson = new JSONObject(getBeaconMessages());
+                        BeaconService.beaconobjs = beaconjson;
+                    }
                 }
 
                 stopService(new Intent(MainActivity.this, BeaconService.class));
@@ -737,7 +741,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     private String getBeaconMessages()
     {
         SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
-        String messages = sharedPreferences.getString("beaconmessages",null);
+        String messages = sharedPreferences.getString("beaconmessages","{\"status\":500}");
         return  messages;
     }
 

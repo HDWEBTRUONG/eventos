@@ -58,7 +58,7 @@ public class CustomDialog implements View.OnClickListener{
                 }
             });
         }else{
-            button.setVisibility(View.GONE);
+            button.setVisibility(View.INVISIBLE);
         }
 
     }

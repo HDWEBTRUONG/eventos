@@ -347,6 +347,7 @@ public class BeaconService extends Service implements BeaconConsumer {
                 NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 NotificationCompat.Builder mNotifyBuilder =  new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_status).setContentTitle(title).setContentText(message).setAutoCancel(true);
                 Intent resultIntent = new Intent(this, MainActivity.class);
+                resultIntent.putExtra("isbeacon","true");
                 resultIntent.putExtra("msgid",msgid);
                 resultIntent.putExtra("title",title);
                 resultIntent.putExtra("body",message);
@@ -364,6 +365,7 @@ public class BeaconService extends Service implements BeaconConsumer {
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder mNotifyBuilder =  new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_status).setContentTitle(title).setContentText(message).setAutoCancel(true);
             Intent resultIntent = new Intent(this, MainActivity.class);
+            resultIntent.putExtra("isbeacon","true");
             resultIntent.putExtra("msgid",msgid);
             resultIntent.putExtra("title",title);
             resultIntent.putExtra("body",message);

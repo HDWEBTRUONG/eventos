@@ -110,8 +110,10 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         Bundle bundle = mainintent.getExtras();
         if(bundle!=null)
         {
-            showBeaconMeaasge(bundle.getString("title"),bundle.getString("body"),bundle.getString("link"),bundle.getInt("isInternal"));
-            sendAPIInfo(device_id,bundle.getString("msgid"),"2");
+            if(bundle.getString("isbeacon")!=""&&bundle.getString("isbeacon")!=null) {
+                showBeaconMeaasge(bundle.getString("title"), bundle.getString("body"), bundle.getString("link"), bundle.getInt("isInternal"));
+                sendAPIInfo(device_id, bundle.getString("msgid"), "2");
+            }
         }
 
         extraHeaders = new HashMap<String, String>();

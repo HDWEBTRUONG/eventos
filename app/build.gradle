@@ -9,8 +9,8 @@ android {
         applicationId "com.appvisor_event.master"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 4
-        versionName "1.0.2"
+        versionCode 5
+        versionName "1.0.3"
     }
     buildTypes {
         release {
@@ -24,8 +24,8 @@ android {
     productFlavors {
         tgs {
             applicationId = "jp.co.nikkeibp.tgs2016"
-            versionCode 4
-            versionName "1.0.2"
+            versionCode 5
+            versionName "1.0.3"
         }
     }
     sourceSets {

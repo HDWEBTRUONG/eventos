@@ -680,7 +680,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                .setTitle("Notice")
+                .setTitle(extras.getString("title", getString(R.string.app_name)))
                 .setMessage(extras.getString("content", ""))
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override

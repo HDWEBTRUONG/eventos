@@ -5,9 +5,9 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "tgs-2016";
+    public static final String Event = "omotesando2016";//"tgs-2016";
     //ベースURL
-    public static final String BASE_URL = "https://tgs-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://stg-api.appvisor-event.com/";//"https://tgs-api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL

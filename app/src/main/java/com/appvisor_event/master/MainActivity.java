@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -23,7 +24,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.appvisor_event.master.camerasquare.CameraSquareActivity;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
@@ -91,6 +94,16 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         AppPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(MainActivity.this, CameraSquareActivity.class);//getApplication()
+                startActivity(intent);
+            } else {
+                // Permission Denied
+                Toast.makeText(MainActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
     }
 
 
@@ -607,7 +620,15 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     //エラーページを非表示にする
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
 
-                } else {
+                } else if (url.equals(Constants.BASE_URL)){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
+                    }else{
+                        Intent intent = new Intent(MainActivity.this, CameraSquareActivity.class);//getApplication()
+                        startActivity(intent);
+                    }
+
+                } else{
                     active_url = url;
                     if((active_url.indexOf(Constants.RegARFlag) != -1))
                     {
@@ -784,5 +805,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             e.printStackTrace();
         }
     }
+
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
 
 }

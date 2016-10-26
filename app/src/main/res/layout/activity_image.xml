@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageButton
+            android:id="@+id/button_close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/close_back_press"
@@ -25,12 +26,12 @@
         android:layout_height="0dp"
         android:layout_weight="0.65"
         >
-        <viewdemo.bravesoft.com.cn.CustomImageView
+        <com.appvisor_event.master.CustomImageView
             android:id="@+id/img"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
-        <viewdemo.bravesoft.com.cn.CustomImageView
+        <com.appvisor_event.master.CustomImageView
             android:id="@+id/img_default"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -57,7 +58,7 @@
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
                     android:background="#ffffff">
-                    <viewdemo.bravesoft.com.cn.CustomImageView
+                    <com.appvisor_event.master.CustomImageView
                         android:id="@+id/image1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -68,7 +69,7 @@
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
                     android:background="#ffffff">
-                    <viewdemo.bravesoft.com.cn.CustomImageView
+                    <com.appvisor_event.master.CustomImageView
                         android:id="@+id/image2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -79,7 +80,7 @@
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
                     android:background="#ffffff">
-                    <viewdemo.bravesoft.com.cn.CustomImageView
+                    <com.appvisor_event.master.CustomImageView
                         android:id="@+id/image3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -90,7 +91,7 @@
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
                     android:background="#ffffff">
-                    <viewdemo.bravesoft.com.cn.CustomImageView
+                    <com.appvisor_event.master.CustomImageView
                         android:id="@+id/image4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

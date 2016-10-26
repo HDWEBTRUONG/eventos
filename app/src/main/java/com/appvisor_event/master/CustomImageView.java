@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.PaintDrawable;
+import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -62,11 +64,16 @@ public class CustomImageView extends FrameLayout {
     public void addImage( int type, ArrayList<ImageItem> items){
 
         Bitmap bitmap1=null;
+        Bitmap firstBitmap=null;
 
         if (items!=null||items.size()>0){
-
-
-            Bitmap firstBitmap=BitmapFactory.decodeResource(getResources(),items.get(0).getId());
+            String path= items.get(0).getName();
+            File mFile=new File(path);
+            //若该文件存在
+            if (mFile.exists()) {
+                firstBitmap=BitmapFactory.decodeFile(path);
+            }
+//             firstBitmap=BitmapFactory.decodeResource(getResources(),items.get(0).getId());
             bitmap1 = Bitmap.createBitmap(firstBitmap.getWidth(), firstBitmap.getHeight(),
                     firstBitmap.getConfig());
             for (int i = 1; i <items.size() ; i++) {

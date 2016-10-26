@@ -1,5 +1,6 @@
 package com.appvisor_event.master;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,19 +11,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.appvisor_event.master.CustomImageView;
-import com.appvisor_event.master.ImageItem;
-import com.appvisor_event.master.R;
-import com.appvisor_event.master.ShareDetailUtils;
-import com.appvisor_event.master.ShareDialog;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.File;
@@ -32,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class ImageActivity extends AppCompatActivity implements View.OnClickListener,ShareDialog.ShareLisenter{
+public class ImageActivity extends Activity implements View.OnClickListener,ShareDialog.ShareLisenter{
     private CustomImageView imageView, imageView1, imageView2, imageView3, imageView4,imageView_default;
     private ImageView button;
     private Thread thread;
@@ -41,6 +36,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private int width,heigth;
     private ShareDialog shareDialog;
     private ArrayList<ImageItem> list,list1,list2,list3;
+    private ImageButton button_close,button_back;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -67,7 +63,10 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 //        layers1[0] = ContextCompat.getDrawable(this, R.drawable.screen);
 //        layers1[1] = new PaintDrawable(ContextCompat.getColor(this, R.color.black10));
 //        layerDrawable1 = new LayerDrawable(layers1);
-
+            button_close= (ImageButton) findViewById(R.id.button_close);
+        button_back= (ImageButton) findViewById(R.id.camera_back);
+        button_close.setOnClickListener(this);
+        button_back.setOnClickListener(this);
 
             WindowManager wm = (WindowManager)this.getSystemService(Context.WINDOW_SERVICE);
 
@@ -79,16 +78,19 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         list2=new ArrayList<>();
         list3=new ArrayList<>();
 
+        Intent intent=getIntent();
+        String img_url=intent.getExtras().getString("image_url");
+
         for (int i = 0; i <3; i++) {
             ImageItem item=new ImageItem();
-            item.setName("event"+i);
+
             if (i>0){
                 item.setWidth_position(i*0.1f);
                 item.setHeight_position(i*0.2f);
                 item.setScale(0.1f);
             }
             if (i==0){
-                item.setId(R.drawable.screen);
+                item.setName(img_url);
             }else if (i==1){
                 item.setId(R.drawable.bulb_on_64);
             }else if (i==2){
@@ -106,7 +108,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 item.setScale(0.15f);
             }
             if (i==0){
-                item.setId(R.drawable.screen);
+                item.setName(img_url);
             }else if (i==1){
                 item.setId(R.drawable.case_64);
             }else if (i==2){
@@ -124,7 +126,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 item.setScale(0.11f);
             }
             if (i==0){
-                item.setId(R.drawable.screen);
+                item.setName(img_url);
             }else if (i==1){
                 item.setId(R.drawable.case_64);
             }else if (i==2){
@@ -142,7 +144,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 item.setScale(0.12f);
             }
             if (i==0){
-                item.setId(R.drawable.screen);
+                item.setName(img_url);
             }else if (i==1){
                 item.setId(R.drawable.cart_64);
             }else if (i==2){
@@ -210,7 +212,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         }
 
         Log.e("test", "保存图片");
-        File file = new File(Environment.getExternalStorageDirectory() + "/ViewDemo/");
+        File file = new File(Environment.getExternalStorageDirectory() + "/EventImage/");
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -258,6 +260,12 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             case R.id.image4:
                 imageView.addImage(1,list3);
                 break;
+            case R.id.button_close:
+                finish();
+                break;
+            case R.id.camera_back:
+                finish();
+                break;
         }
     }
 
@@ -266,15 +274,15 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         progressDialog.show();
         switch (type){
             case ShareDialog.SHARE_TWITTER:
-                ShareDetailUtils.shareTwitter(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/ViewDemo/" + "TEST.png");
+                ShareDetailUtils.shareTwitter(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/EventImage/" + "TEST.png");
                 progressDialog.dismiss();
                 break;
             case ShareDialog.SHARE_FACEBOOK:
-                ShareDetailUtils.shareFaceBook(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/ViewDemo/" + "TEST.png");
+                ShareDetailUtils.shareFaceBook(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/EventImage/" + "TEST.png");
                 progressDialog.dismiss();
                 break;
             case ShareDialog.SHARE_INSTAGRAM:
-                ShareDetailUtils.shareInstgram(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/ViewDemo/" + "TEST.png");
+                ShareDetailUtils.shareInstgram(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/EventImage/" + "TEST.png");
                 progressDialog.dismiss();
                 break;
         }

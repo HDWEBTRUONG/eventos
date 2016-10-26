@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.appvisor_event.master.ImageActivity;
 import com.appvisor_event.master.R;
 
 import java.io.IOException;
@@ -506,6 +507,9 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             String imgurl = ImageUtility.savePicture(getActivity(), ImageUtility.rotatePicture(getActivity(), getRotation(), data));
             Log.e("imgurl", imgurl);
             setSafeToTakePhoto(true);
+            Intent intent=new Intent(getActivity(), ImageActivity.class);
+            intent.putExtra("image_url",imgurl);
+            getActivity().startActivity(intent);
         }
     }
 
@@ -583,7 +587,11 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 String imgurl = ImageUtility.savePicture(getActivity(), ImageUtility.rotatePicture(getActivity(), getRotation(), getDataPic()));
                 Log.e("imgurl", imgurl);
+
                 setSafeToTakePhoto(true);
+                Intent intent=new Intent(getActivity(), ImageActivity.class);
+                intent.putExtra("image_url",imgurl);
+                getActivity().startActivity(intent);
             } else {
                 // Permission Denied
                 Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();

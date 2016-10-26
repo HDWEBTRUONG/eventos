@@ -15,5 +15,6 @@
     <!--custom_dialog-->
     <color name="custom_dialog_blue">#006aae</color>
 
-
+    <color name="dialog_line">#e0e0e0</color>
+    <color name="dialog_certain">#ffffff</color>
 </resources>

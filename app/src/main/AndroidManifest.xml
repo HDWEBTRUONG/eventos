@@ -41,8 +41,11 @@
         android:required="true" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
 
-    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -105,8 +108,11 @@
         <service android:name=".modules.Gcm.GcmIntentService" />
 
         <activity android:name=".QrCodeActivity" />
-         <activity android:name="com.unity3d.player.UnityPlayerActivity" />
-         <activity android:name=".TgsUnityActivity" android:process=":UnityJustKillYourself"></activity>
+        <activity android:name="com.unity3d.player.UnityPlayerActivity" />
+        <activity
+            android:name=".TgsUnityActivity"
+            android:process=":UnityJustKillYourself"></activity>
+
         <service android:name=".modules.DLAndUnzipService" />
         <service
             android:name=".modules.BeaconService"
@@ -114,6 +120,8 @@
 
         <activity android:name=".BaseActivity"></activity>
         <activity android:name=".ImageActivity"></activity>
+        <activity android:name=".camerasquare.CameraSquareActivity"
+            android:theme="@style/squarecamera__CameraFullScreenTheme.NoUI" />
     </application>
 
 </manifest>

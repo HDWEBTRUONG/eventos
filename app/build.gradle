@@ -19,14 +19,14 @@ android {
         }
     }
     productFlavors {
-        mmc_demo {
-            applicationId = "com.appvisor_event.mmc_demo"
-            versionCode 2016000001
+        kidzania {
+            applicationId = "com.appvisor_event.kidzania"
+            versionCode 1
             versionName "1.0.0"
         }
-        mmc_demo_staging {
-            applicationId = "com.appvisor_event.mmc_demo_staging"
-            versionCode 2016000001
+        kidzania_staging {
+            applicationId = "com.appvisor_event.kidzania_staging"
+            versionCode 1
             versionName "1.0.0"
         }
     }

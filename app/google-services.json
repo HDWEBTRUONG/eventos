@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "800785308038",
-    "project_id": "tgs2016-1379"
+    "project_number": "485246024931",
+    "project_id": "api-project-485246024931"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:800785308038:android:974207bfe6d5bb2b",
         "android_client_info": {
-          "package_name": "jp.co.nikkeibp.tgs2016"
+          "package_name": "com.appvisor_event.omotesando2016.staging"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCYUC4ss0gFgHNhh8BDA7stz3PmdnFYzyI"
+          "current_key": "AIzaSyDzBBAPm_eCXiF-CCGieo59L70Ksc0AR6s"
         }
       ],
       "services": {

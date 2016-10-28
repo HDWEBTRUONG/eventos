@@ -22,10 +22,15 @@ android {
         }
     }
     productFlavors {
-        tgs {
-            applicationId = "jp.co.nikkeibp.tgs2016"
-            versionCode 6
-            versionName "1.0.3"
+        omotesando2016 {
+            applicationId = "com.appvisor_event.omotesando2016"
+            versionCode 1
+            versionName "1.0.0"
+        }
+        omotesando2016_staging {
+            applicationId = "com.appvisor_event.omotesando2016.staging"
+            versionCode 1
+            versionName "1.0.0"
         }
     }
     sourceSets {

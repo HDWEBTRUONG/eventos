@@ -5,9 +5,9 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "tgs-2016";
+    public static final String Event = "omotesando2016";
     //ベースURL
-    public static final String BASE_URL = "https://tgs-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -46,9 +46,9 @@ public class Constants {
     public static final String Beacon_AGGREGATE_API= BASE_URL+Event+"/api/beacon/messages/push?";
 
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "https://tgs-push.appvisor-event.com/";
+    public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
 
-    public static final String GCM_SENDER_ID = "800785308038";
+    public static final String GCM_SENDER_ID = "485246024931";
 
     public static final String RegARFlag= "/"+Event+"/ar/marker-scanner";
 }

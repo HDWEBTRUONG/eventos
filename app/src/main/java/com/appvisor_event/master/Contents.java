@@ -729,7 +729,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             beaconData = null;
             active_url = url;
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)||isFromMessage) {
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN2) != -1) || isFromMessage ) {
                if(isFromMessage) {
                    Contents.this.myWebView.loadUrl(url);
                    return false;

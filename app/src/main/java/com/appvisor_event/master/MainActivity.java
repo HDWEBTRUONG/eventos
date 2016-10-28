@@ -569,7 +569,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             active_url = url;
-            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1)) {
+            if((url.indexOf(Constants.APPLI_DOMAIN) != -1) || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)|| (url.indexOf(Constants.GOOGLEMAP_URL2) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN) != -1) || (url.indexOf(Constants.EXHIBITER_DOMAIN2) != -1)) {
                 MainActivity.this.myWebView.stopLoading();
                 return false;
             }else{

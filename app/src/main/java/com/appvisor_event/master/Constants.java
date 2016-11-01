@@ -51,4 +51,6 @@ public class Constants {
     public static final String GCM_SENDER_ID = "800785308038";
 
     public static final String RegARFlag= "/"+Event+"/ar/marker-scanner";
+
+    public static final String PHOTO_FRAME = HOME_URL + "/api/photoframes/check?os=android&version=%d";
 }

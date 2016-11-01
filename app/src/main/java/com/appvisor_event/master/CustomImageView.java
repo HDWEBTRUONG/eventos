@@ -98,7 +98,7 @@ public class CustomImageView extends FrameLayout {
 
     private  Bitmap small(Bitmap bitmap,float size) {
         Matrix matrix = new Matrix();
-        matrix.postScale(size-0.7f,size);
+        matrix.postScale(size,size);
         int bm_width=bitmap.getWidth();
         int bm_height=bitmap.getHeight();
         Bitmap resizeBmp = Bitmap.createBitmap(bitmap, 0, 0,bm_width,

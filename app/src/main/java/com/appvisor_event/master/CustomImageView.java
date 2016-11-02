@@ -57,11 +57,7 @@ public class CustomImageView extends FrameLayout {
 
     }
 
-    /**
-     *
-     * @param type 图片加载类型
-     */
-    public void addImage( int type, ArrayList<ImageItem> items){
+    public void addImage(ArrayList<ImageItem> items){
 
         Bitmap bitmap1=null;
         Bitmap firstBitmap=null;
@@ -76,20 +72,33 @@ public class CustomImageView extends FrameLayout {
 //             firstBitmap=BitmapFactory.decodeResource(getResources(),items.get(0).getId());
             bitmap1 = Bitmap.createBitmap(firstBitmap.getWidth(), firstBitmap.getHeight(),
                     firstBitmap.getConfig());
+            Bitmap bitmap_icon=null;
+            Bitmap bitmap = null;
+            Log.d("frame",items.size()+"img_size");
+            Canvas canvas = new Canvas(bitmap1);
+            canvas.drawBitmap(firstBitmap, new Matrix(), null);
             for (int i = 1; i <items.size() ; i++) {
-                img_width=ContextCompat.getDrawable(mContext,items.get(i).getId()).getIntrinsicWidth();
-                float scale=0.0f;
-                Bitmap secondBitmap=BitmapFactory.decodeResource(getResources(),items.get(i).getId());
-                scale = (float) ((width*items.get(i).getScale())/img_width);
-                Bitmap bitmap = null;
-                Bitmap bm= BitmapFactory.decodeResource(getResources(),items.get(i).getId());
-                bitmap=small(bm, scale);
-                Canvas canvas = new Canvas(bitmap1);
-                canvas.drawBitmap(firstBitmap, new Matrix(), null);
-                canvas.drawBitmap(bitmap,(int)((width*items.get(i).getWidth_position())),(int)((width*items.get(i).getHeight_position())), null);
-                firstBitmap=bitmap1;
-            }
+                String p = getContext().getFilesDir().toString() + "/images/" + items.get(i).getName();//图片路径
+                File file = new File(p);
+                //若该文件存在
+                if (file.exists()) {
 
+                    bitmap_icon = BitmapFactory.decodeFile(p);
+                }
+                if (bitmap_icon != null) {
+                    Log.d("PATH", p);
+                    img_width = bitmap_icon.getWidth();
+                }
+
+                float scale = 0.0f;
+                scale = (float) ((width * items.get(i).getScale()) / img_width);
+                Log.d("SCALE", scale + "---" + (int) ((width * items.get(i).getWidth_position())) + "---" + (int) ((width * items.get(i).getHeight_position())));
+                bitmap = small(bitmap_icon, scale);
+                canvas.drawBitmap(bitmap, (int) ((width * items.get(i).getWidth_position())), (int) ((width * items.get(i).getHeight_position())), null);
+                firstBitmap = bitmap1;
+                bitmap_icon = null;
+                bitmap = null;
+            }
             image_root.setImageBitmap(bitmap1);
 
 

@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -18,7 +20,10 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.appvisor_event.master.model.FrameBean;
+import com.appvisor_event.master.util.SPUtils;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,16 +32,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class ImageActivity extends Activity implements View.OnClickListener,ShareDialog.ShareLisenter{
+public class ImageActivity extends Activity implements View.OnClickListener,ShareDialog.ShareLisenter,RecycleAdapter.RecycleImgListener{
     private CustomImageView imageView, imageView1, imageView2, imageView3, imageView4,imageView_default;
     private ImageView button;
     private Thread thread;
     private ProgressDialog progressDialog;
-    private LayerDrawable layerDrawable1, layerDrawable2, layerDrawable3, layerDrawable4;
-    private int width,heigth;
     private ShareDialog shareDialog;
     private ArrayList<ImageItem> list,list1,list2,list3;
     private ImageButton button_close,button_back;
+    private RecyclerView recyclerView;
+    private RecycleAdapter adapter;
+    private ArrayList<ArrayList<ImageItem>> mList;
+    private String status,frame;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -59,105 +66,48 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
         imageView3.setOnClickListener(this);
         imageView4.setOnClickListener(this);
         button = (ImageView) findViewById(R.id.button);
-//        Drawable[] layers1 = new Drawable[2];
-//        layers1[0] = ContextCompat.getDrawable(this, R.drawable.screen);
-//        layers1[1] = new PaintDrawable(ContextCompat.getColor(this, R.color.black10));
-//        layerDrawable1 = new LayerDrawable(layers1);
             button_close= (ImageButton) findViewById(R.id.button_close);
         button_back= (ImageButton) findViewById(R.id.camera_back);
         button_close.setOnClickListener(this);
         button_back.setOnClickListener(this);
 
-            WindowManager wm = (WindowManager)this.getSystemService(Context.WINDOW_SERVICE);
-
-            width = wm.getDefaultDisplay().getWidth();
-            heigth = wm.getDefaultDisplay().getHeight();
-
-        list=new ArrayList<>();
-        list1=new ArrayList<>();
-        list2=new ArrayList<>();
-        list3=new ArrayList<>();
-
         Intent intent=getIntent();
         String img_url=intent.getExtras().getString("image_url");
-
-        for (int i = 0; i <3; i++) {
-            ImageItem item=new ImageItem();
-
-            if (i>0){
-                item.setWidth_position(i*0.1f);
-                item.setHeight_position(i*0.2f);
-                item.setScale(0.1f);
+        status=SPUtils.get(getApplicationContext(), "version", 0) + "";
+        frame=SPUtils.get(getApplicationContext(), "frame", "") + "";
+        Log.d("FRAME",SPUtils.get(getApplicationContext(), "frame", "") + "");
+        mList=new ArrayList<>();
+        FrameBean frameBean= new Gson().fromJson(frame,FrameBean.class);
+        if (frameBean!=null){
+            Log.d("FRAME",frameBean.getJp().size() + "size");
+            for (int i = 0; i <frameBean.getJp().size(); i++) {
+                list=new ArrayList<>();
+                ImageItem item_back=new ImageItem();
+                item_back.setName(img_url);
+                list.add(item_back);
+                Log.d("FRAME",frameBean.getJp().get(i).getItems().size() + "icon_size");
+                    for (int j = 0; j <frameBean.getJp().get(i).getItems().size() ; j++) {
+                        ImageItem item=new ImageItem();
+                            item.setName(frameBean.getJp().get(i).getItems().get(j).getName());
+                            item.setScale((float)frameBean.getJp().get(i).getItems().get(j).getWidth());
+                            item.setWidth_position((float) frameBean.getJp().get(i).getItems().get(j).getX());
+                            item.setHeight_position((float)frameBean.getJp().get(i).getItems().get(j).getY());
+                        list.add(item);
+                }
+                mList.add(list);
             }
-            if (i==0){
-                item.setName(img_url);
-            }else if (i==1){
-                item.setId(R.drawable.bulb_on_64);
-            }else if (i==2){
-                item.setId(R.drawable.calendar_64);
-            }
-            list.add(item);
         }
+        Log.d("FRAME",mList.size() + "mL_size");
 
-        for (int i = 0; i <3; i++) {
-            ImageItem item=new ImageItem();
-            item.setName("event"+i);
-            if (i>0){
-                item.setWidth_position(i*0.13f);
-                item.setHeight_position(i*0.1f);
-                item.setScale(0.15f);
-            }
-            if (i==0){
-                item.setName(img_url);
-            }else if (i==1){
-                item.setId(R.drawable.case_64);
-            }else if (i==2){
-                item.setId(R.drawable.bulb_on_64);
-            }
-            list1.add(item);
-        }
 
-        for (int i = 0; i <3; i++) {
-            ImageItem item=new ImageItem();
-            item.setName("event"+i);
-            if (i>0){
-                item.setWidth_position(i*0.2f);
-                item.setHeight_position(i*0.3f);
-                item.setScale(0.11f);
-            }
-            if (i==0){
-                item.setName(img_url);
-            }else if (i==1){
-                item.setId(R.drawable.case_64);
-            }else if (i==2){
-                item.setId(R.drawable.chart_area_64);
-            }
-            list2.add(item);
-        }
-
-        for (int i = 0; i <3; i++) {
-            ImageItem item=new ImageItem();
-            item.setName("event"+i);
-            if (i>0){
-                item.setWidth_position(i*0.11f);
-                item.setHeight_position(i*0.15f);
-                item.setScale(0.12f);
-            }
-            if (i==0){
-                item.setName(img_url);
-            }else if (i==1){
-                item.setId(R.drawable.cart_64);
-            }else if (i==2){
-                item.setId(R.drawable.chart_bar_64);
-            }
-            list3.add(item);
-        }
-
-        imageView.addImage(1,list);
-        imageView1.addImage(2,list);
-        imageView2.addImage(2,list1);
-        imageView3.addImage(2,list2);
-        imageView4.addImage(2,list3);
+        recyclerView= (RecyclerView) findViewById(R.id.image_recycle);
+        LinearLayoutManager mLinearManager=new LinearLayoutManager(this);
+        mLinearManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(mLinearManager);
+        adapter=new RecycleAdapter(this,mList);
+        adapter.setOnMenuListener(this);
+        recyclerView.setAdapter(adapter);
+        imageView.addImage(mList.get(0));
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,7 +179,7 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
             Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             Uri uri = Uri.fromFile(f);
             intent.setData(uri);
-            this.sendBroadcast(intent);//这个广播的目的就是更新图库，发了这个广播进入相册就可以找到你保存的图片了！，记得要传你更新的file哦
+            this.sendBroadcast(intent);//这个广播的目的就是更新图库，发了这个广播进入相册就可以找到你保存的图片了
             Message msg = new Message();
             msg.what = 1;
             handler.sendMessage(msg);
@@ -248,18 +198,6 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
     public void onClick(View v) {
         imageView_default.setVisibility(View.GONE);
         switch (v.getId()) {
-            case R.id.image1:
-                imageView.addImage(1,list);
-                break;
-            case R.id.image2:
-                imageView.addImage(1,list1);
-                break;
-            case R.id.image3:
-                imageView.addImage(1,list2);
-                break;
-            case R.id.image4:
-                imageView.addImage(1,list3);
-                break;
             case R.id.button_close:
                 finish();
                 break;
@@ -286,5 +224,10 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
                 progressDialog.dismiss();
                 break;
         }
+    }
+
+    @Override
+    public void RecycleClick(int position) {
+                imageView.addImage(mList.get(position));
     }
 }

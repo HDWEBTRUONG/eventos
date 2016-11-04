@@ -47,15 +47,16 @@ public class CustomImageView extends FrameLayout {
     private void initView(View view) {
         image_root= (ImageView) view.findViewById(R.id.img_root);
         image_up= (ImageView) view.findViewById(R.id.img_up);
-        ViewTreeObserver viewTreeObserver=image_root.getViewTreeObserver();
-
-            WindowManager wm = (WindowManager) getContext()
-                    .getSystemService(Context.WINDOW_SERVICE);
-
-             width = wm.getDefaultDisplay().getWidth();
-            heigth = wm.getDefaultDisplay().getHeight();
+//        ViewTreeObserver viewTreeObserver=image_root.getViewTreeObserver();
+//
+//            WindowManager wm = (WindowManager) getContext()
+//                    .getSystemService(Context.WINDOW_SERVICE);
+//
+//             width = wm.getDefaultDisplay().getWidth();
+//            heigth = wm.getDefaultDisplay().getHeight();
 
     }
+
 
     public void addImage(ArrayList<ImageItem> items){
 
@@ -68,14 +69,15 @@ public class CustomImageView extends FrameLayout {
             //若该文件存在
             if (mFile.exists()) {
                 firstBitmap=BitmapFactory.decodeFile(path);
+                width = firstBitmap.getWidth();
+                heigth = firstBitmap.getHeight();
             }
-            bitmap1 = Bitmap.createBitmap(width, width,
-                    Bitmap.Config.RGB_565);
+            bitmap1 = Bitmap.createBitmap(width, heigth,
+                    firstBitmap.getConfig());
             Bitmap bitmap_icon=null;
-            Bitmap bitmap = null;
-            Log.d("frame",items.size()+"img_size");
+            Bitmap bitmap;
             Canvas canvas = new Canvas(bitmap1);
-            canvas.drawBitmap(firstBitmap, new Matrix(), null);
+            canvas.drawBitmap(firstBitmap, 0, 0, null);
             for (int i = 1; i <items.size() ; i++) {
                 String p = getContext().getFilesDir().toString() + "/images/" + items.get(i).getName();//图片路径
                 File file = new File(p);
@@ -96,9 +98,9 @@ public class CustomImageView extends FrameLayout {
                 bitmap = small(bitmap_icon, scale);
                 Log.d("PATH", bitmap.getWidth()+"---"+bitmap.getHeight());
                 canvas.drawBitmap(bitmap, (int) ((width * items.get(i).getWidth_position())), (int) ((width * items.get(i).getHeight_position())), null);
-                firstBitmap = bitmap1;
+                bitmap_icon.recycle();
                 bitmap_icon = null;
-                bitmap = null;
+                bitmap.recycle();
             }
             image_root.setImageBitmap(bitmap1);
 

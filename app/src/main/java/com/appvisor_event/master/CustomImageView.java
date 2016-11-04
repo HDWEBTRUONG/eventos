@@ -69,9 +69,8 @@ public class CustomImageView extends FrameLayout {
             if (mFile.exists()) {
                 firstBitmap=BitmapFactory.decodeFile(path);
             }
-//             firstBitmap=BitmapFactory.decodeResource(getResources(),items.get(0).getId());
-            bitmap1 = Bitmap.createBitmap(firstBitmap.getWidth(), firstBitmap.getHeight(),
-                    firstBitmap.getConfig());
+            bitmap1 = Bitmap.createBitmap(width, width,
+                    Bitmap.Config.RGB_565);
             Bitmap bitmap_icon=null;
             Bitmap bitmap = null;
             Log.d("frame",items.size()+"img_size");
@@ -81,19 +80,21 @@ public class CustomImageView extends FrameLayout {
                 String p = getContext().getFilesDir().toString() + "/images/" + items.get(i).getName();//图片路径
                 File file = new File(p);
                 //若该文件存在
+
                 if (file.exists()) {
 
                     bitmap_icon = BitmapFactory.decodeFile(p);
                 }
                 if (bitmap_icon != null) {
-                    Log.d("PATH", p);
                     img_width = bitmap_icon.getWidth();
+                }else {
+
                 }
 
                 float scale = 0.0f;
                 scale = (float) ((width * items.get(i).getScale()) / img_width);
-                Log.d("SCALE", scale + "---" + (int) ((width * items.get(i).getWidth_position())) + "---" + (int) ((width * items.get(i).getHeight_position())));
                 bitmap = small(bitmap_icon, scale);
+                Log.d("PATH", bitmap.getWidth()+"---"+bitmap.getHeight());
                 canvas.drawBitmap(bitmap, (int) ((width * items.get(i).getWidth_position())), (int) ((width * items.get(i).getHeight_position())), null);
                 firstBitmap = bitmap1;
                 bitmap_icon = null;

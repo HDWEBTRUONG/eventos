@@ -7,15 +7,15 @@ import java.util.List;
  */
 
 public class FrameBean {
-    private List<ItemsBean> jp;
+    private List<ItemsBean> ja;
     private List<ItemsBean> en;
 
-    public List<ItemsBean> getJp() {
-        return jp;
+    public List<ItemsBean> getja() {
+        return ja;
     }
 
-    public void setJp(List<ItemsBean> jp) {
-        this.jp = jp;
+    public void setja(List<ItemsBean> ja) {
+        this.ja = ja;
     }
 
     public List<ItemsBean> getEn() {

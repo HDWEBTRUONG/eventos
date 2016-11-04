@@ -57,6 +57,17 @@ public class CustomImageView extends FrameLayout {
 
     }
 
+    public void addDefault(String img_url){
+        String path= img_url;
+        File mFile=new File(path);
+        Bitmap bitmap=null;
+        //若该文件存在
+        if (mFile.exists()) {
+            bitmap=BitmapFactory.decodeFile(path);
+            image_root.setImageBitmap(bitmap);
+        }
+    }
+
 
     public void addImage(ArrayList<ImageItem> items){
 

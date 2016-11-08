@@ -74,17 +74,17 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
         FrameBean frameBean= new Gson().fromJson(frame,FrameBean.class);
         if (frame!=null&&!frame.equals("")&&frameBean!=null){
                 if (AppLanguage.getLanguageWithStringValue(ImageActivity.this).equals("ja")){
-                    for (int i = 0; i <frameBean.getja().size(); i++) {
+                    for (int i = 0; i <frameBean.getJa().size(); i++) {
                         list=new ArrayList<>();
                         ImageItem item_back=new ImageItem();
                         item_back.setName(img_url);
                         list.add(item_back);
-                        for (int j = 0; j <frameBean.getja().get(i).getItems().size() ; j++) {
+                        for (int j = 0; j <frameBean.getJa().get(i).getItems().size() ; j++) {
                             ImageItem item=new ImageItem();
-                            item.setName(frameBean.getja().get(i).getItems().get(j).getName());
-                            item.setScale((float)frameBean.getja().get(i).getItems().get(j).getWidth());
-                            item.setWidth_position((float) frameBean.getja().get(i).getItems().get(j).getX());
-                            item.setHeight_position((float)frameBean.getja().get(i).getItems().get(j).getY());
+                            item.setName(frameBean.getJa().get(i).getItems().get(j).getName());
+                            item.setScale((float)frameBean.getJa().get(i).getItems().get(j).getWidth());
+                            item.setWidth_position((float) frameBean.getJa().get(i).getItems().get(j).getX());
+                            item.setHeight_position((float)frameBean.getJa().get(i).getItems().get(j).getY());
                             list.add(item);
                         }
                         mList.add(list);

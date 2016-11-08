@@ -10,11 +10,11 @@ public class FrameBean {
     private List<ItemsBean> ja;
     private List<ItemsBean> en;
 
-    public List<ItemsBean> getja() {
+    public List<ItemsBean> getJa() {
         return ja;
     }
 
-    public void setja(List<ItemsBean> ja) {
+    public void setJa(List<ItemsBean> ja) {
         this.ja = ja;
     }
 

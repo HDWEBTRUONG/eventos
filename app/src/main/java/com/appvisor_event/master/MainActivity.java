@@ -620,7 +620,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     //エラーページを非表示にする
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
 
-                } else if (url.equals(Constants.BASE_URL)){
+                } else if (url.indexOf(Constants.HREF_PHOTO_FRAMES) != -1){
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
                     }else{

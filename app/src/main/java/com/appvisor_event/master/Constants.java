@@ -53,4 +53,6 @@ public class Constants {
     public static final String RegARFlag= "/"+Event+"/ar/marker-scanner";
 
     public static final String PHOTO_FRAME = HOME_URL + "/api/photoframes/check?os=android&version=%d";
+
+    public static final String HREF_PHOTO_FRAMES = "/omotesando2016/photoframes/starting";
 }

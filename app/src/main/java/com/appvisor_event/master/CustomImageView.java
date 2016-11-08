@@ -101,7 +101,7 @@ public class CustomImageView extends FrameLayout {
                 if (bitmap_icon != null) {
                     img_width = bitmap_icon.getWidth();
                 }else {
-
+                    return;
                 }
 
                 float scale = 0.0f;

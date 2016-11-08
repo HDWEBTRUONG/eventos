@@ -113,7 +113,9 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
             adapter=new RecycleAdapter(this,mList);
             adapter.setOnMenuListener(this);
             recyclerView.setAdapter(adapter);
-            imageView.addImage(mList.get(0));
+            if (mList != null && mList.size() > 0) {
+                imageView.addImage(mList.get(0));
+            }
         }else {
             layout_recycle.setVisibility(View.GONE);
             imageView.addDefault(img_url);

@@ -142,7 +142,7 @@ public class SplashActivity extends Activity {
                 if (zipfile.exists()) {
                     //解凍
                     ZipFile zipFile = new ZipFile(zipfile);
-                    zipFile.extractAll(getFilesDir().toString()+"/images");
+                    zipFile.extractAll(getFilesDir().toString()+"/images/");
                 }
             } catch (ZipException e) {
                 Log.d(TAG, "Unpack the zip error", e);

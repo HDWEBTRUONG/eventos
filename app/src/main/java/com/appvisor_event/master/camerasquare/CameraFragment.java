@@ -3,7 +3,9 @@ package com.appvisor_event.master.camerasquare;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -32,6 +34,7 @@ import android.widget.Toast;
 
 import com.appvisor_event.master.ImageActivity;
 import com.appvisor_event.master.R;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 
 import java.io.IOException;
 import java.util.List;
@@ -106,6 +109,14 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
 
         mPreviewView = (SquareCameraPreview) view.findViewById(R.id.camera_preview_view);
         mPreviewView.getHolder().addCallback(CameraFragment.this);
+
+        mPreviewView.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("lytest", "preview  width:" + mPreviewView.getWidth() + "\n" + "height:" + mPreviewView.getHeight());
+                Log.e("lytest", "allheight:" + ImageUtility.getScreenHeight(getActivity()));
+            }
+        });
 
         final View topCoverView = view.findViewById(R.id.cover_top_view);
         final View btnCoverView = view.findViewById(R.id.cover_bottom_view);
@@ -426,8 +437,6 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     @Override
     public void onResume() {
         super.onResume();
-
-
         if (mCamera == null) {
             restartPreview();
         }
@@ -436,7 +445,6 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     @Override
     public void onStop() {
         mOrientationListener.disable();
-
         // stop the preview
         if (mCamera != null) {
             stopCameraPreview();
@@ -504,12 +512,13 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_SAVE_PIC);
         } else {
-            String imgurl = ImageUtility.savePicture(getActivity(), ImageUtility.rotatePicture(getActivity(), getRotation(), data));
-            Log.e("imgurl", imgurl);
-            setSafeToTakePhoto(true);
-            Intent intent=new Intent(getActivity(), ImageActivity.class);
-            intent.putExtra("image_url",imgurl);
-            getActivity().startActivity(intent);
+//            String imgurl = ImageUtility.savePicture(getActivity(), ImageUtility.rotatePicture(getActivity(), getRotation(), data));
+//            Log.e("imgurl", imgurl);
+//            setSafeToTakePhoto(true);
+//            Intent intent = new Intent(getActivity(), ImageActivity.class);
+//            intent.putExtra("image_url", imgurl);
+//            getActivity().startActivity(intent);
+            dialogshow();
         }
     }
 
@@ -585,13 +594,14 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_SAVE_PIC) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                String imgurl = ImageUtility.savePicture(getActivity(), ImageUtility.rotatePicture(getActivity(), getRotation(), getDataPic()));
-                Log.e("imgurl", imgurl);
-
-                setSafeToTakePhoto(true);
-                Intent intent=new Intent(getActivity(), ImageActivity.class);
-                intent.putExtra("image_url",imgurl);
-                getActivity().startActivity(intent);
+//                String imgurl = ImageUtility.savePicture(getActivity(), ImageUtility.rotatePicture(getActivity(), getRotation(), getDataPic()));
+//                Log.e("imgurl", imgurl);
+//
+//                setSafeToTakePhoto(true);
+//                Intent intent = new Intent(getActivity(), ImageActivity.class);
+//                intent.putExtra("image_url", imgurl);
+//                getActivity().startActivity(intent);
+                dialogshow();
             } else {
                 // Permission Denied
                 Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();
@@ -621,5 +631,62 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
 
     public void setRotation(int rotation) {
         this.rotation = rotation;
+    }
+
+    private void dialogshow() {
+        String content = "";
+        String ok = "";
+        String cancel = "";
+
+        if (AppLanguage.getLanguageWithStringValue(getActivity()).equals("ja")) {
+            content = getActivity().getResources().getString(R.string.camera_sucess_dialog_jp);
+            ok = getActivity().getResources().getString(R.string.camera_sucess_ok_jp);
+            cancel = getActivity().getResources().getString(R.string.camera_sucess_cancel_jp);
+
+        } else {
+            content = getActivity().getResources().getString(R.string.camera_sucess_dialog_jp);
+            ok = "OK";
+            cancel = "Cancel";
+        }
+        new AlertDialog.Builder(getActivity()).setMessage(content)
+                .setPositiveButton(ok, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String imgurl = ImageUtility.savePicture(getActivity(), ImageUtility.rotatePicture(getActivity(), getRotation(), getDataPic()));
+                                Log.e("imgurl", imgurl);
+                                setSafeToTakePhoto(true);
+                                Intent intent = new Intent(getActivity(), ImageActivity.class);
+                                intent.putExtra("image_url", imgurl);
+//                                getActivity().startActivity(intent);
+                                getActivity().startActivityForResult(intent, CameraSquareActivity.RESULT_FINISH);
+                            }
+                        }
+
+                )
+                .setNegativeButton(cancel, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                restartCamera2();
+                            }
+                        }
+
+                ).setCancelable(false)
+                .show();
+    }
+
+    public void restartCamera2() {
+        mOrientationListener.disable();
+        // stop the preview
+        if (mCamera != null) {
+            stopCameraPreview();
+            mCamera.release();
+            mCamera = null;
+        }
+        CameraSettingPreferences.saveCameraFlashMode(getActivity(), mFlashMode);
+        if (mCamera == null) {
+            restartPreview();
+        }
     }
 }

@@ -39,12 +39,13 @@
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
     <application
@@ -119,8 +120,11 @@
             android:exported="false" />
 
         <activity android:name=".BaseActivity"></activity>
-        <activity android:name=".ImageActivity"></activity>
-        <activity android:name=".camerasquare.CameraSquareActivity"
+        <activity
+            android:name=".ImageActivity"
+            android:theme="@style/squarecamera__CameraFullScreenTheme.NoUI"></activity>
+        <activity
+            android:name=".camerasquare.CameraSquareActivity"
             android:theme="@style/squarecamera__CameraFullScreenTheme.NoUI" />
     </application>
 

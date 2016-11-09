@@ -12,6 +12,8 @@ import com.appvisor_event.master.R;
 public class CameraSquareActivity extends AppCompatActivity {
 
     public static final String TAG = CameraSquareActivity.class.getSimpleName();
+    public static final int RESULT_FINISH = 1;
+    private CameraFragment mfragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +26,10 @@ public class CameraSquareActivity extends AppCompatActivity {
         setContentView(R.layout.activity_squarecamera_camera);
 
         if (savedInstanceState == null) {
+            mfragment = (CameraFragment) CameraFragment.newInstance();
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, CameraFragment.newInstance(), CameraFragment.TAG)
+                    .replace(R.id.fragment_container, mfragment, CameraFragment.TAG)
                     .commit();
         }
     }
@@ -42,6 +45,16 @@ public class CameraSquareActivity extends AppCompatActivity {
         }
 
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_FINISH) {
+            finish();
+        } else {
+            mfragment.restartCamera2();
+        }
     }
 
     public void onCancel(View view) {

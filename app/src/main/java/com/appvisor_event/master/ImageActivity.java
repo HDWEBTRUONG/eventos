@@ -1,11 +1,11 @@
 package com.appvisor_event.master;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,11 +16,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.appvisor_event.master.camerasquare.CameraSquareActivity;
 import com.appvisor_event.master.model.FrameBean;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.util.SPUtils;
@@ -34,14 +34,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class ImageActivity extends Activity implements View.OnClickListener,ShareDialog.ShareLisenter,RecycleAdapter.RecycleImgListener{
+public class ImageActivity extends Activity implements View.OnClickListener, ShareDialog.ShareLisenter, RecycleAdapter.RecycleImgListener {
     private CustomImageView imageView;
     private ImageView button;
     private Thread thread;
     private ProgressDialog progressDialog;
     private ShareDialog shareDialog;
     private ArrayList<ImageItem> list;
-    private ImageButton button_close,button_back;
+    private ImageButton button_close, button_back;
     private RecyclerView recyclerView;
     private RecycleAdapter adapter;
     private ArrayList<ArrayList<ImageItem>> mList;
@@ -61,67 +61,65 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
         setContentView(R.layout.activity_image);
         imageView = (CustomImageView) findViewById(R.id.img);
         button = (ImageView) findViewById(R.id.button);
-        button_close= (ImageButton) findViewById(R.id.button_close);
-        button_back= (ImageButton) findViewById(R.id.camera_back);
-        layout_recycle= (LinearLayout) findViewById(R.id.layout_recycle);
+        button_close = (ImageButton) findViewById(R.id.button_close);
+        button_back = (ImageButton) findViewById(R.id.camera_back);
+        layout_recycle = (LinearLayout) findViewById(R.id.layout_recycle);
         button_close.setOnClickListener(this);
         button_back.setOnClickListener(this);
 
-        Intent intent=getIntent();
-        String img_url=intent.getExtras().getString("image_url");
-        frame=SPUtils.get(getApplicationContext(), "frame", "") + "";
-        mList=new ArrayList<>();
-        FrameBean frameBean= new Gson().fromJson(frame,FrameBean.class);
-        if (frame!=null&&!frame.equals("")&&frameBean!=null){
-                if (AppLanguage.getLanguageWithStringValue(ImageActivity.this).equals("ja")){
-                    for (int i = 0; i <frameBean.getJa().size(); i++) {
-                        list=new ArrayList<>();
-                        ImageItem item_back=new ImageItem();
-                        item_back.setName(img_url);
-                        list.add(item_back);
-                        for (int j = 0; j <frameBean.getJa().get(i).getItems().size() ; j++) {
-                            ImageItem item=new ImageItem();
-                            item.setName(frameBean.getJa().get(i).getItems().get(j).getName());
-                            item.setScale((float)frameBean.getJa().get(i).getItems().get(j).getWidth());
-                            item.setWidth_position((float) frameBean.getJa().get(i).getItems().get(j).getX());
-                            item.setHeight_position((float)frameBean.getJa().get(i).getItems().get(j).getY());
-                            list.add(item);
-                        }
-                        mList.add(list);
+        Intent intent = getIntent();
+        String img_url = intent.getExtras().getString("image_url");
+        frame = SPUtils.get(getApplicationContext(), "frame", "") + "";
+        mList = new ArrayList<>();
+        FrameBean frameBean = new Gson().fromJson(frame, FrameBean.class);
+        if (frame != null && !frame.equals("") && frameBean != null) {
+            if (AppLanguage.getLanguageWithStringValue(ImageActivity.this).equals("ja")) {
+                for (int i = 0; i < frameBean.getJa().size(); i++) {
+                    list = new ArrayList<>();
+                    ImageItem item_back = new ImageItem();
+                    item_back.setName(img_url);
+                    list.add(item_back);
+                    for (int j = 0; j < frameBean.getJa().get(i).getItems().size(); j++) {
+                        ImageItem item = new ImageItem();
+                        item.setName(frameBean.getJa().get(i).getItems().get(j).getName());
+                        item.setScale((float) frameBean.getJa().get(i).getItems().get(j).getWidth());
+                        item.setWidth_position((float) frameBean.getJa().get(i).getItems().get(j).getX());
+                        item.setHeight_position((float) frameBean.getJa().get(i).getItems().get(j).getY());
+                        list.add(item);
                     }
-                }else {
-                    for (int i = 0; i <frameBean.getEn().size(); i++) {
-                        list=new ArrayList<>();
-                        ImageItem item_back=new ImageItem();
-                        item_back.setName(img_url);
-                        list.add(item_back);
-                        for (int j = 0; j <frameBean.getEn().get(i).getItems().size() ; j++) {
-                            ImageItem item=new ImageItem();
-                            item.setName(frameBean.getEn().get(i).getItems().get(j).getName());
-                            item.setScale((float)frameBean.getEn().get(i).getItems().get(j).getWidth());
-                            item.setWidth_position((float) frameBean.getEn().get(i).getItems().get(j).getX());
-                            item.setHeight_position((float)frameBean.getEn().get(i).getItems().get(j).getY());
-                            list.add(item);
-                        }
-                        mList.add(list);
-                    }
+                    mList.add(list);
                 }
-            recyclerView= (RecyclerView) findViewById(R.id.image_recycle);
-            LinearLayoutManager mLinearManager=new LinearLayoutManager(this);
+            } else {
+                for (int i = 0; i < frameBean.getEn().size(); i++) {
+                    list = new ArrayList<>();
+                    ImageItem item_back = new ImageItem();
+                    item_back.setName(img_url);
+                    list.add(item_back);
+                    for (int j = 0; j < frameBean.getEn().get(i).getItems().size(); j++) {
+                        ImageItem item = new ImageItem();
+                        item.setName(frameBean.getEn().get(i).getItems().get(j).getName());
+                        item.setScale((float) frameBean.getEn().get(i).getItems().get(j).getWidth());
+                        item.setWidth_position((float) frameBean.getEn().get(i).getItems().get(j).getX());
+                        item.setHeight_position((float) frameBean.getEn().get(i).getItems().get(j).getY());
+                        list.add(item);
+                    }
+                    mList.add(list);
+                }
+            }
+            recyclerView = (RecyclerView) findViewById(R.id.image_recycle);
+            LinearLayoutManager mLinearManager = new LinearLayoutManager(this);
             mLinearManager.setOrientation(LinearLayoutManager.HORIZONTAL);
             recyclerView.setLayoutManager(mLinearManager);
-            adapter=new RecycleAdapter(this,mList);
+            adapter = new RecycleAdapter(this, mList);
             adapter.setOnMenuListener(this);
             recyclerView.setAdapter(adapter);
             if (mList != null && mList.size() > 0) {
                 imageView.addImage(mList.get(0));
             }
-        }else {
+        } else {
             layout_recycle.setVisibility(View.GONE);
             imageView.addDefault(img_url);
         }
-
-
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -160,7 +158,7 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
                 Log.e("test", "分享图片");
                 progressDialog.dismiss();
                 progressDialog.cancel();
-                shareDialog= new ShareDialog(ImageActivity.this);
+                shareDialog = new ShareDialog(ImageActivity.this);
                 shareDialog.setOnMessageLisenter(ImageActivity.this);
             }
         }
@@ -213,10 +211,12 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_close:
+                Intent intent = new Intent(ImageActivity.this, CameraSquareActivity.class);
+                setResult(CameraSquareActivity.RESULT_FINISH, intent);
                 finish();
                 break;
             case R.id.camera_back:
-                finish();
+                showCameradialog();
                 break;
         }
     }
@@ -224,7 +224,7 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
     @Override
     public void resultMessage(int type) {
         progressDialog.show();
-        switch (type){
+        switch (type) {
             case ShareDialog.SHARE_TWITTER:
                 ShareDetailUtils.shareTwitter(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/EventImage/" + "TEST.png");
                 progressDialog.dismiss();
@@ -242,6 +242,44 @@ public class ImageActivity extends Activity implements View.OnClickListener,Shar
 
     @Override
     public void RecycleClick(int position) {
-                imageView.addImage(mList.get(position));
+        imageView.addImage(mList.get(position));
+    }
+
+
+    private void showCameradialog() {
+        String content = "";
+        String ok = "";
+        String cancel = "";
+
+        if (AppLanguage.getLanguageWithStringValue(this).equals("ja")) {
+            content = getResources().getString(R.string.image_camera_dialog_jp);
+            ok = getResources().getString(R.string.image_camera_dialog_yes_jp);
+            cancel = getResources().getString(R.string.image_camera_dialog_no_jp);
+
+        } else {
+            content = getResources().getString(R.string.image_camera_dialog_jp);
+            ok = "OK";
+            cancel = "Cancel";
+        }
+        new AlertDialog.Builder(this).setMessage(content)
+                .setPositiveButton(ok, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        }
+
+                )
+                .setNegativeButton(cancel, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }
+
+                )
+                .show();
     }
 }

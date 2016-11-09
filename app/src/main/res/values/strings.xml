@@ -28,6 +28,13 @@
 
     <string name="location_settings_title_en">Location settings</string>
     <string name="location_settings_message_en">Enable location settings.</string>
-
+    <!--camera activity-->
+    <string name="camera_sucess_dialog_jp">フォトフレームを設定して下さい。</string>
+    <string name="camera_sucess_ok_jp">選択</string>
+    <string name="camera_sucess_cancel_jp">撮り直し</string>
+    <!--image activity-->
+    <string name="image_camera_dialog_jp">写真を撮り直しますか？</string>
+    <string name="image_camera_dialog_yes_jp">はい</string>
+    <string name="image_camera_dialog_no_jp">いいえ</string>
 
 </resources>

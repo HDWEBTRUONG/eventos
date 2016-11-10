@@ -125,6 +125,7 @@
             android:theme="@style/squarecamera__CameraFullScreenTheme.NoUI"></activity>
         <activity
             android:name=".camerasquare.CameraSquareActivity"
+            android:launchMode="singleTask"
             android:theme="@style/squarecamera__CameraFullScreenTheme.NoUI" />
     </application>
 

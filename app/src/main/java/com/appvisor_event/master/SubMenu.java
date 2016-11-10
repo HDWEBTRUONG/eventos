@@ -2,10 +2,12 @@ package com.appvisor_event.master;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -16,7 +18,10 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.appvisor_event.master.camerasquare.CameraSquareActivity;
+import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
 
 import java.util.HashMap;
@@ -29,6 +34,7 @@ public class SubMenu extends BaseActivity {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String device_id;
     private Map<String, String> extraHeaders;
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
 
     /** Called when the activity is first created. */
     @Override
@@ -160,7 +166,15 @@ public class SubMenu extends BaseActivity {
                     setResult(RESULT_OK, intent);
                     finish();
                     overridePendingTransition(R.anim.nothing,R.anim.right_out);
-                }else {
+                } else if (url.indexOf(Constants.HREF_PHOTO_FRAMES) != -1){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
+                    }else{
+                        Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
+                        startActivity(intent);
+                    }
+
+                } else {
 
                     if((url.indexOf(Constants.RegARFlag) != -1))
                     {
@@ -189,6 +203,8 @@ public class SubMenu extends BaseActivity {
             }
         }
 
+
+
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
@@ -215,7 +231,24 @@ public class SubMenu extends BaseActivity {
     };
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
+                startActivity(intent);
+            } else {
+                // Permission Denied
+                Toast.makeText(SubMenu.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
+
 }

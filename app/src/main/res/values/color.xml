@@ -17,4 +17,6 @@
 
     <color name="dialog_line">#e0e0e0</color>
     <color name="dialog_certain">#ffffff</color>
+    <!--splash-->
+    <color name="black">#000000</color>
 </resources>

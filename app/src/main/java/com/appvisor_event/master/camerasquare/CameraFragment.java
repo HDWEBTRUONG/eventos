@@ -227,6 +227,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             stopCameraPreview();
             mCamera.release();
             mCamera = null;
+            Log.d("camera","restart----"+mCamera);
         }
 
         getCamera(mCameraID);
@@ -320,8 +321,12 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
 
         mImageParameters.mDisplayOrientation = displayOrientation;
         mImageParameters.mLayoutOrientation = degrees;
-
-        mCamera.setDisplayOrientation(mImageParameters.mDisplayOrientation);
+        Log.d("camera",displayOrientation+"----"+mImageParameters.mDisplayOrientation+"----"+mCamera);
+//        if (mCamera!=null){
+            mCamera.setDisplayOrientation(mImageParameters.mDisplayOrientation);
+//        }else {
+//            startCameraPreview();
+//        }
     }
 
     /**
@@ -398,6 +403,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     private int getBackCameraID() {
 //        return CameraInfo.CAMERA_FACING_BACK;
         int numberOfCameras = Camera.getNumberOfCameras();
+        Log.d("numberOfCameras","numberOfCameras"+numberOfCameras);
         CameraInfo cameraInfo = new CameraInfo();
         for (int i = 0; i < numberOfCameras; i++) {
             Camera.getCameraInfo(i, cameraInfo);
@@ -449,6 +455,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
         if (mCamera != null) {
             stopCameraPreview();
             mCamera.release();
+            Log.d("camera","stop----"+mCamera);
             mCamera = null;
         }
 
@@ -683,6 +690,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             stopCameraPreview();
             mCamera.release();
             mCamera = null;
+            Log.d("camera","----"+mCamera);
         }
         CameraSettingPreferences.saveCameraFlashMode(getActivity(), mFlashMode);
         if (mCamera == null) {

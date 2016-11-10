@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class RecycleAdapter extends RecyclerView.Adapter{
     private Context mContext;
     private ArrayList<ArrayList<ImageItem>> mList;
-
+    private int checked = 0;
 
     public RecycleAdapter(Context context, ArrayList<ArrayList<ImageItem>> list){
         this.mContext=context;
@@ -37,9 +37,12 @@ public class RecycleAdapter extends RecyclerView.Adapter{
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         ImageViewHolder viewHolder= (ImageViewHolder) holder;
         viewHolder.imageView.addImage(mList.get(position));
+        viewHolder.imageView.setChecked(checked == position);
         viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checked = position;
+                notifyDataSetChanged();
              recycleListener.RecycleClick(position);
             }
         });

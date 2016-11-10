@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public class CustomImageView extends FrameLayout {
 
     private View view;
-    private ImageView image_root,image_up;
+    private ImageView image_root,image_check;
     private Context mContext;
     private int width,heigth, img_width;
 
@@ -46,7 +46,7 @@ public class CustomImageView extends FrameLayout {
 
     private void initView(View view) {
         image_root= (ImageView) view.findViewById(R.id.img_root);
-        image_up= (ImageView) view.findViewById(R.id.img_up);
+        image_check= (ImageView) view.findViewById(R.id.img_check);
 //        ViewTreeObserver viewTreeObserver=image_root.getViewTreeObserver();
 //
 //            WindowManager wm = (WindowManager) getContext()
@@ -55,6 +55,14 @@ public class CustomImageView extends FrameLayout {
 //             width = wm.getDefaultDisplay().getWidth();
 //            heigth = wm.getDefaultDisplay().getHeight();
 
+    }
+
+    public void setChecked(boolean isChecked) {
+        if (isChecked) {
+            image_check.setVisibility(VISIBLE);
+        } else {
+            image_check.setVisibility(GONE);
+        }
     }
 
     public void addDefault(String img_url){

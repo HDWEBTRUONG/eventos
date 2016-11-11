@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -115,6 +116,7 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
                 }
             }
             recyclerView = (RecyclerView) findViewById(R.id.image_recycle);
+            ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
             LinearLayoutManager mLinearManager = new LinearLayoutManager(this);
             mLinearManager.setOrientation(LinearLayoutManager.HORIZONTAL);
             recyclerView.setLayoutManager(mLinearManager);

@@ -22,17 +22,17 @@
     </style>
 
 
-    <style name="squarecamera_CameraFullScreenTheme" parent="squarecamera_CameraFullScreenTheme.Base">
-
+    <style name="squarecamera_CameraFullScreenTheme" parent="squarecamera_CameraFullScreenTheme.Base"
+        >
+    <item name="android:windowBackground">@color/black</item>
     </style>
 
-    <style name="squarecamera_CameraFullScreenTheme.Base" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="squarecamera_CameraFullScreenTheme.Base" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <style name="squarecamera__CameraFullScreenTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -46,6 +46,10 @@
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowIsFloating">true</item>
     </style>
-
+    <style name="camera_style" parent="android:Theme.Black.NoTitleBar.Fullscreen">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="android:windowBackground">@color/black</item>
+    </style>
 
 </resources>

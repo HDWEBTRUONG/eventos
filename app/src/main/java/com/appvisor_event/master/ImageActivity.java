@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 
 import com.appvisor_event.master.camerasquare.CameraSquareActivity;
 import com.appvisor_event.master.model.FrameBean;
+import com.appvisor_event.master.model.ItemsBean;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.util.SPUtils;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ImageActivity extends Activity implements View.OnClickListener, ShareDialog.ShareLisenter, RecycleAdapter.RecycleImgListener {
@@ -47,6 +49,10 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
     private ArrayList<ArrayList<ImageItem>> mList;
     private String frame;
     private LinearLayout layout_recycle;
+    private FrameBean frameBean;
+    private String img_name="";
+    private int share_position;
+    private List<ItemsBean> items;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -71,9 +77,10 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
         String img_url = intent.getExtras().getString("image_url");
         frame = SPUtils.get(getApplicationContext(), "frame", "") + "";
         mList = new ArrayList<>();
-        FrameBean frameBean = new Gson().fromJson(frame, FrameBean.class);
+         frameBean = new Gson().fromJson(frame, FrameBean.class);
         if (frame != null && !frame.equals("") && frameBean != null) {
             if (AppLanguage.getLanguageWithStringValue(ImageActivity.this).equals("ja")) {
+                items=frameBean.getJa();
                 for (int i = 0; i < frameBean.getJa().size(); i++) {
                     list = new ArrayList<>();
                     ImageItem item_back = new ImageItem();
@@ -90,6 +97,7 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
                     mList.add(list);
                 }
             } else {
+                items=frameBean.getEn();
                 for (int i = 0; i < frameBean.getEn().size(); i++) {
                     list = new ArrayList<>();
                     ImageItem item_back = new ImageItem();
@@ -179,7 +187,14 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
         if (!file.exists()) {
             file.mkdirs();
         }
-        File f = new File(file.getAbsolutePath() + "/", "TEST.png");
+        if (!img_name.equals("")){
+            File f = new File(file.getAbsolutePath() + "/", img_name+".png");
+            if (f.exists()) {
+                f.delete();
+            }
+        }
+        img_name=System.currentTimeMillis()+"";
+        File f = new File(file.getAbsolutePath() + "/", img_name+".png");
         if (f.exists()) {
             f.delete();
         }
@@ -192,7 +207,7 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
             Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             Uri uri = Uri.fromFile(f);
             intent.setData(uri);
-            this.sendBroadcast(intent);//这个广播的目的就是更新图库，发了这个广播进入相册就可以找到你保存的图片了
+            this.sendBroadcast(intent);
             Message msg = new Message();
             msg.what = 1;
             handler.sendMessage(msg);
@@ -226,15 +241,15 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
         progressDialog.show();
         switch (type) {
             case ShareDialog.SHARE_TWITTER:
-                ShareDetailUtils.shareTwitter(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/EventImage/" + "TEST.png");
+                ShareDetailUtils.shareTwitter(ImageActivity.this,items.get(share_position).getMessage(), "", "", "", Environment.getExternalStorageDirectory() + "/EventImage/" + img_name+".png");
                 progressDialog.dismiss();
                 break;
             case ShareDialog.SHARE_FACEBOOK:
-                ShareDetailUtils.shareFaceBook(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/EventImage/" + "TEST.png");
+                ShareDetailUtils.shareFaceBook(ImageActivity.this,items.get(share_position).getMessage(), "", "", "", Environment.getExternalStorageDirectory() + "/EventImage/" +  img_name+".png");
                 progressDialog.dismiss();
                 break;
             case ShareDialog.SHARE_INSTAGRAM:
-                ShareDetailUtils.shareInstgram(ImageActivity.this, "title", "subtitle", "media", "herf", Environment.getExternalStorageDirectory() + "/EventImage/" + "TEST.png");
+                ShareDetailUtils.shareInstgram(ImageActivity.this,items.get(share_position).getMessage(), "", "", "", Environment.getExternalStorageDirectory() + "/EventImage/" + img_name+".png");
                 progressDialog.dismiss();
                 break;
         }
@@ -243,6 +258,7 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
     @Override
     public void RecycleClick(int position) {
         imageView.addImage(mList.get(position));
+        share_position=position;
     }
 
 

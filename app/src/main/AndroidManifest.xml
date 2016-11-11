@@ -122,11 +122,12 @@
         <activity android:name=".BaseActivity"></activity>
         <activity
             android:name=".ImageActivity"
-            android:theme="@style/squarecamera__CameraFullScreenTheme.NoUI"></activity>
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+            ></activity>
         <activity
             android:name=".camerasquare.CameraSquareActivity"
             android:launchMode="singleTask"
-            android:theme="@style/squarecamera__CameraFullScreenTheme.NoUI" />
+            android:theme="@style/camera_style" />
     </application>
 
 </manifest>

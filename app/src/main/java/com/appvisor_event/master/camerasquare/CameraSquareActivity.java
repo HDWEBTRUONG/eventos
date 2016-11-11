@@ -1,15 +1,15 @@
 package com.appvisor_event.master.camerasquare;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.appvisor_event.master.R;
 
 
-public class CameraSquareActivity extends AppCompatActivity {
+public class CameraSquareActivity extends Activity {
 
     public static final String TAG = CameraSquareActivity.class.getSimpleName();
     public static final int RESULT_FINISH = 1;
@@ -17,17 +17,17 @@ public class CameraSquareActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.squarecamera_CameraFullScreenTheme);
+//        setTheme(R.style.squarecamera_CameraFullScreenTheme);
         super.onCreate(savedInstanceState);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().hide();
+//        }
         setContentView(R.layout.activity_squarecamera_camera);
 
         if (savedInstanceState == null) {
             mfragment = (CameraFragment) CameraFragment.newInstance();
-            getSupportFragmentManager()
+            getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, mfragment, CameraFragment.TAG)
                     .commit();
@@ -58,6 +58,6 @@ public class CameraSquareActivity extends AppCompatActivity {
     }
 
     public void onCancel(View view) {
-        getSupportFragmentManager().popBackStack();
+        getFragmentManager().popBackStack();
     }
 }

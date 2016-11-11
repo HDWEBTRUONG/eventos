@@ -107,6 +107,9 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if(mOrientationListener==null){
+            mOrientationListener=new CameraOrientationListener(getActivity());
+        }
         mOrientationListener.enable();
 
         mPreviewView = (SquareCameraPreview) view.findViewById(R.id.camera_preview_view);

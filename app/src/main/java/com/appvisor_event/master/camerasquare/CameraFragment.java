@@ -4,11 +4,13 @@ package com.appvisor_event.master.camerasquare;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Size;
@@ -18,7 +20,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.OrientationEventListener;
@@ -109,7 +110,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
 
         mPreviewView = (SquareCameraPreview) view.findViewById(R.id.camera_preview_view);
         mPreviewView.getHolder().addCallback(CameraFragment.this);
-
+        mPreviewView.setBackgroundColor(Color.BLACK);
         mPreviewView.post(new Runnable() {
             @Override
             public void run() {
@@ -184,6 +185,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
                 getActivity().finish();
             }
         });
+        mPreviewView.setBackgroundColor(Color.TRANSPARENT);
     }
 
     @Override
@@ -322,11 +324,11 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
         mImageParameters.mDisplayOrientation = displayOrientation;
         mImageParameters.mLayoutOrientation = degrees;
         Log.d("camera",displayOrientation+"----"+mImageParameters.mDisplayOrientation+"----"+mCamera);
-//        if (mCamera!=null){
+        if (mCamera!=null){
             mCamera.setDisplayOrientation(mImageParameters.mDisplayOrientation);
-//        }else {
-//            startCameraPreview();
-//        }
+        }else {
+            startCameraPreview();
+        }
     }
 
     /**
@@ -447,6 +449,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             restartPreview();
         }
     }
+
 
     @Override
     public void onStop() {

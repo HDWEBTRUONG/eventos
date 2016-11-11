@@ -95,6 +95,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         AppPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
+
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent(MainActivity.this, CameraSquareActivity.class);//getApplication()
                 startActivity(intent);

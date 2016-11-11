@@ -236,7 +236,7 @@ public class SubMenu extends BaseActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
+                Intent intent = new Intent(SubMenu.this, ScreenActivity.class);//getApplication()
                 startActivity(intent);
             } else {
                 // Permission Denied

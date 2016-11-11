@@ -9,18 +9,20 @@
         android:layout_centerInParent="true"
         android:background="@drawable/dialog_back">
         <TextView
+            android:id="@+id/tv_01"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="画像が保存されました。"
+            android:text="@string/share_dialog_text_01_jp"
             android:textColor="#000000"
             android:gravity="center"
             android:textSize="18sp"
             android:layout_marginTop="20dp"
             android:textStyle="bold"/>
         <TextView
+            android:id="@+id/tv_02"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SNSにシェアして下さい。"
+            android:text="@string/share_dialog_text_02_jp"
             android:textColor="#000000"
             android:gravity="center"
             android:layout_marginTop="7dp"
@@ -75,19 +77,21 @@
             </View>
         </LinearLayout>
         <TextView
+            android:id="@+id/tv_03"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:textScaleX="1.10"
-            android:text="FacebookとInstagramにシェアする"
+            android:text="@string/share_dialog_text_03_jp"
             android:textSize="15sp"/>
         <TextView
+            android:id="@+id/tv_04"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
             android:gravity="center"
-            android:text="場合は＃(ハッシュタグ)をつけて下さい。"
+            android:text="@string/share_dialog_text_04_jp"
             android:textSize="14sp"/>
         <View
             android:layout_width="match_parent"
@@ -100,7 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="閉じる"
+            android:text="@string/share_dialog_close_jp"
             android:textColor="#157efb"
             android:gravity="center"
             android:background="@drawable/dialog_certain_back"

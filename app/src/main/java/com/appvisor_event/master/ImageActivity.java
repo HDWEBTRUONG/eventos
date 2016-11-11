@@ -275,9 +275,9 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
             cancel = getResources().getString(R.string.image_camera_dialog_no_jp);
 
         } else {
-            content = getResources().getString(R.string.image_camera_dialog_jp);
-            ok = "OK";
-            cancel = "Cancel";
+            content = getResources().getString(R.string.image_camera_dialog_en);
+            ok = getResources().getString(R.string.image_camera_dialog_yes_en);
+            cancel = getResources().getString(R.string.image_camera_dialog_no_en);
         }
         new AlertDialog.Builder(this).setMessage(content)
                 .setPositiveButton(ok, new DialogInterface.OnClickListener() {

@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.OrientationEventListener;
@@ -229,7 +230,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             stopCameraPreview();
             mCamera.release();
             mCamera = null;
-            Log.d("camera","restart----"+mCamera);
+            Log.d("camera", "restart----" + mCamera);
         }
 
         getCamera(mCameraID);
@@ -405,7 +406,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     private int getBackCameraID() {
 //        return CameraInfo.CAMERA_FACING_BACK;
         int numberOfCameras = Camera.getNumberOfCameras();
-        Log.d("numberOfCameras","numberOfCameras"+numberOfCameras);
+        Log.d("numberOfCameras", "numberOfCameras" + numberOfCameras);
         CameraInfo cameraInfo = new CameraInfo();
         for (int i = 0; i < numberOfCameras; i++) {
             Camera.getCameraInfo(i, cameraInfo);
@@ -458,7 +459,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
         if (mCamera != null) {
             stopCameraPreview();
             mCamera.release();
-            Log.d("camera","stop----"+mCamera);
+            Log.d("camera", "stop----" + mCamera);
             mCamera = null;
         }
 
@@ -519,8 +520,19 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
 //                        EditSavePhotoFragment.TAG)
 //                .addToBackStack(null)
 //                .commit();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_SAVE_PIC);
+            int checkCallPhonePermission = ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            int checkCallPhonePermission2 = ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED && checkCallPhonePermission2 != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_SAVE_PIC);
+                return;
+            } else {
+                dialogshow();
+            }
+
         } else {
 //            String imgurl = ImageUtility.savePicture(getActivity(), ImageUtility.rotatePicture(getActivity(), getRotation(), data));
 //            Log.e("imgurl", imgurl);
@@ -693,7 +705,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             stopCameraPreview();
             mCamera.release();
             mCamera = null;
-            Log.d("camera","----"+mCamera);
+            Log.d("camera", "----" + mCamera);
         }
         CameraSettingPreferences.saveCameraFlashMode(getActivity(), mFlashMode);
         if (mCamera == null) {

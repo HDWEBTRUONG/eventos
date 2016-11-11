@@ -122,12 +122,14 @@
         <activity android:name=".BaseActivity"></activity>
         <activity
             android:name=".ImageActivity"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
+            android:screenOrientation="portrait"
             ></activity>
         <activity
             android:name=".camerasquare.CameraSquareActivity"
             android:launchMode="singleTask"
-            android:theme="@style/camera_style" />
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

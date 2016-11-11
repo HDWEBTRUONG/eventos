@@ -52,8 +52,7 @@ public class ShareDetailUtils {
         if (href != null) {
             msg += href + " ";
         }
-        msg += "#appVersion_Event";
-
+        Log.d("SHARE",msg+"******");
         if (isShareAppInstall(TWITTER_ID, activity)) {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_SEND);
@@ -90,14 +89,11 @@ public class ShareDetailUtils {
         if (href != null) {
             msg += href + " ";
         }
-        msg += "#appVersion_Event";
+        Log.d("SHARE",msg+"******");
         if (isShareAppInstall(FACEBOOK_ID, activity)) {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setPackage(sharePackages[FACEBOOK_ID]);
             shareIntent.setType("image/*");
-            if (msg != null) {
-                shareIntent.putExtra(Intent.EXTRA_TEXT, msg);
-            }
             if (imageUrl != null) {
                 shareIntent.putExtra(Intent.EXTRA_STREAM, imageUrl);
             }
@@ -122,14 +118,11 @@ public class ShareDetailUtils {
         if (href != null) {
             msg += href + " ";
         }
-        msg += "#appVersion_Event";
+        Log.d("SHARE",msg+"******");
         if (isShareAppInstall(INS_ID, activity)) {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setPackage(sharePackages[INS_ID]);
             shareIntent.setType("image/*");
-            if (msg != null) {
-                shareIntent.putExtra(Intent.EXTRA_TEXT, msg);
-            }
             if (imageUrl != null) {
                 shareIntent.putExtra(Intent.EXTRA_STREAM, imageUrl);
             }

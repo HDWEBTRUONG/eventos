@@ -673,9 +673,9 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             cancel = getActivity().getResources().getString(R.string.camera_sucess_cancel_jp);
 
         } else {
-            content = getActivity().getResources().getString(R.string.camera_sucess_dialog_jp);
-            ok = "OK";
-            cancel = "Cancel";
+            content = getActivity().getResources().getString(R.string.camera_sucess_dialog_en);
+            ok = getActivity().getResources().getString(R.string.camera_sucess_ok_en);
+            cancel = getActivity().getResources().getString(R.string.camera_sucess_cancel_en);
         }
         new AlertDialog.Builder(getActivity()).setMessage(content)
                 .setPositiveButton(ok, new DialogInterface.OnClickListener() {

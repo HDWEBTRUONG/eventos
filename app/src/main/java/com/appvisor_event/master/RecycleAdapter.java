@@ -36,16 +36,22 @@ public class RecycleAdapter extends RecyclerView.Adapter{
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         ImageViewHolder viewHolder= (ImageViewHolder) holder;
-        viewHolder.imageView.addImage(mList.get(position));
+        if (viewHolder.imageView.getTag() != Integer.valueOf(position)) {
+            viewHolder.imageView.addImage(mList.get(position));
+            viewHolder.imageView.setTag(position);
+        }
         viewHolder.imageView.setChecked(checked == position);
         viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int old = checked;
                 checked = position;
-                notifyDataSetChanged();
-             recycleListener.RecycleClick(position);
+                notifyItemChanged(old);
+                notifyItemChanged(checked);
+                recycleListener.RecycleClick(position);
             }
         });
+
     }
 
     @Override

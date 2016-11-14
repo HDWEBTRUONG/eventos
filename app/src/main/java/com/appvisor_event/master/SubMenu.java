@@ -127,7 +127,7 @@ public class SubMenu extends BaseActivity {
                 extraHeaders.put("user-id", device_id);
                 SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
                 return false;
-            } else {
+            }  else {
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
@@ -175,11 +175,13 @@ public class SubMenu extends BaseActivity {
                         } else {
                             Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
                             startActivity(intent);
+                            myWebView.goBack();
                         }
 
                     } else {
                         Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
                         startActivity(intent);
+                        myWebView.goBack();
                     }
 
                 } else {
@@ -243,6 +245,7 @@ public class SubMenu extends BaseActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
                 startActivity(intent);
+                myWebView.goBack();
             } else {
                 // Permission Denied
                 Toast.makeText(SubMenu.this, "Permission Denied", Toast.LENGTH_SHORT).show();

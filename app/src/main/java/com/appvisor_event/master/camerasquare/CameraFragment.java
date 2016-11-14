@@ -56,6 +56,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     private Camera mCamera;
     private SquareCameraPreview mPreviewView;
     private SurfaceHolder mSurfaceHolder;
+    private boolean status=true;
 
     private boolean mIsSafeToTakePhoto = false;
 
@@ -100,7 +101,6 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_squarecamera_camera, container, false);
-
         return view;
     }
 
@@ -449,8 +449,11 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     @Override
     public void onResume() {
         super.onResume();
-        if (mCamera == null) {
-            restartPreview();
+        if (!status){
+            if (mCamera == null) {
+                restartPreview();
+                status=false;
+            }
         }
     }
 
@@ -477,6 +480,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
 
         getCamera(mCameraID);
         startCameraPreview();
+
     }
 
     @Override

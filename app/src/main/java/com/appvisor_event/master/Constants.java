@@ -25,9 +25,9 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN = "www.google.com";
+    public static final String EXHIBITER_DOMAIN = "www.otsuka-shokai.co.jp";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN2 = "drive.google.com";
+    public static final String EXHIBITER_DOMAIN2 = "";
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL = "www.google.com/maps";
     // GoogleMapのURL

@@ -22,13 +22,13 @@ android {
         }
     }
     productFlavors {
-        omotesando2016 {
-            applicationId = "com.appvisor_event.omotesando2016"
+        otsuka_shokai_jsf {
+            applicationId = "com.appvisor_event.otsuka_shokai_jsf"
             versionCode 1
             versionName "1.0.0"
         }
-        omotesando2016_staging {
-            applicationId = "com.appvisor_event.omotesando2016.staging"
+        otsuka_shokai_jsf_staging {
+            applicationId = "com.appvisor_event.otsuka_shokai_jsf.staging"
             versionCode 1
             versionName "1.0.0"
         }

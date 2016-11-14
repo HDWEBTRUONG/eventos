@@ -5,7 +5,7 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "omotesando2016";
+    public static final String Event = "otsuka-shokai-jsf";
     //ベースURL
     public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
     //ホームのURL

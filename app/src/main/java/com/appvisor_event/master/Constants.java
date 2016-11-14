@@ -5,7 +5,7 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "kidzania";
+    public static final String Event = "juseisinkyu";
     //ベースURL
     public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
     //ホームのURL
@@ -25,7 +25,7 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "www.kidzania.jp";
+    public static final String EXHIBITER_DOMAIN_1 = "www.jusei-sinkyu.com";
     public static final String EXHIBITER_DOMAIN_2 = "";
     public static final String EXHIBITER_DOMAIN_3 = "";
     public static final String EXHIBITER_DOMAIN_4 = "";

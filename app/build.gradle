@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        kidzania {
-            applicationId = "com.appvisor_event.kidzania"
+        juseisinkyu {
+            applicationId = "com.appvisor_event.juseisinkyu"
             versionCode 1
             versionName "1.0.0"
         }
-        kidzania_staging {
-            applicationId = "com.appvisor_event.kidzania_staging"
+        juseisinkyu_staging {
+            applicationId = "com.appvisor_event.juseisinkyu_staging"
             versionCode 1
             versionName "1.0.0"
         }

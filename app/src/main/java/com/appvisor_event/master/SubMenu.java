@@ -127,7 +127,9 @@ public class SubMenu extends BaseActivity {
                 extraHeaders.put("user-id", device_id);
                 SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
                 return false;
-            }  else {
+            }else if (url.contains(Constants.SUB_MENU_URL)){
+                return true;
+            } else{
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
@@ -136,6 +138,7 @@ public class SubMenu extends BaseActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
+            Log.d("WEB-----",url);
             if (mIsFailure) {
                 //ホーム以外の場合はタイトルバーを表示する
                 findViewById(R.id.title_bar).setVisibility(View.GONE);
@@ -175,13 +178,15 @@ public class SubMenu extends BaseActivity {
                         } else {
                             Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
                             startActivity(intent);
-                            myWebView.goBack();
+                            myWebView.clearHistory();
+                            myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
                         }
 
                     } else {
                         Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
                         startActivity(intent);
-                        myWebView.goBack();
+                        myWebView.clearHistory();
+                        myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
                     }
 
                 } else {
@@ -210,7 +215,6 @@ public class SubMenu extends BaseActivity {
                 }
             }
         }
-
 
         @Override
         public void onPageFinished(WebView view, String url) {
@@ -245,7 +249,8 @@ public class SubMenu extends BaseActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
                 startActivity(intent);
-                myWebView.goBack();
+                myWebView.clearHistory();
+                myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
             } else {
                 // Permission Denied
                 Toast.makeText(SubMenu.this, "Permission Denied", Toast.LENGTH_SHORT).show();

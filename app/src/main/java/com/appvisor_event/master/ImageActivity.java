@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
@@ -54,6 +55,9 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
     private String img_name="";
     private int share_position;
     private List<ItemsBean> items;
+    private boolean status=false;
+    private String img_url;
+    private boolean is_delete=false;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -75,7 +79,7 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
         button_back.setOnClickListener(this);
 
         Intent intent = getIntent();
-        String img_url = intent.getExtras().getString("image_url");
+         img_url = intent.getExtras().getString("image_url");
         frame = SPUtils.get(getApplicationContext(), "frame", "") + "";
         mList = new ArrayList<>();
          frameBean = new Gson().fromJson(frame, FrameBean.class);
@@ -153,6 +157,25 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (status){
+            File file=new File(img_url);
+            if (!file.exists()){
+                is_delete=true;
+//                new AlertDialog.Builder(ImageActivity.this).setMessage("The Image has been deleted").setCancelable(false)
+//                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                finish();
+//                            }
+//                        }).show();
+                finish();
+            }
+        }
+        status=true;
+    }
 
     @Override
     protected void onStart() {
@@ -160,12 +183,21 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
 
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (!is_delete==true){
+                showCameradialog();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 1) {
-                Log.e("test", "分享图片");
                 progressDialog.dismiss();
                 progressDialog.cancel();
                 shareDialog = new ShareDialog(ImageActivity.this);
@@ -180,11 +212,9 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
     public void saveBitmap(Bitmap bm) {
         String state = Environment.getExternalStorageState();
         if (!state.equals(Environment.MEDIA_MOUNTED)) {
-            Log.e("test", "路径错误");
             return;
         }
 
-        Log.e("test", "保存图片");
         File file = new File(Environment.getExternalStorageDirectory() + "/EventImage/");
         if (!file.exists()) {
             file.mkdirs();
@@ -205,7 +235,6 @@ public class ImageActivity extends Activity implements View.OnClickListener, Sha
             bm.compress(Bitmap.CompressFormat.PNG, 0, out);
             out.flush();
             out.close();
-            Log.i("test", "已经保存");
             Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             Uri uri = Uri.fromFile(f);
             intent.setData(uri);

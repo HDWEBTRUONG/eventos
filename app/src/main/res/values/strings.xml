@@ -35,6 +35,11 @@
     <string name="camera_sucess_dialog_en">フォトフレームを設定して下さい。en</string>
     <string name="camera_sucess_ok_en">選択en</string>
     <string name="camera_sucess_cancel_en">撮り直しen</string>
+
+    <string name="camera_no_image_jp">フォトフレームのダウンロードに失敗しました</string>
+    <string name="camera_no_image_en">フォトフレームのダウンロードに失敗しましたen</string>
+    <string name="camera_no_certain_jp">確認</string>
+    <string name="camera_no_certain_en">OK</string>
     <!--image activity-->
     <string name="image_camera_dialog_jp">写真を撮り直しますか？</string>
     <string name="image_camera_dialog_yes_jp">はい</string>
@@ -55,5 +60,6 @@
     <string name="share_dialog_text_03_en">FacebookとInstagramにシェアするen</string>
     <string name="share_dialog_text_04_en">場合は＃(ハッシュタグ)をつけて下さい。en</string>
     <string name="share_dialog_close_en">閉じるen</string>
+
 
 </resources>

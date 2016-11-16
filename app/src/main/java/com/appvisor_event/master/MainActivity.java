@@ -42,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -594,20 +595,27 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
 
                 } else if (url.indexOf(Constants.HREF_PHOTO_FRAMES) != -1) {
-                    Intent intent = new Intent(MainActivity.this, CameraSquareActivity.class);//getApplication()
+                    String p = MainActivity.this.getFilesDir().toString() + "/images";
+                    File file=new File(p);
+                    if (!file.exists()){
+                        showCameradialog();
+                    }else {
+                        Intent intent = new Intent(MainActivity.this, CameraSquareActivity.class);//getApplication()
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        int checkCallPhonePermission = ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA);
-                        if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
-                            requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
-                            return;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            int checkCallPhonePermission = ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA);
+                            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
+                                return;
+                            } else {
+                                startActivity(intent);
+                            }
+
                         } else {
                             startActivity(intent);
                         }
-
-                    } else {
-                        startActivity(intent);
                     }
+
 
                 } else {
                     active_url = url;
@@ -647,6 +655,30 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             findViewById(R.id.error_page).setVisibility(View.VISIBLE);
         }
     };
+
+    private void showCameradialog() {
+        String content = "";
+        String ok = "";
+
+        if (AppLanguage.getLanguageWithStringValue(this).equals("ja")) {
+            content = getResources().getString(R.string.camera_no_image_jp);
+            ok = getResources().getString(R.string.camera_no_certain_jp);
+
+        } else {
+            content = getResources().getString(R.string.camera_no_image_en);
+            ok = getResources().getString(R.string.camera_no_certain_en);
+        }
+        new AlertDialog.Builder(this).setMessage(content)
+                .setPositiveButton(ok, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }
+
+                ).show();
+    }
 
     private void initGCM() {
         if (GcmClient.checkPlayServices(this)) {

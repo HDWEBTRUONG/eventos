@@ -24,8 +24,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.appvisor_event.master.camerasquare.CameraSquareActivity;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.BeaconService;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -170,26 +172,32 @@ public class SubMenu extends BaseActivity {
                     finish();
                     overridePendingTransition(R.anim.nothing, R.anim.right_out);
                 } else if (url.indexOf(Constants.HREF_PHOTO_FRAMES) != -1) {
+                    String p = SubMenu.this.getFilesDir().toString() + "/images";
+                    File file=new File(p);
+                    if (!file.exists()){
+                        myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+                        showCameradialog();
+                    }else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            int checkCallPhonePermission = ContextCompat.checkSelfPermission(SubMenu.this, android.Manifest.permission.CAMERA);
+                            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
+                                return;
+                            } else {
+                                finish();
+                                Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
+                                startActivity(intent);
+//                            myWebView.clearHistory();
+//                            myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+                            }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        int checkCallPhonePermission = ContextCompat.checkSelfPermission(SubMenu.this, android.Manifest.permission.CAMERA);
-                        if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
-                            requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
-                            return;
                         } else {
                             finish();
                             Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
                             startActivity(intent);
-//                            myWebView.clearHistory();
-//                            myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
-                        }
-
-                    } else {
-                        finish();
-                        Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
-                        startActivity(intent);
 //                        myWebView.clearHistory();
 //                        myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+                        }
                     }
 
                 } else {
@@ -243,6 +251,32 @@ public class SubMenu extends BaseActivity {
             myWebView.reload();
         }
     };
+
+
+    private void showCameradialog() {
+        String content = "";
+        String ok = "";
+
+        if (AppLanguage.getLanguageWithStringValue(this).equals("ja")) {
+            content = getResources().getString(R.string.camera_no_image_jp);
+            ok = getResources().getString(R.string.camera_no_certain_jp);
+
+        } else {
+            content = getResources().getString(R.string.camera_no_image_en);
+            ok = getResources().getString(R.string.camera_no_certain_en);
+        }
+        new AlertDialog.Builder(this).setMessage(content)
+                .setPositiveButton(ok, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }
+
+                ).show();
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

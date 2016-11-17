@@ -32,6 +32,7 @@ import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
+import com.appvisor_event.master.util.SPUtils;
 import com.google.android.gcm.GCMRegistrar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -452,6 +453,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     protected void onRestart() {
         Log.d("RESTART", "mainActivityに戻った");
         super.onRestart();
+        String language= SPUtils.get(getApplicationContext(), "language", "")+"";
+        if (language.equals("1")){
+            myWebView.reload();
+            SPUtils.put(getApplicationContext(), "language","0");
+        }
 //        this.recreate();
 //        myWebView.reload();
 
@@ -623,10 +629,10 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                         //テストFOR Unity
                         BeaconService.isUnityService = true;
                         Intent intent = new Intent(MainActivity.this, TgsUnityActivity.class);
-
                         startActivity(intent);
                     } else {
                         // インテントのインスタンス生成
+                        Log.d("LANGUAGE","Contents");
                         Intent intent = new Intent(MainActivity.this, Contents.class);
                         // URLを表示
                         intent.putExtra("key.url", active_url);

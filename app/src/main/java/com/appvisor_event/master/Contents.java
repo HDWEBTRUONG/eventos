@@ -48,6 +48,7 @@ import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
+import com.appvisor_event.master.util.SPUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -887,6 +888,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                         language = language.equals("ja") ? "en" : "ja";
                         AppLanguage.setLanguageWithStringValue(Contents.this.getApplicationContext(), language);
                         BeaconService.isJP=AppLanguage.isJapanese(getApplicationContext());
+                        SPUtils.put(getApplicationContext(), "language", "1");
                         myWebView.reload();
                     }
                     else

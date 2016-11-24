@@ -27,15 +27,15 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "";
+    public static final String EXHIBITER_DOMAIN_1 = "XXXXXX";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_2 = "";
+    public static final String EXHIBITER_DOMAIN_2 = "XXXXXX";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_3 = "";
+    public static final String EXHIBITER_DOMAIN_3 = "XXXXXX";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_4 = "";
+    public static final String EXHIBITER_DOMAIN_4 = "XXXXXX";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_5 = "";
+    public static final String EXHIBITER_DOMAIN_5 = "XXXXXX";
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL = "www.google.com/maps";
     // GoogleMapのURL

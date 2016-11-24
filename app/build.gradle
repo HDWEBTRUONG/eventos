@@ -22,14 +22,14 @@ android {
         }
     }
     productFlavors {
-        omotesando2016 {
-            applicationId = "com.appvisor_event.omotesando2016"
-            versionCode 1
-            versionName "1.0.0"
+        richo_stg {
+            applicationId = "com.appvisor_event.richo_stg"
+            versionCode 2016052601
+            versionName "0.0.1"
         }
-        omotesando2016_staging {
-            applicationId = "com.appvisor_event.omotesando2016.staging"
-            versionCode 1
+        richo_pro {
+            applicationId = "jp.co.ricoh.eventapp"
+            versionCode 2016061701
             versionName "1.0.0"
         }
     }

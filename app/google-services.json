@@ -6,9 +6,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:800785308038:android:974207bfe6d5bb2b",
+        "mobilesdk_app_id": "1:485246024931:android:bb570df58173633c",
         "android_client_info": {
-          "package_name": "com.appvisor_event.omotesando2016.staging"
+          "package_name": "com.appvisor_event.richo_stg"
         }
       },
       "oauth_client": [],

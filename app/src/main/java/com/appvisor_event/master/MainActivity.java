@@ -39,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,10 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     private DeviceTokenSender myJsonDeviceTokenSender;
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
+    private static MainActivity sInstance;
+    public static int preset_flg = 0;
+    private int script_flg = 0;
+    private String local;
 
     //全画面広告対応
     private InfosGetter myJsonAds;
@@ -98,7 +103,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         //UUIDの取得
         device_id = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         //DEVICE_TOKENの取得
@@ -120,6 +125,12 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main);
+
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", this.MODE_PRIVATE);
+        String passcode = data.getString("passcode","");
+        if (!passcode.equals("")){
+            preset_flg = 1;
+        }
 
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
@@ -152,17 +163,19 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             local=AppLanguage.getLanguageWithStringValue(this.getApplicationContext());
         }
 
+        //端末の言語設定を取得
+        local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
+        AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
-
-
 
         // UUIDが取得できていれば、URLをロードする。
         if(!mIsFailure){
             if (device_id != null){
                 //最初にホーム画面のページを表示する。
-                myWebView.loadUrl(active_url,extraHeaders);
+                myWebView.loadUrl(active_url+"?language="+local,extraHeaders);
             }
         }
 
@@ -192,7 +205,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                 myWebView.setWebViewClient(mWebViewClient);
                 //URLを表示する
                 extraHeaders.put("user-id", device_id);
-                myWebView.loadUrl(active_url,extraHeaders);
+                myWebView.loadUrl(active_url+"?language="+local,extraHeaders);
             }
         });
 
@@ -380,6 +393,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        sInstance = this;
     }
 
     @Override
@@ -488,10 +503,24 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     }
 
     @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+
+        setIntent(intent);
+        this.checkGCMNotification();
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (myWebView.canGoBack() == true) {
+                if (!myWebView.canGoBackOrForward(2)) {
+                    if (myWebView.getUrl().indexOf(Constants.HOME_URL) == -1) {
+                        preset_flg = 1;
+                    }
+                }
                 myWebView.goBack();
                 return true;
             }
@@ -569,6 +598,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             active_url = url;
+
+            String passcode;
+            String checkPasscode = "?passcode=";
+            int passcode_index = url.indexOf(checkPasscode);
+
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)
@@ -577,9 +611,28 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)) {
-                MainActivity.this.myWebView.stopLoading();
+                if(passcode_index != -1) {
+                    passcode = url.substring(passcode_index+10,url.length());
+                    SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("passcode", passcode);
+                    editor.apply();
+
+                    Constants.UpdateSlug(url);
+                }else {
+                    MainActivity.this.myWebView.stopLoading();
+                }
                 return false;
             }else{
+                if (url.indexOf("app-api://") != -1){
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Passcode Error")
+                            .setMessage("Please re-enter the passcode")
+                            .setPositiveButton("OK", null)
+                            .show();
+
+                    return true;
+                }
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
@@ -603,7 +656,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
             }else {
-                if (url.equals(Constants.HOME_URL)) {
+                String nonQueryUrl = (-1 == url.indexOf("?")) ? url : url.substring(0, url.indexOf("?"));
+                if (nonQueryUrl.equals(Constants.HOME_URL) || nonQueryUrl.equals(Constants.HomeUrl()) || url.indexOf("?passcode=") != -1) {
                     active_url = url;
                     mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
                     mSwipeRefreshLayout.setEnabled(true);
@@ -642,6 +696,30 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             mSwipeRefreshLayout.setRefreshing(false);
 
             showStartupAd();
+
+            if (preset_flg != 0 || script_flg == 1) {
+                SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+                String passcode = data.getString("passcode","");
+                if (!passcode.equals("")){
+                    if (view.getUrl().indexOf(Constants.HOME_URL) != -1){
+                        view.loadUrl("javascript:setPasscode('"+passcode+"');");
+                        script_flg = 1;
+                    }
+                    if (preset_flg == 0 && script_flg == 1){
+                        script_flg = 0;
+                    }
+                    if (view.getUrl().indexOf(Constants.HOME_URL) != -1) {
+                        preset_flg = 0;
+                    }else{
+                        view.loadUrl(Constants.HOME_URL);
+                    }
+                    if (view.getUrl() != null) {
+                        if (!view.getUrl().equals(url)) {
+                            view.loadUrl(url);
+                        }
+                    }
+                }
+            }
         }
 
         @Override
@@ -813,5 +891,51 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static synchronized MainActivity getInstance() {
+        return sInstance;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+        SharedPreferences.Editor editor = data.edit();
+        Date date = new Date(System.currentTimeMillis());
+        editor.putString("time", String.valueOf(date.getTime()));
+        editor.putInt("background_flg", 1);
+        editor.apply();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+        String passcode = data.getString("passcode","");
+        Date date = new Date(System.currentTimeMillis());
+        String time = data.getString("time","");
+        int background_flg = data.getInt("background_flg",0);
+        if (!passcode.equals("")) {
+            if (background_flg == 1) {
+                long old_time = Long.parseLong(time);
+                long current_time = date.getTime();
+                long deff = (current_time - old_time) / (1000*60*60);
+                if (deff > 72) {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+//                    MainActivity.this.myWebView.loadUrl(Constants.HOME_URL+"?language="+local);
+                    preset_flg = 1;
+                }else{
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("time", String.valueOf(current_time));
+                    editor.apply();
+                }
+            }
+        }
+        SharedPreferences.Editor editor = data.edit();
+        editor.putInt("background_flg", 0);
+        editor.apply();
     }
 }

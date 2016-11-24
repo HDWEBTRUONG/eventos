@@ -2,7 +2,6 @@ package com.appvisor_event.master.modules.JavascriptHandler;
 
 import android.content.Context;
 
-import com.appvisor_event.master.Constants;
 import com.appvisor_event.master.modules.FavoritSeminar;
 import com.appvisor_event.master.modules.JavascriptManager;
 
@@ -15,7 +14,7 @@ import org.json.JSONObject;
  */
 public class FavoritSeminarJavascriptHandler implements JavascriptManager.JavascriptHandlerInterface
 {
-    private final static String HANDLE_URL = String.format("/%s/api/favorites/send", Constants.Event);
+    private final static String HANDLE_URL = "/api/favorites/send";
 
     private Context        context        = null;
     private String         alertString    = null;
@@ -55,7 +54,7 @@ public class FavoritSeminarJavascriptHandler implements JavascriptManager.Javasc
             return false;
         }
 
-        return (0 == url.indexOf(HANDLE_URL));
+        return (-1 != url.indexOf(HANDLE_URL));
     }
 
     private JSONObject jsonAlert() throws JSONException

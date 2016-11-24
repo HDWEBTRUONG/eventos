@@ -5,7 +5,9 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "omotesando2016";
+    public static final String Event = "ricoh_passcode/passcode";
+    public static String CurrentSlug = Event;
+
     //ベースURL
     public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
     //ホームのURL
@@ -49,8 +51,30 @@ public class Constants {
 
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
-
+    
     public static final String GCM_SENDER_ID = "485246024931";
 
     public static final String RegARFlag= "/"+Event+"/ar/marker-scanner";
+
+    public static String HomeUrl()
+    {
+        return HOME_URL.replace(Event, CurrentSlug);
+    }
+
+    public static String SubMenuUrl()
+    {
+        return SUB_MENU_URL.replace(Event, CurrentSlug);
+    }
+
+    public static String SettingUrl()
+    {
+        return SETTING_URL.replace(Event, CurrentSlug);
+    }
+
+    public static void UpdateSlug(String url)
+    {
+        String path = url.replaceAll(Constants.BASE_URL, "");
+        int index = (-1 != path.indexOf("?")) ? path.indexOf("?") : path.indexOf("/");
+        CurrentSlug = path.substring(0, index);
+    }
 }

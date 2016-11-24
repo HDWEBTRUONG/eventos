@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -65,6 +66,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -189,6 +192,9 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         }else {
             myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         }
+
+        //CATHEを使用する
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -456,6 +462,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
         }else{
             view .setBackgroundColor(getResources().getColor(R.color.selected_color));
+            // 端末のホーム画面に戻る
             Contents.this.finish();
         }
     }
@@ -661,7 +668,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     active_url = bundle.getString("key.url", "");
-                    if(active_url.equals(Constants.HOME_URL)){
+                    if(active_url.equals(Constants.HomeUrl())){
                         finish();
                     }
 
@@ -788,11 +795,22 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
             }
         }
 
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+
+            String nonQueryUrl = (-1 == url.indexOf("?")) ? url : url.substring(0, url.indexOf("?"));
+            if (nonQueryUrl.equals(Constants.HOME_URL) || nonQueryUrl.equals(Constants.HomeUrl())) {
+                finish();
+            }
+        }
+
         /**
          * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
          */
         @Override
         public void onPageFinished(WebView view, String url) {
+
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
 
@@ -817,21 +835,19 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
             }else {
-                if (url.equals(Constants.HOME_URL)) {
-                    finish();
-
-//                    active_url = url;
-//                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-//                    mSwipeRefreshLayout.setEnabled(true);
-//                    //ホームの場合はタイトルバーを非表示にする
-//                    findViewById(R.id.title_bar).setVisibility(View.GONE);
-//                    //SWIPEを表示にする。
-//                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-//                    //WEBVIEWを表示にする
-//                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
-//                    //エラーページを非表示にする
-//                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
-
+                String nonQueryUrl = (-1 == url.indexOf("?")) ? url : url.substring(0, url.indexOf("?"));
+                if (nonQueryUrl.equals(Constants.HOME_URL) || nonQueryUrl.equals(Constants.HomeUrl())) {
+                    active_url = url;
+                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+                    mSwipeRefreshLayout.setEnabled(true);
+                    //ホームの場合はタイトルバーを非表示にする
+                    findViewById(R.id.title_bar).setVisibility(View.GONE);
+                    //SWIPEを表示にする。
+                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
+                    //WEBVIEWを表示にする
+                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
+                    //エラーページを非表示にする
+                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
                 } else if ((url.indexOf(Constants.BOOTH) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
                     active_url = url;
                     // SwipeRefreshLayoutの設定
@@ -850,7 +866,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     if(myWebView.getTitle() != null) {
-                        if (myWebView.getTitle().length() >= 15) {
+                        if (myWebView.getTitle().length() >= 16) {
                             textView.setText(myWebView.getTitle().substring(0, 15) + "...");
                         } else {
                             textView.setText(myWebView.getTitle());
@@ -872,7 +888,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     if(myWebView.getTitle() != null) {
-                        if (myWebView.getTitle().length() >= 15) {
+                        if (myWebView.getTitle().length() >= 16) {
                             textView.setText(myWebView.getTitle().substring(0, 15) + "...");
                         } else {
                             textView.setText(myWebView.getTitle());
@@ -923,14 +939,16 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                 message = message.replace("ajax-handler:", "");
                 JavascriptManager.getInstance().onJsAlert(message);
 
-                if (0 == view.getUrl().indexOf(Constants.SETTING_URL))
+                if (0 == url.indexOf(Constants.SettingUrl()))
                 {
                     if (0 == message.indexOf("language:"))
                     {
                         String language = message.replace("language:", "");
                         language = language.equals("ja") ? "en" : "ja";
                         AppLanguage.setLanguageWithStringValue(Contents.this.getApplicationContext(), language);
+
                         BeaconService.isJP=AppLanguage.isJapanese(getApplicationContext());
+
                         myWebView.reload();
                     }
                     else
@@ -1292,5 +1310,27 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         return inSampleSize;
     }
 
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+        String passcode = data.getString("passcode","");
+        Date date = new Date(System.currentTimeMillis());
+        String time = data.getString("time","");
+        int background_flg = data.getInt("background_flg",0);
+        if (!passcode.equals("")) {
+            if (background_flg == 1) {
+                long old_time = Long.parseLong(time);
+                long current_time = date.getTime();
+                long deff = (current_time - old_time) / (1000*60*60);
+                if (deff > 72) {
+                    finish();
+                }else{
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("time", String.valueOf(current_time));
+                    editor.apply();
+                }
+            }
+        }
+    }
 }

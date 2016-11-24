@@ -2,11 +2,13 @@ package com.appvisor_event.master;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
@@ -15,9 +17,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.content.Intent;
 
 import com.appvisor_event.master.modules.BeaconService;
-
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +41,10 @@ public class SubMenu extends BaseActivity {
          //メニューリストを表示
          setContentView(R.layout.menu_list);
 
+        //どの管理画面を見ているか判定する。
+        // インテントを取得
+        Intent intent = getIntent();
+
          extraHeaders = new HashMap<String, String>();
          extraHeaders.put("user-id", device_id);
 
@@ -48,7 +55,7 @@ public class SubMenu extends BaseActivity {
          // JS利用を許可する
          myWebView.getSettings().setJavaScriptEnabled(true);
          // ドロワー画面のページを表示する。
-         myWebView.loadUrl(Constants.SUB_MENU_URL, extraHeaders);
+         myWebView.loadUrl(Constants.SubMenuUrl(), extraHeaders);
          //CATHEを使用する
         if(isCachePolicy())
         {
@@ -86,7 +93,7 @@ public class SubMenu extends BaseActivity {
                 mIsFailure = false;
                 //URLを表示する
                 extraHeaders.put("user-id", device_id);
-                myWebView.loadUrl(Constants.SUB_MENU_URL);
+                myWebView.loadUrl(Constants.SubMenuUrl());
             }
         });
         // SwipeRefreshLayoutの設定
@@ -154,7 +161,7 @@ public class SubMenu extends BaseActivity {
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.GONE);
 
-                if (url.equals(Constants.SUB_MENU_URL)) {
+                if (url.equals(Constants.SubMenuUrl())) {
 
                 } else if(url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1
                         || url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1
@@ -225,5 +232,29 @@ public class SubMenu extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+        String passcode = data.getString("passcode","");
+        Date date = new Date(System.currentTimeMillis());
+        String time = data.getString("time","");
+        int background_flg = data.getInt("background_flg",0);
+        if (!passcode.equals("")) {
+            if (background_flg == 1) {
+                long old_time = Long.parseLong(time);
+                long current_time = date.getTime();
+                long deff = (current_time - old_time) / (1000*60*60);
+                if (deff > 72) {
+                    finish();
+                }else{
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("time", String.valueOf(current_time));
+                    editor.apply();
+                }
+            }
+        }
     }
 }

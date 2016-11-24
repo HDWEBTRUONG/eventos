@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 
+import com.appvisor_event.master.modules.BeaconService;
+
 public class SplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +19,7 @@ public class SplashActivity extends Activity {
         Handler hdl = new Handler();
         // 500ms遅延させてsplashHandlerを実行します。
         hdl.postDelayed(new splashHandler(), 1000);
+        BeaconService.activities.clear();
     }
     class splashHandler implements Runnable {
         public void run() {

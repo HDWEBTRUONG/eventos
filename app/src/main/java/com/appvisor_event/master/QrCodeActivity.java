@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.appvisor_event.master.modules.BeaconService;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
-public class QrCodeActivity extends Activity implements ZXingScannerView.ResultHandler, LocationListener{
+public class QrCodeActivity extends BaseActivity implements ZXingScannerView.ResultHandler, LocationListener{
 
     private ZXingScannerView mScannerView;
     private ArrayList<BarcodeFormat> formats;

@@ -1,9 +1,11 @@
 package com.appvisor_event.master.modules.alarm;
 
 import android.content.Context;
+import android.os.Build;
 
 import com.appvisor_event.master.MainActivity;
 import com.appvisor_event.master.R;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,8 +32,8 @@ public class FavoritSeminarAlarm
                 .setId(id)
                 .setIntentClass(MainActivity.class)
                 .setTitle(context.getString(R.string.app_name))
-                .setContentText(FavoritSeminarAlarm.text(title, startDateString))
-                .setSmallIconResourceId(R.drawable.ic_launcher);
+                .setContentText(FavoritSeminarAlarm.text(context, title, startDateString))
+                .setSmallIconResourceId(FavoritSeminarAlarm.smallIconResourceId());
 
         FavoritSeminarAlarm.alarm.add(context, alarmBean, FavoritSeminarAlarm.fireDate(startDateString));
     }
@@ -41,9 +43,15 @@ public class FavoritSeminarAlarm
         FavoritSeminarAlarm.alarm.cancelAll(context);
     }
 
-    private static String text(String title, String startDateString)
+    private static String text(Context context, String title, String startDateString)
     {
-        return String.format("「%s」が%sから開始します。", title, FavoritSeminarAlarm.startTime(startDateString));
+        String text = String.format("「%s」が%sから開始します。", title, FavoritSeminarAlarm.startTime(startDateString));
+        if (!AppLanguage.isJapanese(context))
+        {
+            text = String.format("[%s] starts at %s", title, FavoritSeminarAlarm.startTime(startDateString));
+        }
+
+        return text;
     }
 
     private static Date fireDate(String startDateString)
@@ -77,5 +85,15 @@ public class FavoritSeminarAlarm
     private static boolean isPastDate(Date startDate)
     {
         return 0 < new Date().compareTo(startDate);
+    }
+
+    private static int smallIconResourceId()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            return R.drawable.ic_status;
+        }
+
+        return R.drawable.ic_launcher;
     }
 }

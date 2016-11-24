@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="title_bar_color">#3d7dca</color>
+    <color name="title_bar_color">#f49500</color>
     <color name="selected_color">#20000000</color>
-    <color name="title_bar_txt_color">#ffffff</color>
+    <color name="title_bar_txt_color">#FFFFFF</color>
     <!--更新時の色指定-->
     <color name="white">#ffffff</color>
     <color name="red">#ff0000</color>
@@ -10,5 +10,10 @@
     <color name="green">#00ff00</color>
     <color name="yellow">#ffff00</color>
     <color name="gray">#636363</color>
+    <!--アイコン色-->
+    <color name="ic_status_color">#006aaf</color>
+    <!--custom_dialog-->
+    <color name="custom_dialog_blue">#006aae</color>
+
 
 </resources>

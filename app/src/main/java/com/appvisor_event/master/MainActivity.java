@@ -152,7 +152,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
 
-        String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
+        //端末の言語設定を取得
+        local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
         if(isFirstStart()) {
             //端末の言語設定を取得
             AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
@@ -160,12 +161,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         }
         else
         {
-            local=AppLanguage.getLanguageWithStringValue(this.getApplicationContext());
+            local = AppLanguage.getLanguageWithStringValue(this.getApplicationContext());
         }
-
-        //端末の言語設定を取得
-        local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
-        AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);

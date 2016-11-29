@@ -57,7 +57,7 @@ public class Constants {
 
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
-    
+
     public static final String GCM_SENDER_ID = "485246024931";
 
     public static final String RegARFlag= "/"+Event+"/ar/marker-scanner";
@@ -83,4 +83,8 @@ public class Constants {
         int index = (-1 != path.indexOf("?")) ? path.indexOf("?") : path.indexOf("/");
         CurrentSlug = path.substring(0, index);
     }
+
+    public static final String PHOTO_FRAME = HOME_URL + "/api/photoframes/check?os=android&version=%d";
+
+    public static final String HREF_PHOTO_FRAMES = "/omotesando2016/photoframes/starting";
 }

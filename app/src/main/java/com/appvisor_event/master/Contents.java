@@ -52,6 +52,7 @@ import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascr
 import com.appvisor_event.master.modules.JavascriptManager;
 import com.appvisor_event.master.modules.Spiral.ETicket.QRCodeScannerActivity;
 import com.appvisor_event.master.modules.WebAppInterface;
+import com.appvisor_event.master.util.SPUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -949,6 +950,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
                         BeaconService.isJP=AppLanguage.isJapanese(getApplicationContext());
 
+                        SPUtils.put(getApplicationContext(), "language", "1");
                         myWebView.reload();
                     }
                     else

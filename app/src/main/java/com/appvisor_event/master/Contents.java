@@ -42,8 +42,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.appvisor_event.master.modules.AndroidSpiralETicketInterface;
+import com.appvisor_event.master.modules.Advertisement.Advertisement;
 import com.appvisor_event.master.modules.AndroidBeaconMapInterface;
+import com.appvisor_event.master.modules.AndroidSpiralETicketInterface;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
@@ -67,7 +68,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -281,7 +281,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         this.setupFavoritSeminarAlarm();
 
         //広告表示と非表示などコントロール
-        if(MainActivity.adloaded&&MainActivity.adSec>0)
+        if(Advertisement.isLoaded && Advertisement.interval > 0)
         {
 
             findViewById(R.id.adview).setVisibility(View.VISIBLE);
@@ -290,14 +290,14 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
             int sc_height = getResources().getDisplayMetrics().heightPixels;
             float sc_density = getResources().getDisplayMetrics().density;
             int ad_width = sc_width;
-            int ad_height = (int)(ad_width*MainActivity.ad_ratio);
+            int ad_height = (int)(ad_width * Advertisement.ratio);
             LinearLayout.LayoutParams layoutParams_adview = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ad_height);
             findViewById(R.id.adview).setLayoutParams(layoutParams_adview);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (sc_height - 44 * sc_density - ad_height-MainActivity.status_bar_height));
             findViewById(R.id.swipe_refresh_layout).setLayoutParams(layoutParams);
 
             final ImageLoader imageLoader = ImageLoader.getInstance();
-            if(MainActivity.adsList.length()>1)
+            if(Advertisement.list.length()>1)
             {
                 isMultAdShow = true;
                 if(adRunnable == null) {
@@ -309,7 +309,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                                 if (!isMultAdShow) {
                                     return;
                                 }
-                                JSONObject adJson = MainActivity.adsList.getJSONObject(MainActivity.ad_index);
+                                JSONObject adJson = Advertisement.list.getJSONObject(Advertisement.currentIndex);
                                 ad_image = adJson.getString("imageurl");
                                 ad_link = adJson.getString("url");
                                 imageLoader.loadImage(ad_image, new SimpleImageLoadingListener() {
@@ -334,10 +334,10 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                                     }
                                 });
 
-                                ad_handler.postDelayed(this, MainActivity.adSec * 1000);
-                                MainActivity.ad_index++;
-                                if (MainActivity.ad_index >= MainActivity.adsList.length()) {
-                                    MainActivity.ad_index = 0;
+                                ad_handler.postDelayed(this, Advertisement.interval * 1000);
+                                Advertisement.currentIndex++;
+                                if (Advertisement.currentIndex >= Advertisement.list.length()) {
+                                    Advertisement.currentIndex = 0;
                                 }
 
                             } catch (JSONException e) {
@@ -352,7 +352,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
                 try
                 {
-                    JSONObject adJson = MainActivity.adsList.getJSONObject(MainActivity.ad_index);
+                    JSONObject adJson = Advertisement.list.getJSONObject(Advertisement.currentIndex);
                     ad_image = adJson.getString("imageurl");
                     ad_link = adJson.getString("url");
 

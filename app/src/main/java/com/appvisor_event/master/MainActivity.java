@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.appvisor_event.master.camerasquare.CameraSquareActivity;
+import com.appvisor_event.master.modules.Advertisement.Advertisement;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
@@ -36,12 +37,7 @@ import com.appvisor_event.master.modules.Photoframe.Photoframe;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.appvisor_event.master.util.SPUtils;
 import com.google.android.gcm.GCMRegistrar;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -75,17 +71,6 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     public static int preset_flg = 0;
     private int script_flg = 0;
     private String local;
-
-    //全画面広告対応
-    private InfosGetter myJsonAds;
-
-    //全画面広告切り替え対応パラメーター
-    private int image_load_num = 0;
-    static JSONArray adsList = null;
-    static int adSec = -1;
-    static boolean adloaded = false;
-    static int ad_index = 0;
-    static float ad_ratio = 0.0f;
 
     static int status_bar_height = 0;
     private InfosGetter pushGetter;
@@ -278,75 +263,6 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
         StartupAd.setShown(false);
 
-        if (!adloaded) {
-            try {
-                DisplayImageOptions ad_defaultOptions = new DisplayImageOptions.Builder()
-                        .cacheInMemory(true).build();
-                ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                        .defaultDisplayImageOptions(ad_defaultOptions)
-                        .build();
-                ImageLoader.getInstance().init(config);
-
-                // 引数にサーバーのURLを入れる。
-                myJsonAds = new InfosGetter(Constants.ADS_API);
-                myJsonAds.start();
-                myJsonAds.join();
-
-                // responseがあればログ出力する。
-                if (myJsonAds.mResponse != null && myJsonAds.mResponse != "") {
-                    try {
-                        JSONObject adsjson = new JSONObject(myJsonAds.mResponse);
-                        if (adsjson.getInt("changetime") > 0) {
-                            ImageLoader imageLoader = ImageLoader.getInstance();
-                            adsList = adsjson.getJSONArray("ads");
-                            if (adsList != null && adsList.length() > 0) {
-                                adSec = adsjson.getInt("changetime");
-                                if (adSec <= 0) {
-                                    adSec = 5;
-                                }
-                                for (int i = 0; i < MainActivity.adsList.length(); i++) {
-                                    JSONObject adJson = MainActivity.adsList.getJSONObject(i);
-                                    String ad_image = adJson.getString("imageurl");
-                                    imageLoader.loadImage(ad_image, new SimpleImageLoadingListener() {
-                                        @Override
-                                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                                            int ad_height = loadedImage.getHeight();
-                                            int ad_width = loadedImage.getWidth();
-                                            float compare_ratio = (float) ad_height / (float) ad_width;
-                                            if (ad_ratio < compare_ratio) {
-                                                ad_ratio = compare_ratio;
-                                            }
-                                            image_load_num++;
-                                            if (image_load_num == MainActivity.adsList.length()) {
-                                                adloaded = true;
-                                            }
-                                        }
-                                    });
-                                }
-                            } else {
-                                adloaded = true;
-                                adSec = -1;
-                                adsList = null;
-                            }
-                        } else {
-                            adloaded = true;
-                            adsList = null;
-                            adSec = -1;
-                        }
-
-                    } catch (JSONException e) {
-                        adloaded = true;
-                        adsList = null;
-                        adSec = -1;
-                        e.printStackTrace();
-                    }
-                }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-
-            }
-        }
         try {
             myJsonbeacon = new InfosGetter(Constants.Beacon_MESSAGE_API + getBeaconVersion());
             myJsonbeacon.start();
@@ -394,7 +310,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             e.printStackTrace();
         }
 
-        resetPhotoframe();
+        reset();
 
         sInstance = this;
     }
@@ -488,10 +404,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     protected void onDestroy() {
         Log.d("onDestroy", "mainActivityに戻った");
         super.onDestroy();
-        adloaded = false;
-        adsList = null;
-        adSec = -1;
-        ad_index = 0;
+        Advertisement.clear();
     }
 
     @Override
@@ -618,7 +531,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     editor.apply();
 
                     Constants.UpdateSlug(url);
-                    resetPhotoframe();
+                    reset();
                 }else {
                     MainActivity.this.myWebView.stopLoading();
                 }
@@ -966,6 +879,18 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         SharedPreferences.Editor editor = data.edit();
         editor.putInt("background_flg", 0);
         editor.apply();
+    }
+
+    private void reset()
+    {
+        resetAdvertisement();
+        resetPhotoframe();
+    }
+
+    private void resetAdvertisement()
+    {
+        Advertisement.clear();
+        Advertisement.load(getApplicationContext());
     }
 
     private void resetPhotoframe()

@@ -80,6 +80,11 @@ public class Constants {
         return SETTING_URL.replace(Event, CurrentSlug);
     }
 
+    public static String AdvertisementUrl()
+    {
+        return ADS_API.replace(Event, CurrentSlug);
+    }
+
     public static String PhotoframeUrl()
     {
         return HREF_PHOTO_FRAMES.replace(Event, CurrentSlug);

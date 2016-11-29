@@ -106,6 +106,16 @@
         <service android:name=".modules.Gcm.GcmIntentService" />
 
         <activity android:name=".QrCodeActivity"></activity>
+        <activity android:name=".modules.Spiral.ETicket.QRCodeScannerActivity"></activity>
+        <activity android:name="com.unity3d.player.UnityPlayerActivity" />
+        <activity android:name=".TgsUnityActivity" android:process=":UnityJustKillYourself"></activity>
+        <service android:name=".modules.DLAndUnzipService" />
+        <service
+            android:name=".modules.BeaconService"
+            android:exported="false" />
+
+        <activity android:name=".BaseActivity"></activity>
+
     </application>
 
 </manifest>

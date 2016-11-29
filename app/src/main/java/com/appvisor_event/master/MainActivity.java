@@ -32,6 +32,7 @@ import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
+import com.appvisor_event.master.modules.Photoframe.Photoframe;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.appvisor_event.master.util.SPUtils;
 import com.google.android.gcm.GCMRegistrar;
@@ -44,8 +45,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -393,6 +394,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             e.printStackTrace();
         }
 
+        resetPhotoframe();
+
         sInstance = this;
     }
 
@@ -615,6 +618,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     editor.apply();
 
                     Constants.UpdateSlug(url);
+                    resetPhotoframe();
                 }else {
                     MainActivity.this.myWebView.stopLoading();
                 }
@@ -664,7 +668,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     //エラーページを非表示にする
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
 
-                } else if (url.indexOf(Constants.HREF_PHOTO_FRAMES) != -1) {
+                } else if (url.indexOf(Constants.PhotoframeUrl()) != -1) {
                     String p = MainActivity.this.getFilesDir().toString() + "/images";
                     File file=new File(p);
                     if (!file.exists()){
@@ -962,5 +966,25 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         SharedPreferences.Editor editor = data.edit();
         editor.putInt("background_flg", 0);
         editor.apply();
+    }
+
+    private void resetPhotoframe()
+    {
+        Photoframe.clearCache(getApplicationContext());
+
+        Photoframe.check(getApplicationContext(), new Photoframe.OnCheckListener() {
+            @Override
+            public void onFinishCheck(final int version, final String url, final String frame) {
+                if (Photoframe.isNewVersion(getApplicationContext(), version))
+                {
+                    Photoframe.donwloadData(url, MainActivity.this, new Photoframe.OnDownloadListener() {
+                        @Override
+                        public void onFinishDownload() {
+                            Photoframe.updateVersion(getApplicationContext(), version, url, frame);
+                        }
+                    });
+                }
+            }
+        });
     }
 }

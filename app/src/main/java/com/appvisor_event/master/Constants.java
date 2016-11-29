@@ -3,9 +3,12 @@ package com.appvisor_event.master;
 public class Constants {
     private static final String TAG = Constants.class.getSimpleName();
 
+    // パスコード 利用する場合は "/passcode" しない場合は "" にする
+    private static final String PASSCODE = "/passcode";
+
     private Constants(){}
     //ホームのURL
-    public static final String Event = "ricoh_passcode/passcode";
+    public static final String Event = "ricoh_passcode" + PASSCODE;
     public static String CurrentSlug = Event;
 
     //ベースURL
@@ -77,6 +80,11 @@ public class Constants {
         return SETTING_URL.replace(Event, CurrentSlug);
     }
 
+    public static String PhotoframeUrl()
+    {
+        return HREF_PHOTO_FRAMES.replace(Event, CurrentSlug);
+    }
+
     public static void UpdateSlug(String url)
     {
         String path = url.replaceAll(Constants.BASE_URL, "");
@@ -86,5 +94,10 @@ public class Constants {
 
     public static final String PHOTO_FRAME = HOME_URL + "/api/photoframes/check?os=android&version=%d";
 
-    public static final String HREF_PHOTO_FRAMES = "/omotesando2016/photoframes/starting";
+    public static final String HREF_PHOTO_FRAMES = Event + "/photoframes/starting";
+
+    public static boolean isPasscodeEnable()
+    {
+        return (0 < PASSCODE.length());
+    }
 }

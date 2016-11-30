@@ -30,11 +30,11 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "XXXXXX";
+    public static final String EXHIBITER_DOMAIN_1 = "www.google.com";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_2 = "XXXXXX";
+    public static final String EXHIBITER_DOMAIN_2 = "drive.google.com";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_3 = "XXXXXX";
+    public static final String EXHIBITER_DOMAIN_3 = "goo.gl";
     //アプリ内に表示させるドメイン
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXX";
     //アプリ内に表示させるドメイン

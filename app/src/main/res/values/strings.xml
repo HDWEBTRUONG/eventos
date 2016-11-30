@@ -32,34 +32,34 @@
     <string name="camera_sucess_dialog_jp">フォトフレームを設定して下さい。</string>
     <string name="camera_sucess_ok_jp">選択</string>
     <string name="camera_sucess_cancel_jp">撮り直し</string>
-    <string name="camera_sucess_dialog_en">フォトフレームを設定して下さい。en</string>
-    <string name="camera_sucess_ok_en">選択en</string>
-    <string name="camera_sucess_cancel_en">撮り直しen</string>
+    <string name="camera_sucess_dialog_en">Please select the photo frame.</string>
+    <string name="camera_sucess_ok_en">Select</string>
+    <string name="camera_sucess_cancel_en">Retry</string>
 
     <string name="camera_no_image_jp">フォトフレームのダウンロードに失敗しました</string>
-    <string name="camera_no_image_en">フォトフレームのダウンロードに失敗しましたen</string>
+    <string name="camera_no_image_en">Failed to download Photo Frame.</string>
     <string name="camera_no_certain_jp">確認</string>
     <string name="camera_no_certain_en">OK</string>
     <!--image activity-->
     <string name="image_camera_dialog_jp">写真を撮り直しますか？</string>
     <string name="image_camera_dialog_yes_jp">はい</string>
     <string name="image_camera_dialog_no_jp">いいえ</string>
-    <string name="image_camera_dialog_en">写真を撮り直しますか？en</string>
-    <string name="image_camera_dialog_yes_en">はいen</string>
-    <string name="image_camera_dialog_no_en">いいえen</string>
+    <string name="image_camera_dialog_en">Would you like to take a picture again?</string>
+    <string name="image_camera_dialog_yes_en">Yes</string>
+    <string name="image_camera_dialog_no_en">No</string>
 
     <!-- share dialog -->
     <string name="share_dialog_text_01_jp">画像が保存されました。</string>
     <string name="share_dialog_text_02_jp">SNSにシェアして下さい。</string>
-    <string name="share_dialog_text_03_jp">FacebookとInstagramにシェアする</string>
-    <string name="share_dialog_text_04_jp">場合は＃(ハッシュタグ)をつけて下さい。</string>
+    <string name="share_dialog_text_03_jp">FacebookとInstagramにシェアする場合は</string>
+    <string name="share_dialog_text_04_jp">#表参道イルミネーションをつけて下さい。</string>
     <string name="share_dialog_close_jp">閉じる</string>
 
-    <string name="share_dialog_text_01_en">画像が保存されました。en</string>
-    <string name="share_dialog_text_02_en">SNSにシェアして下さい。en</string>
-    <string name="share_dialog_text_03_en">FacebookとInstagramにシェアするen</string>
-    <string name="share_dialog_text_04_en">場合は＃(ハッシュタグ)をつけて下さい。en</string>
-    <string name="share_dialog_close_en">閉じるen</string>
+    <string name="share_dialog_text_01_en">The image has been saved.</string>
+    <string name="share_dialog_text_02_en">Please share photo to SNS.</string>
+    <string name="share_dialog_text_03_en">If you want to share it with Facebook and Instagram,</string>
+    <string name="share_dialog_text_04_en">enter #表参道イルミネーション.</string>
+    <string name="share_dialog_close_en">Close</string>
 
 
 </resources>

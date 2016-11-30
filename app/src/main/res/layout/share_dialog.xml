@@ -84,7 +84,7 @@
             android:gravity="center"
             android:textScaleX="1.10"
             android:text="@string/share_dialog_text_03_jp"
-            android:textSize="15sp"/>
+            android:textSize="12sp"/>
         <TextView
             android:id="@+id/tv_04"
             android:layout_width="match_parent"
@@ -92,7 +92,7 @@
             android:layout_marginTop="7dp"
             android:gravity="center"
             android:text="@string/share_dialog_text_04_jp"
-            android:textSize="14sp"/>
+            android:textSize="12sp"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

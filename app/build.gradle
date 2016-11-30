@@ -23,12 +23,12 @@ android {
     }
     productFlavors {
         richo_stg {
-            applicationId = "com.appvisor_event.omotesando2016_stg"
+            applicationId = "tokyo.eventos.omotesando2016_stg"
             versionCode 1
             versionName "0.1.0"
         }
         richo_pro {
-            applicationId = "com.appvisor_event.omotesando2016"
+            applicationId = "tokyo.eventos.omotesando2016"
             versionCode 1
             versionName "1.0.0"
         }

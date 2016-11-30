@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "756039880396",
-    "firebase_url": "https://eventos-for-omotesando2016.firebaseio.com",
-    "project_id": "eventos-for-omotesando2016",
-    "storage_bucket": "eventos-for-omotesando2016.appspot.com"
+    "project_number": "334010452292",
+    "firebase_url": "https://ardent-codex-151111.firebaseio.com",
+    "project_id": "ardent-codex-151111",
+    "storage_bucket": "ardent-codex-151111.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:756039880396:android:6c29387b6c1ddfa3",
+        "mobilesdk_app_id": "1:334010452292:android:ed9350e52164dd59",
         "android_client_info": {
-          "package_name": "com.appvisor_event.omotesando2016"
+          "package_name": "tokyo.eventos.omotesando2016"
         }
       },
       "oauth_client": [
         {
-          "client_id": "756039880396-0jipuavg84j828hbeu47f2p666gt93oa.apps.googleusercontent.com",
+          "client_id": "334010452292-utk10bnngrmm9mfsn4dm5lq0vcsfp1t5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCH5G0zu6SSTPdLTqsRWi-1rwx9NyYCdG4"
+          "current_key": "AIzaSyBhBlNSTDCXqTP8ibuWT6VumRa6FP6nDRY"
         }
       ],
       "services": {

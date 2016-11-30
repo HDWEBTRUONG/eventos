@@ -190,6 +190,12 @@ public class BeaconService extends Service implements BeaconConsumer {
                     for(int i = 0 ;i<beaconlist.length;i++) {
 
                         Beacon beacon =(Beacon)beaconlist[i];
+                        if (5.0 < beacon.getDistance())
+                        {
+                            // 遠すぎるビーコンは検知対象外とする
+                            continue;
+                        }
+
                         if(beaconmap!=null) {
                             if (nearestbeacon.getDistance() > beacon.getDistance()) {
                                 nearestbeacon = beacon;

@@ -4,11 +4,11 @@ public class Constants {
     private static final String TAG = Constants.class.getSimpleName();
 
     // パスコード 利用する場合は "/passcode" しない場合は "" にする
-    private static final String PASSCODE = "/passcode";
+    private static final String PASSCODE = "";
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "ricoh_passcode" + PASSCODE;
+    public static final String Event = "omotesando2016" + PASSCODE;
     public static String CurrentSlug = Event;
 
     //ベースURL

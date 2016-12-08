@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        juseisinkyu {
-            applicationId = "com.appvisor_event.juseisinkyu"
+        machidabiyou {
+            applicationId = "tokyo.eventos.machidabiyou"
             versionCode 1
             versionName "1.0.0"
         }
-        juseisinkyu_staging {
-            applicationId = "com.appvisor_event.juseisinkyu_staging"
+        machidabiyou_staging {
+            applicationId = "tokyo.eventos.machidabiyou_staging"
             versionCode 1
             versionName "1.0.0"
         }

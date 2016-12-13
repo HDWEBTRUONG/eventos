@@ -30,13 +30,19 @@ public class SubMenu extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
-         //UUIDの取得
-        device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+         //UUID, Appid, versionの取得
+         device_id  = User.getUUID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+         String app_id = User.getAppID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+         String version =  String.valueOf(User.getVersion());
+
+//        device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
          //メニューリストを表示
          setContentView(R.layout.menu_list);
 
          extraHeaders = new HashMap<String, String>();
          extraHeaders.put("user-id", device_id);
+         extraHeaders.put("app-id", app_id);
+         extraHeaders.put("version", version);
 
          //レイアウトで指定したWebViewのIDを指定する。
          myWebView = (WebView)findViewById(R.id.webView1);

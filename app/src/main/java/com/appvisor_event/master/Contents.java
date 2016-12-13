@@ -130,11 +130,17 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //UUIDの取得
-        device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        //UUID, Appid, versionの取得
+        device_id  = User.getUUID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        String app_id = User.getAppID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        String version =  String.valueOf(User.getVersion());
+
+//      device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
-        Log.d("device_token", device_id);
+        extraHeaders.put("app-id", app_id);
+        extraHeaders.put("version", version);
+        Log.d("device_token",device_id);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main_contents);
@@ -701,7 +707,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                         } else {
                             textView.setText(myWebView.getTitle());
                         }
-                        
+
                         if (url.indexOf("facebook.com") != -1)
                         {
                             textView.setText("Facebook");

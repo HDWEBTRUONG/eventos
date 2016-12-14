@@ -2,6 +2,8 @@ package com.appvisor_event.master;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 
 import java.util.UUID;
@@ -11,7 +13,6 @@ import java.util.UUID;
  */
 public class User {
     private static String uuid = null;
-    private static String appid = null;
     private static String version = null;
     private static final String UUID_KEY = "UUID_KEY";
 
@@ -35,8 +36,16 @@ public class User {
         return context.getPackageName();
     }
 
-    public static int getVersion() {
-        return Build.VERSION.SDK_INT;
+    public static String getAppVersion(Context context) {
+        PackageManager pm = context.getPackageManager();
+        String pn = context.getPackageName();
+        try{
+            PackageInfo pi = pm.getPackageInfo(pn, 0);
+            version = pi.versionName;
+        }catch(PackageManager.NameNotFoundException e){
+            e.printStackTrace();
+        }
+        return version;
     }
 
 }

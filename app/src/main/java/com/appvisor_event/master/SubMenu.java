@@ -32,7 +32,7 @@ public class SubMenu extends Activity {
          //UUID, Appid, versionの取得
          device_id  = User.getUUID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
          String app_id = User.getAppID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
-         String version =  String.valueOf(User.getVersion());
+         String version =  User.getAppVersion(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
 
 //        device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
          //メニューリストを表示
@@ -41,7 +41,7 @@ public class SubMenu extends Activity {
          extraHeaders = new HashMap<String, String>();
          extraHeaders.put("user-id", device_id);
          extraHeaders.put("app-id", app_id);
-         extraHeaders.put("version", version);
+         extraHeaders.put("app-version", version);
 
          //レイアウトで指定したWebViewのIDを指定する。
          myWebView = (WebView)findViewById(R.id.webView1);

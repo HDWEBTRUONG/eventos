@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        machidabiyou {
-            applicationId = "tokyo.eventos.machidabiyou"
+        brave_expo {
+            applicationId = "tokyo.eventos.brave_expo"
             versionCode 1
             versionName "1.0.0"
         }
-        machidabiyou_staging {
-            applicationId = "tokyo.eventos.machidabiyou_staging"
+        brave_expo_staging {
+            applicationId = "tokyo.eventos.brave_expo_staging"
             versionCode 1
             versionName "1.0.0"
         }

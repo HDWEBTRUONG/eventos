@@ -213,7 +213,9 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
             // 引数にサーバーのURLを入れる。
             myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
-            myJsonSender.mData = device_id ;
+            myJsonSender.mDeviseID = device_id ;
+            myJsonSender.mAppID = app_id ;
+            myJsonSender.mVersion = version ;
             myJsonSender.start ();
             myJsonSender.join ();
 

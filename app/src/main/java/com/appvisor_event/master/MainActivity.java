@@ -127,7 +127,9 @@ public class MainActivity extends Activity {
 
             // 引数にサーバーのURLを入れる。
             myJsonSender = new MyHttpSender ( Constants.REGISTER_API_URL );
-            myJsonSender.mData = device_id ;
+            myJsonSender.mDeviseID = device_id ;
+            myJsonSender.mAppID = app_id ;
+            myJsonSender.mVersion = version ;
             myJsonSender.start ();
             myJsonSender.join ();
 
@@ -151,6 +153,8 @@ public class MainActivity extends Activity {
             myJsonDeviceTokenSender = new DeviceTokenSender ( Constants.DEVICE_TOKEN_API_URL );
             myJsonDeviceTokenSender.device_id = device_id ;
             myJsonDeviceTokenSender.device_token = device_token ;
+            myJsonDeviceTokenSender.app_id = app_id ;
+            myJsonDeviceTokenSender.version = version ;
             myJsonDeviceTokenSender.start ();
             myJsonDeviceTokenSender.join ();
 

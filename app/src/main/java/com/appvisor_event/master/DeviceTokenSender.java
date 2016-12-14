@@ -22,6 +22,8 @@ public class DeviceTokenSender extends Thread {
     // フィールド変数の設定
     String device_id;  // 送信用のdevice_idをここに格納
     String device_token;  // 送信用のdevice_tokenをここに格納
+    String app_id;  // 送信用のapp_idをここに格納
+    String version;  // 送信用のversionをここに格納
     String mResponse;  // 送信結果を受け取る変数
     String mUrl;  // 送信先のURL
 
@@ -35,7 +37,7 @@ public class DeviceTokenSender extends Thread {
     public void run () {
 
         // 送信用のデータが格納されていなければreturn
-        if ( device_id == null & device_token == null) {
+        if ( device_id == null & device_token == null || app_id == null || version == null) {
             return;
         }
 
@@ -53,6 +55,8 @@ public class DeviceTokenSender extends Thread {
             ArrayList<NameValuePair> DeviceValuePairs = new ArrayList < NameValuePair > () ;
             DeviceValuePairs.add ( new BasicNameValuePair( "device_id", device_id ) );
             DeviceValuePairs.add ( new BasicNameValuePair( "device_token", device_token ) );
+            DeviceValuePairs.add ( new BasicNameValuePair( "app_id", app_id ) );
+            DeviceValuePairs.add ( new BasicNameValuePair( "version", version ) );
 
             // ArrayListをセットする。
             request.setEntity ( new UrlEncodedFormEntity( DeviceValuePairs ) );

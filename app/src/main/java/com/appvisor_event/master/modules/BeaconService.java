@@ -103,8 +103,8 @@ public class BeaconService extends Service implements BeaconConsumer {
         try {
             beaconManager = BeaconManager.getInstanceForApplication(this);
             beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(IBEACON_FORMAT));
-            beaconManager.setBackgroundScanPeriod(TimeUnit.SECONDS.toMillis(5));
-            beaconManager.setBackgroundBetweenScanPeriod(TimeUnit.SECONDS.toMillis(5));
+            beaconManager.setBackgroundScanPeriod(TimeUnit.SECONDS.toMillis(1));
+            beaconManager.setBackgroundBetweenScanPeriod(TimeUnit.SECONDS.toMillis(1));
 
             if(beaconobjs!=null)
             {
@@ -190,7 +190,7 @@ public class BeaconService extends Service implements BeaconConsumer {
                     for(int i = 0 ;i<beaconlist.length;i++) {
 
                         Beacon beacon =(Beacon)beaconlist[i];
-                        if (7.0 < beacon.getDistance())
+                        if (10.0 < beacon.getDistance())
                         {
                             // 遠すぎるビーコンは検知対象外とする
                             continue;

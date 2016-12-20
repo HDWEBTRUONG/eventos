@@ -29,8 +29,8 @@ android {
         }
         omotesando2016_pro {
             applicationId = "tokyo.eventos.omotesando2016"
-            versionCode 3
-            versionName "1.0.1"
+            versionCode 4
+            versionName "1.0.2"
         }
     }
     sourceSets {

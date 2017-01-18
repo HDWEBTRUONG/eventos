@@ -35,6 +35,7 @@ public class GcmClient
     private static final String REGISTRATION_URL                 = BASE_URL + "/registration.php";
     private static final String SETTINGS_URL                     = BASE_URL + "/settings.php";
     private static final String REDIRECT_URL                     = BASE_URL + "/redirect.php";
+    private static final String RESPONSE_URL                     = BASE_URL + "/response.php";
     private static final String EXTRA_MESSAGE                    = "message";
     private static final String PROPERTY_REG_ID                  = "registration_id";
     private static final String PROPERTY_APP_VERSION             = "appVersion";
@@ -93,6 +94,19 @@ public class GcmClient
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         GcmClient.this.context.startActivity(intent);
+    }
+
+    public void sendResponse(String pushId)
+    {
+        if (null == pushId || null == GcmClient.this.registrationId)
+        {
+            return;
+        }
+
+        HttpConnection httpConnection = new HttpConnection();
+        httpConnection.addParam("token", GcmClient.this.registrationId);
+        httpConnection.addParam("id", pushId);
+        httpConnection.asyncPost(RESPONSE_URL);
     }
 
     public String getRegistrationId()

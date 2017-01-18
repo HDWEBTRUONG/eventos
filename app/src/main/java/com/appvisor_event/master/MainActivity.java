@@ -668,16 +668,16 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                 Log.d("MainActivity", "checkGCMNotification: " + key + " = " + extras.get(key));
             }
             this.actionPushNortification(extras);
+            this.sendPushNotificationResponse(extras.getString("id", null));
         }
     }
 
     private void actionPushNortification(Bundle extras)
     {
-        int notificationId = extras.getInt("id", 0);
+        int notificationId = extras.getInt("notificationId", 0);
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(notificationId);
-
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
                 .setTitle(extras.getString("title", getString(R.string.app_name)))
@@ -730,6 +730,16 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
         String version = sharedPreferences.getString("beaconVersion","-1" );
         return  version;
+    }
+
+    private void sendPushNotificationResponse(String pushId)
+    {
+        if (null == pushId || !(pushId instanceof String))
+        {
+            return;
+        }
+
+        this.gcmClient.sendResponse(pushId);
     }
 
     private void setBeaconVersion(String curversion)

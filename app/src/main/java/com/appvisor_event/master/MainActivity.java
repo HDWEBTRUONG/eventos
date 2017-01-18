@@ -355,16 +355,16 @@ public class MainActivity extends Activity {
                 Log.d("MainActivity", "checkGCMNotification: " + key + " = " + extras.get(key));
             }
             this.actionPushNortification(extras);
+            this.sendPushNotificationResponse(extras.getString("id", null));
         }
     }
 
     private void actionPushNortification(Bundle extras)
     {
-        int notificationId = extras.getInt("id", 0);
+        int notificationId = extras.getInt("notificationId", 0);
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(notificationId);
-
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
                 .setTitle("お知らせ")
@@ -431,5 +431,15 @@ public class MainActivity extends Activity {
         myWebView.loadUrl("javascript:showAd();");
 
         StartupAd.setShown(true);
+    }
+
+    private void sendPushNotificationResponse(String pushId)
+    {
+        if (null == pushId || !(pushId instanceof String))
+        {
+            return;
+        }
+
+        this.gcmClient.sendResponse(pushId);
     }
 }

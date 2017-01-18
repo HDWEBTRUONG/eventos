@@ -72,7 +72,7 @@ public class GcmIntentService extends IntentService
         }
 
         int notificationId = new Random().nextInt();
-        extras.putInt("id", notificationId);
+        extras.putInt("notificationId", notificationId);
         extras.putBoolean("GcmNotification", true);
 
         NotificationManager notificationManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);

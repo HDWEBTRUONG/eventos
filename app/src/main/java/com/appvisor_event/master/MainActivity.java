@@ -53,7 +53,7 @@ import java.util.Map;
 public class MainActivity extends BaseActivity implements AppPermission.Interface {
 
         private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
-        
+
     private GcmClient gcmClient = null;
 
     private WebView myWebView;
@@ -708,15 +708,16 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                 Log.d("MainActivity", "checkGCMNotification: " + key + " = " + extras.get(key));
             }
             this.actionPushNortification(extras);
+            this.sendPushNotificationResponse(extras.getString("id", null));
         }
     }
 
-    private void actionPushNortification(Bundle extras) {
-        int notificationId = extras.getInt("id", 0);
+    private void actionPushNortification(Bundle extras)
+    {
+        int notificationId = extras.getInt("notificationId", 0);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(notificationId);
-
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
                 .setTitle(extras.getString("title", getString(R.string.app_name)))
@@ -788,8 +789,19 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         return  version;
     }
 
-    private void setBeaconVersion(String curversion) {
-        SharedPreferences sharedPreferences = getSharedPreferences("beaconData", Context.MODE_PRIVATE);
+    private void sendPushNotificationResponse(String pushId)
+    {
+        if (null == pushId || !(pushId instanceof String))
+        {
+            return;
+        }
+
+        this.gcmClient.sendResponse(pushId);
+    }
+
+    private void setBeaconVersion(String curversion)
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("beaconVersion", curversion);
         editor.apply();

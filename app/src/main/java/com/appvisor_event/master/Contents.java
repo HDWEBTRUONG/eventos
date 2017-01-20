@@ -656,8 +656,17 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                     String code = bundle.getString("data");
                     latitude = bundle.getDouble("lat");
                     longitude = bundle.getDouble("lon");
-                    myWebView.loadUrl("javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
-                    Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
+                    String url = myWebView.getOriginalUrl();
+                    String reading_qrcode_url = "/reading_qrcode/";
+
+                    if (url.indexOf(reading_qrcode_url) != -1) {
+                        myWebView.loadUrl("javascript:Reading.scanQRCode('"+ code + "')");
+                    }else {
+                        latitude = bundle.getDouble("lat");
+                        longitude = bundle.getDouble("lon");
+                        myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + "','" + code + "','" + latitude + "','" + longitude + "')");
+                        Log.d("TAG", "javascript:CheckIn.scanQRCode('" + device_id + "','" + code + "','" + latitude + "','" + longitude + "')");
+                    }
                 }
                 break;
             case ShowGalleryChooserRequestCode:

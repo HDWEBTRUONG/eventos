@@ -35,6 +35,11 @@ public class WebAppInterface {
     }
 
     @JavascriptInterface
+    public void openReadingQRCode(){
+        ((Contents)context).startReadingQRcode();
+    }
+
+    @JavascriptInterface
     public void addNavigationBarButton(String fileName, String url){
         ((Contents)context).buttonBar(fileName, url);
     }

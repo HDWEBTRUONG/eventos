@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        brave_expo {
-            applicationId = "tokyo.eventos.brave_expo"
+        kunikoinoguchi {
+            applicationId = "tokyo.eventos.kunikoinoguchi"
             versionCode 1
             versionName "1.0.0"
         }
-        brave_expo_staging {
-            applicationId = "tokyo.eventos.brave_expo_staging"
+        kunikoinoguchi_staging {
+            applicationId = "tokyo.eventos.kunikoinoguchi_staging"
             versionCode 1
             versionName "1.0.0"
         }

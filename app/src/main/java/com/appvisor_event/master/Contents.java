@@ -701,6 +701,15 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                         } else {
                             textView.setText(myWebView.getTitle());
                         }
+                        
+                        if (url.indexOf("facebook.com") != -1)
+                        {
+                            textView.setText("Facebook");
+                        }
+                        else if (url.indexOf("twitter.com") != -1)
+                        {
+                            textView.setText("Twitter");
+                        }
                     }
                 }
                 // 0.2秒待機

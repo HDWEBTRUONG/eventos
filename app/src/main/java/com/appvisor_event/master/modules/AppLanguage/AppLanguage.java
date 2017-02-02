@@ -10,6 +10,8 @@ public class AppLanguage
 {
     public class Language
     {
+
+        public final static int Unknown  = -1;
         public final static int Japanese = 0;
         public final static int English  = 1;
     }
@@ -32,8 +34,17 @@ public class AppLanguage
     public static int language(Context context)
     {
         SharedPreferences data = context.getSharedPreferences("AppLanguage", Context.MODE_PRIVATE);
-        String language = data.getString("language", "ja");
+        String language = data.getString("language", null);
+        if (null == language)
+        {
+            return Language.Unknown;
+        }
         return AppLanguage.languageWithStringValue(language);
+    }
+
+    public static Boolean isUnknown(Context context)
+    {
+        return (Language.Unknown == AppLanguage.language(context));
     }
 
     public static Boolean isJapanese(Context context)

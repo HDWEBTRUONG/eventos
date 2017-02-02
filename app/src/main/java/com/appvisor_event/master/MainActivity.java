@@ -32,6 +32,9 @@ import com.appvisor_event.master.modules.Advertisement.Advertisement;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
+import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.Photoframe.Photoframe;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
@@ -107,9 +110,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //UUID, Appid, versionの取得
+        device_id  = User.getUUID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        String app_id = User.getAppID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+        String version =  User.getAppVersion(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
 
-        //UUIDの取得
-        device_id = AppUUID.get(this.getApplicationContext()).replace("-", "").replace(" ", "").replace(">", "").replace("<", "");
         //DEVICE_TOKENの取得
         device_token = GCMRegistrar.getRegistrationId(this).replace("-", "").replace(" ", "").replace(">", "").replace("<", "");
         Log.d("device_token", device_token);
@@ -154,15 +159,15 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         }
 
         //端末の言語設定を取得
-        local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
-        if(isFirstStart()) {
-            //端末の言語設定を取得
+
+        if (AppLanguage.isUnknown(getApplicationContext()))
+        {
+            local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
             AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
-            setIsFirstStarts(false);
         }
         else
         {
-            local = AppLanguage.getLanguageWithStringValue(this.getApplicationContext());
+            local = AppLanguage.isJapanese(getApplicationContext()) ? "ja" : "en";
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -384,6 +389,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
         GcmClient.checkPlayServices(this);
         BeaconService.isUnityService = false;
+        checkVersion();
     }
 
     @Override
@@ -909,6 +915,24 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                         }
                     });
                 }
+            }
+        });
+    }
+    
+    public void checkVersion()
+    {
+        ForceUpdate.checkVersion(getApplicationContext(), new ForceUpdate.CheckVersionListener() {
+            @Override
+            public void OnSuccess(ForceUpdateApiClient.Response response) {
+                if (ForceUpdate.isNotSatisfiedVersion(response))
+                {
+                    ForceUpdate.showAlertViewWithData(getFragmentManager(), response.getData());
+                }
+            }
+
+            @Override
+            public void OnError(Exception exception) {
+
             }
         });
     }

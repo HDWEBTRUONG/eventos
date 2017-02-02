@@ -1044,7 +1044,6 @@ public class Contents extends AppActivity implements BeaconConsumer, AppPermissi
 
         Bitmap image = Bitmap.createBitmap(tmpImage, 0, 0, tmpImage.getWidth(), tmpImage.getHeight(), matrix, true);
 
-        Log.d("tto", String.format("width: %d, height: %d", image.getWidth(), image.getHeight()));
         return image;
     }
 

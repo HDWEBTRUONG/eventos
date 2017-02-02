@@ -20,6 +20,9 @@ import android.widget.Button;
 
 import com.appvisor_event.master.modules.Document.Document;
 import com.appvisor_event.master.modules.Document.DocumentsActivity;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
+import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.google.android.gcm.GCMRegistrar;
@@ -54,7 +57,7 @@ public class MainActivity extends AppActivity {
         device_id  = User.getUUID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         String app_id = User.getAppID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         String version =  User.getAppVersion(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
-//        device_id = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+
         //DEVICE_TOKENの取得
         device_token = GCMRegistrar.getRegistrationId(this).replace("-","").replace(" ","").replace(">","").replace("<","");
         Log.d("device_token",device_token);
@@ -82,7 +85,16 @@ public class MainActivity extends AppActivity {
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
         //端末の言語設定を取得
-        String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
+        String local = null;
+        if (AppLanguage.isUnknown(getApplicationContext()))
+        {
+            local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
+            AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
+        }
+        else
+        {
+            local = AppLanguage.isJapanese(getApplicationContext()) ? "ja" : "en";
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
@@ -195,6 +207,8 @@ public class MainActivity extends AppActivity {
         super.onResume();
 
         GcmClient.checkPlayServices(this);
+
+        checkVersion();
     }
 
     @Override
@@ -462,5 +476,23 @@ public class MainActivity extends AppActivity {
     {
         Intent intent = new Intent(this, DocumentsActivity.class);
         startActivity(intent);
+    }
+    
+    public void checkVersion()
+    {
+        ForceUpdate.checkVersion(getApplicationContext(), new ForceUpdate.CheckVersionListener() {
+            @Override
+            public void OnSuccess(ForceUpdateApiClient.Response response) {
+                if (ForceUpdate.isNotSatisfiedVersion(response))
+                {
+                    ForceUpdate.showAlertViewWithData(getFragmentManager(), response.getData());
+                }
+            }
+
+            @Override
+            public void OnError(Exception exception) {
+
+            }
+        });
     }
 }

@@ -1,20 +1,27 @@
 {
   "project_info": {
-    "project_number": "485246024931",
-    "project_id": "api-project-485246024931"
+    "project_number": "1052435883825",
+    "firebase_url": "https://eventos-for-otsuka-shokai-jsf.firebaseio.com",
+    "project_id": "eventos-for-otsuka-shokai-jsf",
+    "storage_bucket": "eventos-for-otsuka-shokai-jsf.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:800785308038:android:974207bfe6d5bb2b",
+        "mobilesdk_app_id": "1:1052435883825:android:c10fb1e482dba8da",
         "android_client_info": {
-          "package_name": "com.appvisor_event.otsuka_shokai_jsf.staging"
+          "package_name": "tokyo.eventos.otsuka_shokai_jsf"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1052435883825-19er73m0om4h9bp3f5hdoaajm3lmscj2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDzBBAPm_eCXiF-CCGieo59L70Ksc0AR6s"
+          "current_key": "AIzaSyDcstBrqTE4pg94M1j8mbv8pRLlKdbwDs0"
         }
       ],
       "services": {
@@ -26,7 +33,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

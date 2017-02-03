@@ -8,11 +8,11 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "omotesando2016" + PASSCODE;
+    public static final String Event = "sportsone-ed" + PASSCODE;
     public static String CurrentSlug = Event;
 
     //ベースURL
-    public static final String BASE_URL = "https://api.appvisor-event.com/";
+    public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -30,11 +30,11 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "www.google.com";
+    public static final String EXHIBITER_DOMAIN_1 = "www.sportsone.jp";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_2 = "drive.google.com";
+    public static final String EXHIBITER_DOMAIN_2 = "XXXXXX";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_3 = "goo.gl";
+    public static final String EXHIBITER_DOMAIN_3 = "XXXXXX";
     //アプリ内に表示させるドメイン
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXX";
     //アプリ内に表示させるドメイン
@@ -59,9 +59,9 @@ public class Constants {
     public static final String Beacon_AGGREGATE_API= BASE_URL+Event+"/api/beacon/messages/push?";
 
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
+    public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
 
-    public static final String GCM_SENDER_ID = "334010452292";
+    public static final String GCM_SENDER_ID = "485246024931";
 
     public static final String RegARFlag= "/"+Event+"/ar/marker-scanner";
 

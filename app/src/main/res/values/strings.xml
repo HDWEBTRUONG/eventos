@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">表参道イルミ</string>
+    <string name="app_name">企業対抗駅伝</string>
     <string name="hello_world"></string>
     <string name="action_settings"></string>
     <string name="normal_button"></string>
@@ -52,13 +52,13 @@
     <string name="share_dialog_text_01_jp">画像が保存されました。</string>
     <string name="share_dialog_text_02_jp">SNSにシェアして下さい。</string>
     <string name="share_dialog_text_03_jp">FacebookとInstagramにシェアする場合は</string>
-    <string name="share_dialog_text_04_jp">#表参道イルミネーションをつけて下さい。</string>
+    <string name="share_dialog_text_04_jp">#企業対抗駅伝をつけて下さい。</string>
     <string name="share_dialog_close_jp">閉じる</string>
 
     <string name="share_dialog_text_01_en">The image has been saved.</string>
     <string name="share_dialog_text_02_en">Please share photo to SNS.</string>
     <string name="share_dialog_text_03_en">If you want to share it with Facebook and Instagram,</string>
-    <string name="share_dialog_text_04_en">enter #表参道イルミネーション.</string>
+    <string name="share_dialog_text_04_en">enter #企業対抗駅伝.</string>
     <string name="share_dialog_close_en">Close</string>
 
 

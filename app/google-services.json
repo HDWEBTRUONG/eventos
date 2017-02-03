@@ -1,27 +1,20 @@
 {
   "project_info": {
-    "project_number": "334010452292",
-    "firebase_url": "https://ardent-codex-151111.firebaseio.com",
-    "project_id": "ardent-codex-151111",
-    "storage_bucket": "ardent-codex-151111.appspot.com"
+    "project_number": "485246024931",
+    "project_id": "api-project-485246024931"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:334010452292:android:ed9350e52164dd59",
+        "mobilesdk_app_id": "1:485246024931:android:bb570df58173633c",
         "android_client_info": {
-          "package_name": "tokyo.eventos.omotesando2016"
+          "package_name": "tokyo.eventos.sportsone_ed_staging"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "334010452292-utk10bnngrmm9mfsn4dm5lq0vcsfp1t5.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBhBlNSTDCXqTP8ibuWT6VumRa6FP6nDRY"
+          "current_key": "AIzaSyDzBBAPm_eCXiF-CCGieo59L70Ksc0AR6s"
         }
       ],
       "services": {
@@ -33,7 +26,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 2
+          "status": 1
         }
       }
     }

@@ -22,15 +22,15 @@ android {
         }
     }
     productFlavors {
-        omotesando2016_stg {
-            applicationId = "tokyo.eventos.omotesando2016_stg"
+        sportsone_ed {
+            applicationId = "tokyo.eventos.sportsone_ed"
             versionCode 1
-            versionName "0.1.0"
+            versionName "1.0.0"
         }
-        omotesando2016_pro {
-            applicationId = "tokyo.eventos.omotesando2016"
-            versionCode 4
-            versionName "1.0.2"
+        sportsone_ed_staging {
+            applicationId = "tokyo.eventos.sportsone_ed_staging"
+            versionCode 1
+            versionName "1.0.0"
         }
     }
     sourceSets {

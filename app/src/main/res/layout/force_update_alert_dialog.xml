@@ -16,7 +16,10 @@
         android:textStyle="bold"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:scrollHorizontally="true" />
 
     <ScrollView
         android:layout_width="match_parent"

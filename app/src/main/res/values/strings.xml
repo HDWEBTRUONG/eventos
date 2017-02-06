@@ -20,4 +20,14 @@
     <string name="location_settings_title">位置情報の設定</string>
     <string name="location_settings_message">位置情報をONにしてください。</string>
 
+    <string name="open_market_for_pdf_viewer_dialog_title">PDFファイルを開けません</string>
+    <string name="open_market_for_pdf_viewer_dialog_message">PDFファイルを閲覧できるアプリケーションがインストールされていません。\n\nPlayストアからインストールしますか？</string>
+    <string name="open_market_for_pdf_viewer_dialog_button_yes">はい</string>
+    <string name="open_market_for_pdf_viewer_dialog_button_no">いいえ</string>
+    <string name="open_market_for_pdf_viewer_dialog_title_english">Cannot open a PDF file</string>
+    <string name="open_market_for_pdf_viewer_dialog_message_english">An application that can view PDF files is not installed.\n\nWould you like to install from the market?</string>
+    <string name="open_market_for_pdf_viewer_dialog_button_yes_english">Yes</string>
+    <string name="open_market_for_pdf_viewer_dialog_button_no_english">No</string>
+    <string name="open_market_for_pdf_viewer_id">market://details?id=com.adobe.reader</string>
+
 </resources>

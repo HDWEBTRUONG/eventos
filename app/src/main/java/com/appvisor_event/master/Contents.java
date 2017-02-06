@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -604,6 +605,21 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
             beaconData = null;
 
+            // webviewではpdfファイルが開けないので専用のアプリで開く
+            if (url.endsWith(".pdf"))
+            {
+                Intent pdfIntent = new Intent(Intent.ACTION_VIEW);
+                pdfIntent.setDataAndType(Uri.parse(url), "application/pdf");
+                try {
+                    startActivity(pdfIntent);
+                }
+                catch (ActivityNotFoundException exception)
+                {
+                    showOpenMarketForPDFViewerDialog();
+                }
+                return true;
+            }
+
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
@@ -1088,5 +1104,30 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         }
 
         return inSampleSize;
+    }
+
+    private void showOpenMarketForPDFViewerDialog()
+    {
+        String dialogTitle     = getResources().getString(R.string.open_market_for_pdf_viewer_dialog_title);
+        String dialogMessage   = getResources().getString(R.string.open_market_for_pdf_viewer_dialog_message);
+        String dialogButtonYes = getResources().getString(R.string.open_market_for_pdf_viewer_dialog_button_yes);
+        String dialogButtonNo  = getResources().getString(R.string.open_market_for_pdf_viewer_dialog_button_no);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(dialogTitle);
+        builder.setMessage(dialogMessage);
+        builder.setPositiveButton(dialogButtonYes,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String dialogMarketId  = getResources().getString(R.string.open_market_for_pdf_viewer_id);
+
+                        Intent marketIntent = new Intent(Intent.ACTION_VIEW);
+                        marketIntent.setData(Uri.parse(dialogMarketId));
+                        startActivity(marketIntent);
+                    }
+                });
+        builder.setNegativeButton(dialogButtonNo, null);
+        builder.create().show();
     }
 }

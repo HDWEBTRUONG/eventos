@@ -26,7 +26,6 @@ public class ForceUpdateAlertDialogFragment extends DialogFragment
         Dialog dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.force_update_alert_dialog);
-//        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         TextView   titleTextView = (TextView)dialog.findViewById(R.id.titleTextView);
         TextView  headerTextView = (TextView)dialog.findViewById(R.id.headerTextView);
@@ -37,28 +36,28 @@ public class ForceUpdateAlertDialogFragment extends DialogFragment
         Bundle arguments = getArguments();
 
         String title = arguments.getString("title");
-        if (null != title)
+        if (null != title && !title.isEmpty())
         {
             titleTextView.setText(title);
             titleTextView.setVisibility(View.VISIBLE);
         }
 
         String header = arguments.getString("header");
-        if (null != header)
+        if (null != header && !header.isEmpty())
         {
             headerTextView.setText(header);
             headerTextView.setVisibility(View.VISIBLE);
         }
 
         String footer = arguments.getString("footer");
-        if (null != footer)
+        if (null != footer && !footer.isEmpty())
         {
             footerTextView.setText(footer);
             footerTextView.setVisibility(View.VISIBLE);
         }
 
         String image = arguments.getString("image");
-        if (null != image)
+        if (null != image && !image.isEmpty())
         {
             Uri uri = Uri.parse(image);
             Glide.with(this).load(uri).into(imageView);

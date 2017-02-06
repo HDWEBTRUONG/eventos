@@ -5,9 +5,9 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "bravesoft-univ";
+    public static final String Event = "inoguchi";
     //ベースURL
-    public static final String BASE_URL = "http://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -28,8 +28,8 @@ public class Constants {
     public static final String EXHIBITER_DOMAIN_1 = "facebook.com";
     public static final String EXHIBITER_DOMAIN_2 = "twitter.com";
     public static final String EXHIBITER_DOMAIN_3 = "kunikoinoguchi.jp";
-    public static final String EXHIBITER_DOMAIN_4 = "";
-    public static final String EXHIBITER_DOMAIN_5 = "";
+    public static final String EXHIBITER_DOMAIN_4 = "XXXXXXXXXXXX";
+    public static final String EXHIBITER_DOMAIN_5 = "XXXXXXXXXXXX";
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL = "www.google.com/maps";
     // GoogleMapのURL
@@ -39,6 +39,6 @@ public class Constants {
     // device_tokenのためのAPI
     public static final String DEVICE_TOKEN_API_URL = BASE_URL + Event + "/api/users/update.json";
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "http://stg-push.appvisor-event.com/";
-    public static final String GCM_SENDER_ID = "485246024931";
+    public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
+    public static final String GCM_SENDER_ID = "501268283986";
 }

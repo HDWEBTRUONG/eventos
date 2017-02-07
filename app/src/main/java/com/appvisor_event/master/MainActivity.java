@@ -531,6 +531,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                 checkVersion();
             }
 
+            if (url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
+
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)

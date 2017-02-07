@@ -389,7 +389,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
         GcmClient.checkPlayServices(this);
         BeaconService.isUnityService = false;
-        checkVersion();
+
+        if (active_url.indexOf(Constants.HOME_URL) != -1)
+        {
+            checkVersion();
+        }
     }
 
     @Override
@@ -521,6 +525,13 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             String checkPasscode = "?passcode=";
             int passcode_index = url.indexOf(checkPasscode);
 
+
+            if (url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
+
+            active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)

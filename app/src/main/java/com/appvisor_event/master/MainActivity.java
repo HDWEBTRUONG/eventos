@@ -208,7 +208,10 @@ public class MainActivity extends AppActivity {
 
         GcmClient.checkPlayServices(this);
 
-        checkVersion();
+        if (active_url.indexOf(Constants.HOME_URL) != -1)
+        {
+            checkVersion();
+        }
     }
 
     @Override
@@ -284,6 +287,11 @@ public class MainActivity extends AppActivity {
                 }
 
             } catch (MalformedURLException e) {}
+
+            if (url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
 
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)

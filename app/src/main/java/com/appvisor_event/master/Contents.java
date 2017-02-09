@@ -3,10 +3,12 @@ package com.appvisor_event.master;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -19,6 +21,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.provider.MediaStore;
@@ -53,6 +56,7 @@ import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -86,6 +90,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private GPSManager gps;
     private ArrayList<Region> regionB;
 
+    private String imageDownloadUrl;
+
     private Uri m_uri;
 
     private static final String[] beaconDetectionRequiredPermissions = {
@@ -110,7 +116,12 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     private static final String[] spiralETicketQRCodeScannerRequiredPermissions = {
             Manifest.permission.CAMERA
     };
-    private static final int spiralETicketQRCodeScannerRequiredPermissionsRequestCode = 102;
+    private static final int spiralETicketQRCodeScannerRequiredPermissionsRequestCode = 103;
+
+    private static final String[] imageDownloadRequiredPermissions = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    private static final int imageDownloadRequiredPermissionsRequestCode = 104;
 
     private String beaconData;
 
@@ -149,6 +160,23 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         findViewById(R.id.title_bar).setVisibility(View.GONE);
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
+
+        myWebView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                WebView webView = (WebView) v;
+                WebView.HitTestResult hr = webView.getHitTestResult();
+                switch (hr.getType())
+                {
+                    case WebView.HitTestResult.IMAGE_TYPE:
+                        String url = hr.getExtra();
+                        confirmDownloadImageDialog(url);
+                        break;
+                }
+                return false;
+            }
+        });
+
         myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
         myWebView.addJavascriptInterface(new AndroidSpiralETicketInterface(this),"AndroidSpiralETicketInterface");
         // JS利用を許可する
@@ -878,6 +906,15 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                         break;
                 }
                 break;
+
+            case imageDownloadRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
         }
 
         return isRequirePermission;
@@ -931,6 +968,20 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                         .create()
                         .show();
                 break;
+
+            case imageDownloadRequiredPermissionsRequestCode:
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.permission_dialog_title))
+                        .setMessage(getString(R.string.permission_dialog_message_storage))
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                AppPermission.openSettings(Contents.this);
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
         }
     }
 
@@ -948,6 +999,10 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
             case beaconDetectionRequiredPermissionsRequestCode:
                 startBeaconDetection(beaconData);
+                break;
+
+            case imageDownloadRequiredPermissionsRequestCode:
+                downloadImage(imageDownloadUrl);
                 break;
         }
     }
@@ -1129,5 +1184,47 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 });
         builder.setNegativeButton(dialogButtonNo, null);
         builder.create().show();
+    }
+
+    private void confirmDownloadImageDialog(final String url)
+    {
+        new AlertDialog.Builder(this)
+                .setMessage("画像を保存しますか？")
+                .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        checkImageDownloadPermissions(url);
+                    }
+                })
+                .setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                })
+                .show();
+    }
+
+    private void checkImageDownloadPermissions(String url)
+    {
+        if (AppPermission.checkPermission(this, imageDownloadRequiredPermissions))
+        {
+            downloadImage(url);
+        }
+        else {
+            imageDownloadUrl = url;
+            AppPermission.requestPermissions(this, imageDownloadRequiredPermissionsRequestCode, imageDownloadRequiredPermissions);
+        }
+    }
+
+    private void downloadImage(final String url)
+    {
+        File image = new File(url);
+
+        DownloadManager mdDownloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, image.getName());
+        mdDownloadManager.enqueue(request);
     }
 }

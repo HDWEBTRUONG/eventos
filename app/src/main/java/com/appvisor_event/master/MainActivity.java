@@ -2,7 +2,9 @@ package com.appvisor_event.master;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,6 +12,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -19,16 +22,18 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.google.android.gcm.GCMRegistrar;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements AppPermission.Interface {
 
     private GcmClient gcmClient = null;
 
@@ -43,6 +48,14 @@ public class MainActivity extends Activity {
     private DeviceTokenSender myJsonDeviceTokenSender;
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
+
+
+    private String imageDownloadUrl;
+
+    private static final String[] imageDownloadRequiredPermissions = {
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    private static final int imageDownloadRequiredPermissionsRequestCode = 104;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -66,6 +79,22 @@ public class MainActivity extends Activity {
 
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
+
+        myWebView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                WebView webView = (WebView) v;
+                WebView.HitTestResult hr = webView.getHitTestResult();
+                switch (hr.getType())
+                {
+                    case WebView.HitTestResult.IMAGE_TYPE:
+                        String url = hr.getExtra();
+                        confirmDownloadImageDialog(url);
+                        break;
+                }
+                return false;
+            }
+        });
 
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
@@ -441,5 +470,109 @@ public class MainActivity extends Activity {
         }
 
         this.gcmClient.sendResponse(pushId);
+    }
+
+    private void confirmDownloadImageDialog(final String url)
+    {
+        new AlertDialog.Builder(this)
+                .setMessage("画像を保存しますか？")
+                .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        checkImageDownloadPermissions(url);
+                    }
+                })
+                .setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                })
+                .show();
+    }
+
+    private void checkImageDownloadPermissions(String url)
+    {
+        if (AppPermission.checkPermission(this, imageDownloadRequiredPermissions))
+        {
+            downloadImage(url);
+        }
+        else {
+            imageDownloadUrl = url;
+            AppPermission.requestPermissions(this, imageDownloadRequiredPermissionsRequestCode, imageDownloadRequiredPermissions);
+        }
+    }
+
+    private void downloadImage(final String url)
+    {
+        File image = new File(url);
+
+        DownloadManager mdDownloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, image.getName());
+        mdDownloadManager.enqueue(request);
+    }
+
+    @Override
+    public Boolean isRequirePermission(int requestCode, String permission) {
+        AppPermission.log(String.format("isRequirePermission: %s", permission));
+
+        Boolean isRequirePermission = false;
+
+        switch (requestCode)
+        {
+            case imageDownloadRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case android.Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
+        }
+
+        return isRequirePermission;
+    }
+
+    @Override
+    public void allRequiredPermissions(int requestCode, String[] permissions)
+    {
+        switch (requestCode)
+        {
+            case imageDownloadRequiredPermissionsRequestCode:
+                downloadImage(imageDownloadUrl);
+                break;
+        }
+    }
+
+    @Override
+    public void showErrorDialog(int requestCode)
+    {
+        AppPermission.log(String.format("showErrorDialog"));
+
+        switch (requestCode)
+        {
+            case imageDownloadRequiredPermissionsRequestCode:
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.permission_dialog_title))
+                        .setMessage(getString(R.string.permission_dialog_message_storage))
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                AppPermission.openSettings(MainActivity.this);
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        AppPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 }

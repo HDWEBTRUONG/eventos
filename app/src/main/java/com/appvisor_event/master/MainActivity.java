@@ -18,9 +18,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.Document.Document;
 import com.appvisor_event.master.modules.Document.DocumentsActivity;
-import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
@@ -480,12 +480,17 @@ public class MainActivity extends AppActivity {
         this.gcmClient.sendResponse(pushId);
     }
 
-    private void showDocumentsActivity()
-    {
-        Intent intent = new Intent(this, DocumentsActivity.class);
-        startActivity(intent);
+    @Override
+    public void onStop() {
+        super.onStop();
     }
-    
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ForceUpdate.dismissAlertView();
+    }
+
     public void checkVersion()
     {
         ForceUpdate.checkVersion(getApplicationContext(), new ForceUpdate.CheckVersionListener() {
@@ -502,5 +507,11 @@ public class MainActivity extends AppActivity {
 
             }
         });
+    }
+
+    private void showDocumentsActivity()
+    {
+        Intent intent = new Intent(this, DocumentsActivity.class);
+        startActivity(intent);
     }
 }

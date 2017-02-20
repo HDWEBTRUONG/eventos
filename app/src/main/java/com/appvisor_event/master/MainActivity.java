@@ -901,6 +901,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         SharedPreferences.Editor editor = data.edit();
         editor.putInt("background_flg", 0);
         editor.apply();
+        ForceUpdate.dismissAlertView();
     }
 
     private void reset()
@@ -934,7 +935,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             }
         });
     }
-    
+
     public void checkVersion()
     {
         ForceUpdate.checkVersion(getApplicationContext(), new ForceUpdate.CheckVersionListener() {
@@ -951,5 +952,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
             }
         });
+    }
+
+    private void showDocumentsActivity()
+    {
+        Intent intent = new Intent(this, DocumentsActivity.class);
+        startActivity(intent);
     }
 }

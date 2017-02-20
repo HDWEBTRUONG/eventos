@@ -60,14 +60,24 @@ public class ForceUpdate
 
     static public void showAlertViewWithData(FragmentManager fragmentManager, Bundle data)
     {
-        if (null != alertDialogFragment)
+        if (null == alertDialogFragment)
+        {
+            alertDialogFragment = new ForceUpdateAlertDialogFragment();
+        }
+
+        alertDialogFragment.setArguments(data);
+        alertDialogFragment.setCancelable(false);
+        alertDialogFragment.show(fragmentManager, null);
+    }
+
+    static public void dismissAlertView()
+    {
+        if (null == alertDialogFragment)
         {
             return;
         }
 
-        alertDialogFragment = new ForceUpdateAlertDialogFragment();
-        alertDialogFragment.setArguments(data);
-        alertDialogFragment.setCancelable(false);
-        alertDialogFragment.show(fragmentManager, null);
+        alertDialogFragment.dismissAllowingStateLoss();
+        alertDialogFragment = null;
     }
 }

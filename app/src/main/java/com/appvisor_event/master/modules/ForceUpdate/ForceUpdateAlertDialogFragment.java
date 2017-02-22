@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.appvisor_event.master.R;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 /**
  * Created by bsfuji on 2017/02/02.
@@ -60,7 +61,7 @@ public class ForceUpdateAlertDialogFragment extends DialogFragment
         if (null != image && !image.isEmpty())
         {
             Uri uri = Uri.parse(image);
-            Glide.with(this).load(uri).into(imageView);
+            Glide.with(this).load(uri).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(imageView);
             imageView.setVisibility(View.VISIBLE);
         }
 

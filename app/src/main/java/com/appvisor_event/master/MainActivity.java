@@ -19,10 +19,12 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+
 import com.appvisor_event.master.modules.Document.Document;
 import com.appvisor_event.master.modules.Document.DocumentsActivity;
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
+
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.google.android.gcm.GCMRegistrar;
@@ -200,6 +202,8 @@ public class MainActivity extends AppActivity {
         this.checkGCMNotification();
 
         StartupAd.setShown(false);
+
+        checkVersion();
     }
 
     @Override
@@ -207,11 +211,6 @@ public class MainActivity extends AppActivity {
         super.onResume();
 
         GcmClient.checkPlayServices(this);
-
-        if (active_url.indexOf(Constants.HOME_URL) != -1)
-        {
-            checkVersion();
-        }
     }
 
     @Override
@@ -261,6 +260,11 @@ public class MainActivity extends AppActivity {
         @Override
         public void onRefresh() {
             myWebView.reload();
+
+            if (active_url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
             // 3秒待機
 //            new Handler().postDelayed(new Runnable() {
 //
@@ -488,6 +492,7 @@ public class MainActivity extends AppActivity {
     @Override
     public void onStart() {
         super.onStart();
+
         ForceUpdate.dismissAlertView();
     }
 

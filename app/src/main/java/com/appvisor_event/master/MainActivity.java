@@ -19,12 +19,8 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
-
 import com.appvisor_event.master.modules.Document.Document;
 import com.appvisor_event.master.modules.Document.DocumentsActivity;
-import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
-import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
-
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.google.android.gcm.GCMRegistrar;
@@ -482,36 +478,6 @@ public class MainActivity extends AppActivity {
         }
 
         this.gcmClient.sendResponse(pushId);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        ForceUpdate.dismissAlertView();
-    }
-
-    public void checkVersion()
-    {
-        ForceUpdate.checkVersion(getApplicationContext(), new ForceUpdate.CheckVersionListener() {
-            @Override
-            public void OnSuccess(ForceUpdateApiClient.Response response) {
-                if (ForceUpdate.isNotSatisfiedVersion(response))
-                {
-                    ForceUpdate.showAlertViewWithData(getFragmentManager(), response.getData());
-                }
-            }
-
-            @Override
-            public void OnError(Exception exception) {
-
-            }
-        });
     }
 
     private void showDocumentsActivity()

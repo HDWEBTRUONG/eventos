@@ -33,8 +33,10 @@ import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
+
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.Photoframe.Photoframe;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
@@ -381,6 +383,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                 startService(new Intent(MainActivity.this, BeaconService.class));
                 break;
         }
+        checkVersion();
     }
 
     @Override
@@ -501,6 +504,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         @Override
         public void onRefresh() {
             myWebView.reload();
+
+            if (active_url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
         }
     };
 

@@ -20,12 +20,12 @@ android {
     }
     productFlavors {
         bravesoft_app {
-            applicationId = "tokyo.eventos.bravesoft_app"
+            applicationId = "tokyo.eventos.edogawa-u"
             versionCode 1
             versionName "1.0.0"
         }
         bravesoft_app_staging {
-            applicationId = "tokyo.eventos.bravesoft_app_staging"
+            applicationId = "tokyo.eventos.edogawa-u_staging"
             versionCode 1
             versionName "1.0.0"
         }

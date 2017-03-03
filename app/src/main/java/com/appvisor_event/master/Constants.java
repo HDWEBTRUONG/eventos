@@ -25,7 +25,7 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "www.edogawa-u.ac.jp";
+    public static final String EXHIBITER_DOMAIN_1 = "edogawa-u.ac.jp";
     public static final String EXHIBITER_DOMAIN_2 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_3 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXXXX";

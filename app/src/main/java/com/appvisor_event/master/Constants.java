@@ -61,7 +61,7 @@ public class Constants {
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
 
-    public static final String GCM_SENDER_ID = "485246024931";
+    public static final String GCM_SENDER_ID = "766558889496";
 
     public static final String RegARFlag= "/"+Event+"/ar/marker-scanner";
 

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -18,6 +19,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
+import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.google.android.gcm.GCMRegistrar;
 
@@ -34,6 +38,7 @@ public class MainActivity extends Activity {
 //    private AppVisorPush appVisorPush;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String active_url = Constants.HOME_URL;
+    private String local;
     private String device_id;
     private String device_token;
     private Map<String, String> extraHeaders;
@@ -76,6 +81,18 @@ public class MainActivity extends Activity {
         {
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
+
+        //端末の言語設定を取得
+        if (AppLanguage.isUnknown(getApplicationContext()))
+        {
+            local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
+            AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
+        }
+        else
+        {
+            local = AppLanguage.isJapanese(getApplicationContext()) ? "ja" : "en";
+        }
+
 
         // UUIDが取得できていれば、URLをロードする。
         if(!mIsFailure){
@@ -173,12 +190,21 @@ public class MainActivity extends Activity {
         this.initGCM();
         this.checkGCMNotification();
     }
-
     @Override
+    public void onStart() {
+        super.onStart();
+        ForceUpdate.dismissAlertView();
+    }
+        @Override
     protected void onResume(){
         super.onResume();
 
         GcmClient.checkPlayServices(this);
+        if (active_url.indexOf(Constants.HOME_URL) != -1)
+        {
+            checkVersion();
+        }
+
     }
 
     @Override
@@ -258,6 +284,10 @@ public class MainActivity extends Activity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
+            if (url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
             if(url.equals(Constants.ERROR_URL)){
                 mIsFailure = true;
             }
@@ -387,4 +417,22 @@ public class MainActivity extends Activity {
 
         dialog.create().show();
     }
+    public void checkVersion()
+    {
+        ForceUpdate.checkVersion(getApplicationContext(), new ForceUpdate.CheckVersionListener() {
+            @Override
+            public void OnSuccess(ForceUpdateApiClient.Response response) {
+                if (ForceUpdate.isNotSatisfiedVersion(response))
+                {
+                    ForceUpdate.showAlertViewWithData(getFragmentManager(), response.getData());
+                }
+            }
+
+            @Override
+            public void OnError(Exception exception) {
+
+            }
+        });
+    }
+
 }

@@ -20,4 +20,6 @@
     <string name="location_settings_title">位置情報の設定</string>
     <string name="location_settings_message">位置情報をONにしてください。</string>
 
+    <string name="force_update_alert_dialog_store_button_label">OK</string>
+
 </resources>

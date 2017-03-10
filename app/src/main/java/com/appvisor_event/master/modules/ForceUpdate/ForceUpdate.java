@@ -1,6 +1,8 @@
 package com.appvisor_event.master.modules.ForceUpdate;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -60,14 +62,22 @@ public class ForceUpdate
 
     static public void showAlertViewWithData(FragmentManager fragmentManager, Bundle data)
     {
-        if (null == alertDialogFragment)
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment prevFragment = fragmentManager.findFragmentByTag(ForceUpdateAlertDialogFragment.class.getName());
+        if (null != prevFragment)
         {
-            alertDialogFragment = new ForceUpdateAlertDialogFragment();
+            dismissAlertView();
+            fragmentTransaction.remove(prevFragment);
         }
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
 
+        alertDialogFragment = new ForceUpdateAlertDialogFragment();
         alertDialogFragment.setArguments(data);
         alertDialogFragment.setCancelable(false);
-        alertDialogFragment.show(fragmentManager, null);
+        fragmentTransaction.add(alertDialogFragment, ForceUpdateAlertDialogFragment.class.getName());
+        fragmentTransaction.show(alertDialogFragment);
+
     }
 
     static public void dismissAlertView()
@@ -77,7 +87,10 @@ public class ForceUpdate
             return;
         }
 
-        alertDialogFragment.dismissAllowingStateLoss();
+        if (null != alertDialogFragment.getFragmentManager())
+        {
+            alertDialogFragment.dismissAllowingStateLoss();
+        }
         alertDialogFragment = null;
     }
 }

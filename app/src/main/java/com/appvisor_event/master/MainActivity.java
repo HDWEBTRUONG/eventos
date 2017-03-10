@@ -30,7 +30,7 @@ import java.util.Map;
 
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppActivity {
 
     private GcmClient gcmClient = null;
 

@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubMenu extends Activity {
+public class SubMenu extends AppActivity {
 
     private WebView myWebView;
     private boolean mIsFailure = false;

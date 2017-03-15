@@ -21,8 +21,8 @@ android {
     productFlavors {
         passport{
             applicationId = "com.tamiya.passport"
-            versionCode 2016122701
-            versionName "1.0.3"
+            versionCode 2017031501
+            versionName "1.1.0"
         }
     }
 }

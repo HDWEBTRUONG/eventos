@@ -1,11 +1,18 @@
 package com.appvisor_event.master.modules.Schedule;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 /**
  * Created by bsfuji on 2017/03/27.
@@ -17,12 +24,15 @@ public class Schedule
     private Activity activity = null;
     private URL           url = null;
 
+    SharedPreferences sharedPreferences = null;
+
     public Schedule(WebView webView, Activity activity)
     {
         webView.addJavascriptInterface(this, "ScheduleJavascriptInterface");
 
-        this.webView  = webView;
-        this.activity = activity;
+        this.webView           = webView;
+        this.activity          = activity;
+        this.sharedPreferences = activity.getSharedPreferences("Schedule", Context.MODE_PRIVATE);
     }
 
     public void setUrl(URL url)
@@ -148,24 +158,102 @@ public class Schedule
     @JavascriptInterface
     public void onReceiveSchedulesJsonString(String schedulesJsonString)
     {
-        Log.d("tto", "onReceiveSchedulesJsonString: " + schedulesJsonString);
+        Log.d("Schedule", "onReceiveSchedulesJsonString: " + schedulesJsonString);
 
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+
+        try {
+            JSONArray schedules = new JSONArray(schedulesJsonString);
+            for (int i = 0; i < schedules.length(); i++)
+            {
+                JSONObject schedule = schedules.getJSONObject(i);
+
+                String scheduleId    = schedule.getString("id");
+                String scheduleTitle = schedule.getString("title");
+                String scheduleStart = schedule.getString("start");
+                String scheduleEnd   = schedule.getString("end");
+
+                long scheduleEventId = sharedPreferences.getLong(scheduleId, 0);
+
                 if (isRegistCalenderUrl(url))
                 {
-                    webView.loadUrl(scheduleRegistSuccessJavascript());
-                    return;
+                    if (0 != scheduleEventId)
+                    {
+                        Log.d("Schedule", "Is saved schedule. " + schedule.toString(2));
+                        continue;
+                    }
+
+                    scheduleEventId = ScheduleCalender.addEvent(
+                            activity,
+                            1,
+                            scheduleTitle,
+                            null,
+                            "1",
+                            simpleDateFormat.parse(scheduleStart).getTime(),
+                            simpleDateFormat.parse(scheduleEnd).getTime()
+                    );
+
+                    if (0 != scheduleEventId)
+                    {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putLong(scheduleId, scheduleEventId);
+                        editor.commit();
+                    }
                 }
 
                 if (isDeleteCalenderUrl(url))
                 {
-                    webView.loadUrl(scheduleDeleteSuccessJavascript());
-                    return;
+                    if (0 == scheduleEventId)
+                    {
+                        Log.d("Schedule", "is not saved schedule. " + schedule.toString(2));
+                        continue;
+                    }
+
+                    int numberOfDeleteSchedules = ScheduleCalender.deleteEvent(activity, scheduleEventId);
+                    if (0 < numberOfDeleteSchedules)
+                    {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.remove(scheduleId);
+                        editor.commit();
+                    }
                 }
             }
-        });
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isRegistCalenderUrl(url))
+                    {
+                        webView.loadUrl(scheduleRegistSuccessJavascript());
+                        return;
+                    }
+
+                    if (isDeleteCalenderUrl(url))
+                    {
+                        webView.loadUrl(scheduleDeleteSuccessJavascript());
+                        return;
+                    }
+                }
+            });
+        } catch (Exception e) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isRegistCalenderUrl(url))
+                    {
+                        webView.loadUrl(scheduleRegistFailedJavascript());
+                        return;
+                    }
+
+                    if (isDeleteCalenderUrl(url))
+                    {
+                        webView.loadUrl(scheduleDeleteFailedJavascript());
+                        return;
+                    }
+                }
+            });
+        }
     }
 
     public void registSchedules()

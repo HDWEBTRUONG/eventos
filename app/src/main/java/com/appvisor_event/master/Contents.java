@@ -1,7 +1,6 @@
 package com.appvisor_event.master;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
@@ -41,6 +40,8 @@ import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
+import com.appvisor_event.master.modules.PermissionRequestManager.PermissionRequestManager;
+import com.appvisor_event.master.modules.Schedule.Schedule;
 import com.appvisor_event.master.modules.Spiral.ETicket.QRCodeScannerActivity;
 import com.appvisor_event.master.modules.WebAppInterface;
 
@@ -56,13 +57,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Contents extends Activity implements BeaconConsumer, AppPermission.Interface {
+public class Contents extends AppActivity implements BeaconConsumer, AppPermission.Interface {
 
     private WebView myWebView;
     private static final String TAG = "TAG";
@@ -121,6 +124,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
     private static final int ShowGalleryChooserRequestCode = 200;
 
+    private Schedule schedule = null;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
@@ -151,6 +156,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         myWebView = (WebView) findViewById(R.id.webView1);
         myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
         myWebView.addJavascriptInterface(new AndroidSpiralETicketInterface(this),"AndroidSpiralETicketInterface");
+        schedule = new Schedule(myWebView, this);
+        myWebView.addJavascriptInterface(schedule, "ScheduleJavascriptInterface");
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
         // ファイルアクセスを許可する
@@ -619,6 +626,25 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 }
                 return true;
             }
+
+            try {
+                final URL urlObject = new URL(url);
+
+                // 「スケジュール登録」リクエスト
+                if (Schedule.isRegistCalenderUrl(urlObject))
+                {
+                    registSchedules(urlObject);
+                    return true;
+                }
+
+                // 「スケジュール削除」リクエスト
+                if (Schedule.isDeleteCalenderUrl(urlObject))
+                {
+                    deleteSchedules(urlObject);
+                    return true;
+                }
+
+            } catch (MalformedURLException e) {}
 
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
@@ -1129,5 +1155,41 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 });
         builder.setNegativeButton(dialogButtonNo, null);
         builder.create().show();
+    }
+
+    private void registSchedules(URL url)
+    {
+        schedule.setUrl(url);
+        PermissionRequestManager.getInstance().requestPermissions(Contents.this, new String[]{Manifest.permission.WRITE_CALENDAR}, new PermissionRequestManager.OnRequestPermissionsResultListener() {
+            @Override
+            public void onRequestPermissionsResult(PermissionRequestManager.PermissionsResult result) {
+                if (result.isGrantedAll())
+                {
+                    schedule.registSchedules();
+                }
+                else
+                {
+                    schedule.cancel();
+                }
+            }
+        });
+    }
+
+    private void deleteSchedules(URL url)
+    {
+        schedule.setUrl(url);
+        PermissionRequestManager.getInstance().requestPermissions(Contents.this, new String[]{Manifest.permission.WRITE_CALENDAR}, new PermissionRequestManager.OnRequestPermissionsResultListener() {
+            @Override
+            public void onRequestPermissionsResult(PermissionRequestManager.PermissionsResult result) {
+                if (result.isGrantedAll())
+                {
+                    schedule.deleteSchedules();
+                }
+                else
+                {
+                    schedule.cancel();
+                }
+            }
+        });
     }
 }

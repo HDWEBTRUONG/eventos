@@ -1,6 +1,5 @@
 package com.appvisor_event.master;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
@@ -28,7 +27,7 @@ import java.util.Map;
 
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppActivity {
 
     private GcmClient gcmClient = null;
 

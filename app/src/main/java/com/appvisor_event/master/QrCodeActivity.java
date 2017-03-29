@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
-public class QrCodeActivity extends Activity implements ZXingScannerView.ResultHandler, LocationListener{
+public class QrCodeActivity extends AppActivity implements ZXingScannerView.ResultHandler, LocationListener{
 
     private ZXingScannerView mScannerView;
     private ArrayList<BarcodeFormat> formats;

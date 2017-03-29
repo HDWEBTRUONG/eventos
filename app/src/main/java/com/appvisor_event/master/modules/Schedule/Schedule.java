@@ -1,5 +1,10 @@
 package com.appvisor_event.master.modules.Schedule;
 
+import android.app.Activity;
+import android.util.Log;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+
 import java.net.URL;
 
 /**
@@ -8,18 +13,21 @@ import java.net.URL;
 
 public class Schedule
 {
-    private static Schedule instance = null;
+    private WebView   webView = null;
+    private Activity activity = null;
+    private URL           url = null;
 
-    private Schedule() {}
-
-    public static Schedule sharedInstance()
+    public Schedule(WebView webView, Activity activity)
     {
-        if (null == instance)
-        {
-            instance = new Schedule();
-        }
+        webView.addJavascriptInterface(this, "ScheduleJavascriptInterface");
 
-        return instance;
+        this.webView  = webView;
+        this.activity = activity;
+    }
+
+    public void setUrl(URL url)
+    {
+        this.url = url;
     }
 
     public static Boolean isRegistCalenderUrl(URL url)
@@ -52,98 +60,136 @@ public class Schedule
         return url.getPath().startsWith("/delete-calender/mass");
     }
 
-    public static String scheduleGetJavascriptWithUrl(URL url)
+    public String scheduleGetJavascript()
     {
         if (isRegistCalenderUrlForDetail(url))
         {
-            return "Detail.schedule();";
+            return "javascript:ScheduleJavascriptInterface.onReceiveSchedulesJsonString(Detail.schedule());";
         }
 
         if (isDeleteCalenderUrlForDetail(url))
         {
-            return "Detail.schedule();";
+            return "javascript:ScheduleJavascriptInterface.onReceiveSchedulesJsonString(Detail.schedule());";
         }
 
         if (isRegistCalenderUrlForMass(url))
         {
-            return "MassRegistration.schedules();";
+            return "javascript:ScheduleJavascriptInterface.onReceiveSchedulesJsonString(MassRegistration.schedules());";
         }
 
         if (isDeleteCalenderUrlForMass(url))
         {
-            return "MassRegistration.schedules();";
+            return "javascript:ScheduleJavascriptInterface.onReceiveSchedulesJsonString(MassRegistration.schedules());";
         }
 
         return null;
     }
 
-    public static String scheduleRegistSuccessJavascriptWithUrl(URL url)
+    public String scheduleRegistSuccessJavascript()
     {
         if (isRegistCalenderUrlForDetail(url))
         {
-            return "Detail.onRegistSuccess();";
+            return "javascript:Detail.onRegistSuccess();";
         }
 
         if (isRegistCalenderUrlForMass(url))
         {
-            return "MassRegistration.onRegistSuccess();";
+            return "javascript:MassRegistration.onRegistSuccess();";
         }
 
         return null;
     }
 
-    public static String scheduleDeleteSuccessJavascriptWithUrl(URL url)
+    public String scheduleDeleteSuccessJavascript()
+    {
+        if (isDeleteCalenderUrlForDetail(url))
+        {
+            return "javascript:Detail.onDeleteSuccess();";
+        }
+
+        if (isDeleteCalenderUrlForMass(url))
+        {
+            return "javascript:MassRegistration.onDeleteSuccess();";
+        }
+
+        return null;
+    }
+
+    public String scheduleRegistFailedJavascript()
     {
         if (isRegistCalenderUrlForDetail(url))
         {
-            return "Detail.onDeleteSuccess();";
+            return "javascript:Detail.onRegistFailed();";
         }
 
         if (isRegistCalenderUrlForMass(url))
         {
-            return "MassRegistration.onDeleteSuccess();";
+            return "javascript:MassRegistration.onRegistFailed();";
         }
 
         return null;
     }
 
-    public static String scheduleRegistFailedJavascriptWithUrl(URL url)
+    public String scheduleDeleteFailedJavascript()
     {
         if (isRegistCalenderUrlForDetail(url))
         {
-            return "Detail.onRegistFailed();";
+            return "javascript:Detail.onDeleteFailed();";
         }
 
         if (isRegistCalenderUrlForMass(url))
         {
-            return "MassRegistration.onRegistFailed();";
+            return "javascript:MassRegistration.onDeleteFailed();";
         }
 
         return null;
     }
 
-    public static String scheduleDeleteFailedJavascriptWithUrl(URL url)
+    @JavascriptInterface
+    public void onReceiveSchedulesJsonString(String schedulesJsonString)
     {
-        if (isRegistCalenderUrlForDetail(url))
-        {
-            return "Detail.onDeleteFailed();";
-        }
+        Log.d("tto", "onReceiveSchedulesJsonString: " + schedulesJsonString);
 
-        if (isRegistCalenderUrlForMass(url))
-        {
-            return "MassRegistration.onDeleteFailed();";
-        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isRegistCalenderUrl(url))
+                {
+                    webView.loadUrl(scheduleRegistSuccessJavascript());
+                    return;
+                }
 
-        return null;
+                if (isDeleteCalenderUrl(url))
+                {
+                    webView.loadUrl(scheduleDeleteSuccessJavascript());
+                    return;
+                }
+            }
+        });
     }
 
-    public void registSchedulesWithJsonString(String schedulesJsonString)
+    public void registSchedules()
     {
-
+        webView.loadUrl(scheduleGetJavascript());
     }
 
-    public void deleteSchedulesWithJsonString(String schedulesJsonString)
+    public void deleteSchedules()
     {
+        webView.loadUrl(scheduleGetJavascript());
+    }
 
+    public void cancel()
+    {
+        if (isRegistCalenderUrl(url))
+        {
+            webView.loadUrl(scheduleRegistFailedJavascript());
+            return;
+        }
+
+        if (isDeleteCalenderUrl(url))
+        {
+            webView.loadUrl(scheduleDeleteFailedJavascript());
+            return;
+        }
     }
 }

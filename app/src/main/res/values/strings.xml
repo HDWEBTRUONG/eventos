@@ -29,5 +29,7 @@
     <string name="open_market_for_pdf_viewer_dialog_button_yes_english">Yes</string>
     <string name="open_market_for_pdf_viewer_dialog_button_no_english">No</string>
     <string name="open_market_for_pdf_viewer_id">market://details?id=com.adobe.reader</string>
+    
+    <string name="documents_content_title">資料ダウンロード</string>
 
 </resources>

@@ -18,10 +18,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.appvisor_event.master.modules.Document.Document;
+import com.appvisor_event.master.modules.Document.DocumentsActivity;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.google.android.gcm.GCMRegistrar;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -255,6 +259,18 @@ public class MainActivity extends AppActivity {
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            try {
+                final URL urlObject = new URL(url);
+
+                // 「資料」リクエスト
+                if (Document.isDocumentUrl(urlObject))
+                {
+                    showDocumentsActivity();
+                    return true;
+                }
+
+            } catch (MalformedURLException e) {}
+
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)
@@ -440,5 +456,11 @@ public class MainActivity extends AppActivity {
         }
 
         this.gcmClient.sendResponse(pushId);
+    }
+
+    private void showDocumentsActivity()
+    {
+        Intent intent = new Intent(this, DocumentsActivity.class);
+        startActivity(intent);
     }
 }

@@ -104,6 +104,7 @@
 
         <activity android:name=".QrCodeActivity"></activity>
         <activity android:name=".modules.Spiral.ETicket.QRCodeScannerActivity"></activity>
+        <activity android:name=".modules.Document.DocumentsActivity" android:theme="@android:style/Theme.Light.NoTitleBar"></activity>
     </application>
 
 </manifest>

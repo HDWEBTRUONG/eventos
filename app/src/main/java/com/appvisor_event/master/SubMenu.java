@@ -14,6 +14,11 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.appvisor_event.master.modules.Document.Document;
+import com.appvisor_event.master.modules.Document.DocumentsActivity;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,6 +107,20 @@ public class SubMenu extends AppActivity {
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            try {
+                final URL urlObject = new URL(url);
+
+                // 「資料」リクエスト
+                if (Document.isDocumentUrl(urlObject))
+                {
+                    showDocumentsActivity();
+                    finish();
+                    return true;
+                }
+
+            } catch (MalformedURLException e) {}
+
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
@@ -192,4 +211,10 @@ public class SubMenu extends AppActivity {
             myWebView.reload();
         }
     };
+
+    private void showDocumentsActivity()
+    {
+        Intent intent = new Intent(this, DocumentsActivity.class);
+        startActivity(intent);
+    }
 }

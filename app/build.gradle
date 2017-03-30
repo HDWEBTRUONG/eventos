@@ -40,4 +40,5 @@ dependencies {
     compile 'org.altbeacon:android-beacon-library:2+'
     compile 'me.dm7.barcodescanner:zxing:1.5'
     compile "com.google.android.gms:play-services-gcm:8.3.0"
+    compile group: 'com.tonicartos', name: 'stickygridheaders', version: '1.0.1'
 }

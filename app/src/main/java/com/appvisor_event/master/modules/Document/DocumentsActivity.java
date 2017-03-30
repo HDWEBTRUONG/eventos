@@ -1,6 +1,7 @@
 package com.appvisor_event.master.modules.Document;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -173,6 +174,13 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
                     document.saveDocument(documentItem);
                 }
 
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
                 showViewer(documentItem);
             }
 
@@ -213,6 +221,10 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
         {
             return;
         }
+
+        Intent intent = new Intent(this, DocumentViewerActivity.class);
+        intent.putExtra("document", item.toString());
+        startActivity(intent);
     }
 
     public void onClickButtonBack(View view)

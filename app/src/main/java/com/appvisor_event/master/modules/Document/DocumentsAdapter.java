@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.appvisor_event.master.R.id.imageView;
+import static com.appvisor_event.master.R.id.markImageView;
 
 /**
  * Created by bsfuji on 2017/03/30.
@@ -111,6 +112,7 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
             convertView = mInflater.inflate(mItemResId, parent, false);
             holder = new DocumentsAdapter.ViewHolder();
             holder.imageView = (ImageView)convertView.findViewById(imageView);
+            holder.markImageView = (ImageView)convertView.findViewById(markImageView);
             convertView.setTag(holder);
         }
         else
@@ -119,6 +121,12 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
         }
 
         Document.Item item = getItem(position);
+
+        holder.markImageView.setVisibility(View.GONE);
+        if (item.isSaved(context))
+        {
+            holder.markImageView.setVisibility(View.VISIBLE);
+        }
 
         Glide.with(context).load(item.getThumbnailImageUri()).skipMemoryCache(true).into(holder.imageView);
 
@@ -142,5 +150,6 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
 
     protected class ViewHolder{
         public ImageView imageView;
+        public ImageView markImageView;
     }
 }

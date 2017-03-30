@@ -271,6 +271,12 @@ public class Document
             return file.renameTo(new File(saveDirectory, savedFileName()));
         }
 
+        public boolean isSaved(Context context)
+        {
+            File file = new File(context.getFilesDir(), savedFileName());
+            return (null == file) ? false : file.canRead();
+        }
+
         public boolean equals(Object object)
         {
             if (null == object)

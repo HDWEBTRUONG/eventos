@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import static com.appvisor_event.master.Constants.BASE_URL;
+
 /**
  * Created by bsfuji on 2017/03/29.
  */
@@ -150,6 +152,11 @@ public class Document
             return this.dataPath;
         }
 
+        public String getThumbnailImageUri()
+        {
+            return BASE_URL + this.thumbnailImagePath;
+        }
+
         public boolean isPublic()
         {
             return this.period.isWithin();
@@ -167,7 +174,7 @@ public class Document
                 return false;
             }
 
-            return ((Item)object).getId() == this.id;
+            return ((Item)object).getId().equals(this.id);
         }
 
         public String toString()
@@ -237,7 +244,7 @@ public class Document
 
     public List<Item> getDocuments()
     {
-        return documents;
+        return new ArrayList<>(documents);
     }
 
     public void saveDocument(Item item)

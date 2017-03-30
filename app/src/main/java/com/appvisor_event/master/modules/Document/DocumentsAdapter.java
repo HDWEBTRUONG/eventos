@@ -6,12 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static com.appvisor_event.master.R.id.imageView;
 
 /**
  * Created by bsfuji on 2017/03/30.
@@ -23,6 +27,8 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
     private LayoutInflater mInflater;
     private int mItemResId;
     private List<Document.Item> mItems;
+    private Context context;
+    private Document document;
 
     public DocumentsAdapter(Context context, List<Document.Item> items, int headerResId, int itemResId)
     {
@@ -104,7 +110,7 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
         {
             convertView = mInflater.inflate(mItemResId, parent, false);
             holder = new DocumentsAdapter.ViewHolder();
-            holder.textView = (TextView)convertView.findViewById(android.R.id.text1);
+            holder.imageView = (ImageView)convertView.findViewById(imageView);
             convertView.setTag(holder);
         }
         else
@@ -113,9 +119,8 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
         }
 
         Document.Item item = getItem(position);
-        holder.textView.setText(item.getName());
 
-        Log.d("tto", "item: " + item.toString() + " position: " + position);
+        Glide.with(context).load(item.getThumbnailImageUri()).skipMemoryCache(true).into(holder.imageView);
 
         return convertView;
     }
@@ -126,6 +131,8 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
         this.mHeaderResId = headerResId;
         this.mItemResId = itemResId;
         mInflater = LayoutInflater.from(context);
+        this.context = context;
+        this.document = new Document(context.getApplicationContext());
     }
 
     protected class HeaderViewHolder
@@ -134,6 +141,6 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
     }
 
     protected class ViewHolder{
-        public TextView textView;
+        public ImageView imageView;
     }
 }

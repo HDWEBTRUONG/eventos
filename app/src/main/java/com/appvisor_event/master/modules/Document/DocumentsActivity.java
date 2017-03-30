@@ -9,10 +9,6 @@ import com.appvisor_event.master.AppActivity;
 import com.appvisor_event.master.R;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -24,6 +20,7 @@ import java.util.List;
 public class DocumentsActivity extends AppActivity implements StickyGridHeadersGridView.OnItemClickListener
 {
     private StickyGridHeadersGridView gridView  = null;
+    private Document                  document  = null;
     private List<Document.Item>       documents = null;
 
     @Override
@@ -33,6 +30,7 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
         setContentView(R.layout.documents);
 
         reset();
+        loadDocuments();
     }
 
     private void reset()
@@ -50,30 +48,9 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
 
     private void resetDocuments()
     {
-        documents = new ArrayList<Document.Item>();
+        document = new Document(getApplicationContext());
 
-        for (int i = 1; i < 10; i++)
-        {
-            try {
-                JSONObject itemObject = new JSONObject();
-
-                itemObject.put("id",                            String.format("%d", i));
-                itemObject.put("name",                          String.format("name%d", i));
-                itemObject.put("event_document_category_id",    String.format("%d", (i % 4)));
-                itemObject.put("event_document_category_name",  String.format("category_%d", (i % 4)));
-                itemObject.put("period_start_date",             String.format("2017-04-%02d 10:00:00", i));
-                itemObject.put("period_end_date",               String.format("2017-04-%02d 17:00:00", i));
-                itemObject.put("sequence",                      String.format("%d", i));
-                itemObject.put("thumbnail_image_path",          String.format("/%d", i));
-                itemObject.put("path",                          String.format("/%d", i));
-
-                Document.Item item = Document.newItem(itemObject);
-
-                documents.add(item);
-            } catch (JSONException exception) {
-                Log.e("tto", "exception: " + exception.getMessage());
-            }
-        }
+        documents = document.getDocuments();
 
         Collections.sort(documents, new Comparator<Document.Item>() {
             @Override
@@ -89,10 +66,16 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
         });
     }
 
+    private void loadDocuments()
+    {
+        // apiからゲットする。
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-
+        Document.Item document = documents.get(position);
+        Log.d("tto", "clickItem: " + document.toString());
     }
 
     public void onClickButtonBack(View view)

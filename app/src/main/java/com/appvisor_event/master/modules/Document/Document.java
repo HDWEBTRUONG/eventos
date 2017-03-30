@@ -2,6 +2,7 @@ package com.appvisor_event.master.modules.Document;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.appvisor_event.master.Constants;
@@ -10,7 +11,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +45,13 @@ public class Document
 
     public static class Item
     {
+        public interface OnDownloadListener
+        {
+            void onStartDownload();
+            void onDownloadSuccess(String path);
+            void onProgressUpdate(Integer progress);
+        }
+
         public class Category
         {
             private String id   = null;
@@ -157,9 +171,104 @@ public class Document
             return BASE_URL + this.thumbnailImagePath;
         }
 
+        public String getDataUri()
+        {
+            return BASE_URL + this.dataPath;
+        }
+
         public boolean isPublic()
         {
             return this.period.isWithin();
+        }
+
+        public void downloadData(final OnDownloadListener listener)
+        {
+            new AsyncTask<Item, Integer, String>() {
+                @Override
+                protected void onPreExecute()
+                {
+                    super.onPreExecute();
+
+                    if (null != listener)
+                    {
+                        listener.onStartDownload();
+                    }
+                }
+
+                @Override
+                protected String doInBackground(Item[] items)
+                {
+                    String path = null;
+
+                    try {
+                        URL url = new URL(items[0].getDataUri());
+
+                        URLConnection connection = url.openConnection();
+                        connection.connect();
+
+                        int fileLength = connection.getContentLength();
+
+                        File temporaryFile = File.createTempFile("tmp_", "_document");
+
+                        InputStream input  = new BufferedInputStream(url.openStream());
+                        OutputStream output = new FileOutputStream(temporaryFile.getAbsolutePath());
+
+                        byte data[] = new byte[1024];
+                        long total = 0;
+                        int count;
+                        while (-1 != (count = input.read(data)))
+                        {
+                            total += count;
+
+                            publishProgress((int)(total * 100 / fileLength));
+                            output.write(data, 0, count);
+                        }
+
+                        output.flush();
+                        output.close();
+                        input.close();
+
+                        path = temporaryFile.getAbsolutePath();
+                    }
+                    catch (Exception exception) {
+                        Log.e("tto", exception.getMessage());
+                    }
+
+                    return path;
+                }
+
+                @Override
+                protected void onProgressUpdate(Integer[] values)
+                {
+                    super.onProgressUpdate(values);
+
+                    if (null != listener)
+                    {
+                        listener.onProgressUpdate(values[0]);
+                    }
+                }
+
+                @Override
+                protected void onPostExecute(String path)
+                {
+                    super.onPostExecute(path);
+
+                    if (null != listener)
+                    {
+                        listener.onDownloadSuccess(path);
+                    }
+                }
+            }.execute(this);
+        }
+
+        public String savedFileName()
+        {
+            return String.format("%s_%s", this.id, this.name);
+        }
+
+        public boolean save(File file, File saveDirectory)
+        {
+            return file.renameTo(new File(saveDirectory, savedFileName()));
         }
 
         public boolean equals(Object object)

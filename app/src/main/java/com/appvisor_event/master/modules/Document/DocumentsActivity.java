@@ -1,9 +1,11 @@
 package com.appvisor_event.master.modules.Document;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.appvisor_event.master.AppActivity;
 import com.appvisor_event.master.Constants;
@@ -14,6 +16,7 @@ import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -28,6 +31,7 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
     private DocumentsAdapter          adapter   = null;
     private Document                  document  = null;
     private List<Document.Item>       documents = null;
+    private ProgressDialog       progressDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -132,10 +136,83 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        Document.Item documentItem = documents.get(position);
-        document.saveDocument(documentItem);
-        Log.d("tto", "position: " + position + " clickItem: " + documentItem.toString());
-        Log.d("tto", "documents: " + documents.toString());
+        final Document.Item documentItem = documents.get(position);
+        if (document.isSavedItem(documentItem))
+        {
+            showViewer(documentItem);
+            return;
+        }
+
+        documentItem.downloadData(new Document.Item.OnDownloadListener() {
+            @Override
+            public void onStartDownload() {
+                showDownloadProgress();
+            }
+
+            @Override
+            public void onDownloadSuccess(String path)
+            {
+                hideDownloadProgress();
+
+                if (null == path)
+                {
+                    Toast.makeText(getApplicationContext(), R.string.document_failed_download_message, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.d("tto", "path: " + path);
+
+                File file = new File(path);
+                Log.d("tto", "isFile: " + file.isFile());
+                Log.d("tto", "canRead: " + file.canRead());
+                Log.d("tto", "exists: " + file.exists());
+                Log.d("tto", "length: " + file.length());
+
+                if (documentItem.save(file, getFilesDir()))
+                {
+                    document.saveDocument(documentItem);
+                }
+
+                showViewer(documentItem);
+            }
+
+            @Override
+            public void onProgressUpdate(Integer progress)
+            {
+                updateDownloadProgress(progress);
+            }
+        });
+    }
+
+    private void showDownloadProgress()
+    {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setIndeterminate(false);
+        progressDialog.setMax(100);
+        progressDialog.incrementProgressBy(0);
+        progressDialog.show();
+    }
+
+    private void updateDownloadProgress(Integer progress)
+    {
+        progressDialog.incrementProgressBy(progress);
+    }
+
+    private void hideDownloadProgress()
+    {
+        progressDialog.incrementProgressBy(0);
+        progressDialog.hide();
+        progressDialog = null;
+    }
+
+    private void showViewer(Document.Item item)
+    {
+        File file = new File(getFilesDir(), item.savedFileName());
+        if (!file.canRead())
+        {
+            return;
+        }
     }
 
     public void onClickButtonBack(View view)

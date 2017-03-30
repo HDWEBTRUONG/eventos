@@ -1,12 +1,12 @@
 package com.appvisor_event.master;
 
 import android.app.Activity;
-
-import com.appvisor_event.master.modules.PermissionRequestManager.PermissionRequestManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
+import com.appvisor_event.master.modules.PermissionRequestManager.PermissionRequestManager;
 
 public class AppActivity extends Activity
 {
@@ -59,6 +59,18 @@ public class AppActivity extends Activity
     protected void onDestroy()
     {
         super.onDestroy();
+    }
+
+    protected boolean isCachePolicy()
+    {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+        if(cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected())
+        {
+            return false;
+        }else
+        {
+            return true;
+        }
     }
 
     protected void checkVersion()

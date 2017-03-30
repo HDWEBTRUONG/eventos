@@ -57,7 +57,14 @@ public class SubMenu extends AppActivity {
          // ドロワー画面のページを表示する。
          myWebView.loadUrl(Constants.SUB_MENU_URL, extraHeaders);
          //CATHEを使用する
-         myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        if (isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }
+        else
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
 
          overridePendingTransition(R.anim.right_in, R.anim.nothing);
 

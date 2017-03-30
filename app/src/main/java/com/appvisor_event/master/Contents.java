@@ -164,7 +164,14 @@ public class Contents extends AppActivity implements BeaconConsumer, AppPermissi
         myWebView.getSettings().setAllowFileAccess(true);
 
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        if (isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }
+        else
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

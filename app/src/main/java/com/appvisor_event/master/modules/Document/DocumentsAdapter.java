@@ -12,7 +12,6 @@ import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by bsfuji on 2017/03/30.
@@ -23,14 +22,14 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
     private int mHeaderResId;
     private LayoutInflater mInflater;
     private int mItemResId;
-    private List<Map<String, String>> mItems;
+    private List<Document.Item> mItems;
 
-    public DocumentsAdapter(Context context, List<Map<String, String>> items, int headerResId, int itemResId)
+    public DocumentsAdapter(Context context, List<Document.Item> items, int headerResId, int itemResId)
     {
         init(context, items, headerResId, itemResId);
     }
 
-    public DocumentsAdapter(Context context, Map<String, String>[] items, int headerResId, int itemResId)
+    public DocumentsAdapter(Context context, Document.Item[] items, int headerResId, int itemResId)
     {
         init(context, Arrays.asList(items), headerResId, itemResId);
     }
@@ -50,8 +49,8 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
     @Override
     public long getHeaderId(int position)
     {
-        Map<String, String> item = getItem(position);
-        long headerId = Long.valueOf(item.get("section_id"));
+        Document.Item item = getItem(position);
+        long headerId = Long.valueOf(item.getCategory().getId());
 
         Log.d("tto", "headerId: " + headerId + " item: " + item.toString() + " position: " + position);
         return headerId;
@@ -75,8 +74,8 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
             holder = (DocumentsAdapter.HeaderViewHolder)convertView.getTag();
         }
 
-        Map<String, String> item = getItem(position);
-        holder.textView.setText(item.get("section"));
+        Document.Item item = getItem(position);
+        holder.textView.setText(item.getCategory().getName());
 
         Log.d("tto", "section: " + item.toString() + " position: " + position);
 
@@ -84,7 +83,7 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
     }
 
     @Override
-    public Map<String, String> getItem(int position)
+    public Document.Item getItem(int position)
     {
         return mItems.get(position);
     }
@@ -113,15 +112,15 @@ public class DocumentsAdapter extends BaseAdapter implements StickyGridHeadersSi
             holder = (DocumentsAdapter.ViewHolder)convertView.getTag();
         }
 
-        Map<String, String> item = getItem(position);
-        holder.textView.setText(item.get("name"));
+        Document.Item item = getItem(position);
+        holder.textView.setText(item.getName());
 
         Log.d("tto", "item: " + item.toString() + " position: " + position);
 
         return convertView;
     }
 
-    private void init(Context context, List<Map<String, String>> items, int headerResId, int itemResId)
+    private void init(Context context, List<Document.Item> items, int headerResId, int itemResId)
     {
         this.mItems = items;
         this.mHeaderResId = headerResId;

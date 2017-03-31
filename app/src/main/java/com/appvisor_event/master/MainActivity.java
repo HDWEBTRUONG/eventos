@@ -1,6 +1,5 @@
 package com.appvisor_event.master;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
@@ -19,16 +18,21 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+import com.appvisor_event.master.modules.Document.Document;
+import com.appvisor_event.master.modules.Document.DocumentsActivity;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.google.android.gcm.GCMRegistrar;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppActivity {
 
     private GcmClient gcmClient = null;
 
@@ -51,7 +55,7 @@ public class MainActivity extends Activity {
         device_id  = User.getUUID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         String app_id = User.getAppID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         String version =  User.getAppVersion(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
-//        device_id = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+
         //DEVICE_TOKENの取得
         device_token = GCMRegistrar.getRegistrationId(this).replace("-","").replace(" ","").replace(">","").replace("<","");
         Log.d("device_token",device_token);
@@ -71,7 +75,14 @@ public class MainActivity extends Activity {
         myWebView.getSettings().setJavaScriptEnabled(true);
 
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        if (isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }
+        else
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -79,7 +90,16 @@ public class MainActivity extends Activity {
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
         //端末の言語設定を取得
-        String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString() ;
+        String local = null;
+        if (AppLanguage.isUnknown(getApplicationContext()))
+        {
+            local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
+            AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
+        }
+        else
+        {
+            local = AppLanguage.isJapanese(getApplicationContext()) ? "ja" : "en";
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
@@ -185,6 +205,8 @@ public class MainActivity extends Activity {
         this.checkGCMNotification();
 
         StartupAd.setShown(false);
+
+        checkVersion();
     }
 
     @Override
@@ -241,6 +263,11 @@ public class MainActivity extends Activity {
         @Override
         public void onRefresh() {
             myWebView.reload();
+
+            if (active_url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
             // 3秒待機
 //            new Handler().postDelayed(new Runnable() {
 //
@@ -256,6 +283,23 @@ public class MainActivity extends Activity {
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            try {
+                final URL urlObject = new URL(url);
+
+                // 「資料」リクエスト
+                if (Document.isDocumentUrl(urlObject))
+                {
+                    showDocumentsActivity();
+                    return true;
+                }
+
+            } catch (MalformedURLException e) {}
+
+            if (url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
+
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)
@@ -441,5 +485,11 @@ public class MainActivity extends Activity {
         }
 
         this.gcmClient.sendResponse(pushId);
+    }
+
+    private void showDocumentsActivity()
+    {
+        Intent intent = new Intent(this, DocumentsActivity.class);
+        startActivity(intent);
     }
 }

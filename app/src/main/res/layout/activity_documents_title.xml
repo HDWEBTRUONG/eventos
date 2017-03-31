@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    android:background="@color/title_bar_color"
+    android:id="@+id/main">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical"
+        android:textColor="@color/title_bar_txt_color"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/documents_content_title" />
+
+    <ImageView
+        android:id="@+id/btn_back_button"
+        android:layout_width="wrap_content"
+        android:onClick="onClickButtonBack"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:state_pressed="true"
+        android:state_selected="true"
+        android:src="@drawable/btn_back" />
+
+</RelativeLayout>

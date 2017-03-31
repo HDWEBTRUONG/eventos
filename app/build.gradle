@@ -27,7 +27,7 @@ android {
         edogawa_u_staging {
             applicationId = "tokyo.eventos.edogawa_u_staging"
             versionCode 1
-            versionName "1.0.0"
+            versionName "1.1.0"
         }
     }
 }
@@ -40,4 +40,8 @@ dependencies {
     compile 'org.altbeacon:android-beacon-library:2+'
     compile 'me.dm7.barcodescanner:zxing:1.5'
     compile "com.google.android.gms:play-services-gcm:8.3.0"
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile group: 'com.tonicartos', name: 'stickygridheaders', version: '1.0.1'
+    compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
 }

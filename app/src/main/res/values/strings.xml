@@ -30,4 +30,10 @@
     <string name="open_market_for_pdf_viewer_dialog_button_no_english">No</string>
     <string name="open_market_for_pdf_viewer_id">market://details?id=com.adobe.reader</string>
 
+    <string name="documents_content_title">資料ダウンロード</string>
+    <string name="document_failed_download_message">ダウンロードできませんでした。</string>
+    <string name="document_failed_open_message">資料を開けませんでした。</string>
+    
+    <string name="force_update_alert_dialog_store_button_label">OK</string>
+
 </resources>

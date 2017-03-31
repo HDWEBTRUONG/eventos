@@ -142,12 +142,12 @@ public class Schedule
 
     public String scheduleDeleteFailedJavascript()
     {
-        if (isRegistCalenderUrlForDetail(url))
+        if (isDeleteCalenderUrlForDetail(url))
         {
             return "javascript:Detail.onDeleteFailed();";
         }
 
-        if (isRegistCalenderUrlForMass(url))
+        if (isDeleteCalenderUrlForMass(url))
         {
             return "javascript:MassRegistration.onDeleteFailed();";
         }

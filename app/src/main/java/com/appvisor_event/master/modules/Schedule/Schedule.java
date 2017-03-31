@@ -186,10 +186,8 @@ public class Schedule
 
                     scheduleEventId = ScheduleCalender.addEvent(
                             activity,
-                            1,
                             scheduleTitle,
                             null,
-                            "1",
                             simpleDateFormat.parse(scheduleStart).getTime(),
                             simpleDateFormat.parse(scheduleEnd).getTime()
                     );
@@ -211,12 +209,9 @@ public class Schedule
                     }
 
                     int numberOfDeleteSchedules = ScheduleCalender.deleteEvent(activity, scheduleEventId);
-                    if (0 < numberOfDeleteSchedules)
-                    {
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.remove(scheduleId);
-                        editor.commit();
-                    }
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.remove(scheduleId);
+                    editor.commit();
                 }
             }
 
@@ -237,6 +232,7 @@ public class Schedule
                 }
             });
         } catch (Exception e) {
+            Log.e("tto", e.getMessage());
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

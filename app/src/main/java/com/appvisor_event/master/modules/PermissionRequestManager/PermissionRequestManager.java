@@ -2,6 +2,7 @@ package com.appvisor_event.master.modules.PermissionRequestManager;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 
@@ -96,8 +97,23 @@ public class PermissionRequestManager
 
     private ArrayList<OnRequestPermissionsResultListener> listeners = new ArrayList<OnRequestPermissionsResultListener>();
 
-    public void requestPermissions(Activity activity, String[]permissions, PermissionRequestManager.OnRequestPermissionsResultListener listener)
+    public void requestPermissions(Activity activity, String[] permissions, PermissionRequestManager.OnRequestPermissionsResultListener listener)
     {
+        if (null == listener)
+        {
+            return;
+        }
+
+        if (Build.VERSION_CODES.M > Build.VERSION.SDK_INT)
+        {
+            int[] grantResults = new int[permissions.length];
+            for (int i = 0; i < permissions.length; i++)
+            {
+                grantResults[i] = PackageManager.PERMISSION_GRANTED;
+            }
+            listener.onRequestPermissionsResult(new PermissionsResult(permissions, grantResults));
+        }
+
         int requestCode = listeners.size();
 
         listeners.add(listener);

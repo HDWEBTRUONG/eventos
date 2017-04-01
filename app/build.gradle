@@ -44,4 +44,5 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile group: 'com.tonicartos', name: 'stickygridheaders', version: '1.0.1'
     compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
+    compile 'com.github.barteksc:android-pdf-viewer:2.5.0'
 }

@@ -8,19 +8,27 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/content_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:layout_height="match_parent">
 
-    <com.joanzapata.pdfview.PDFView
+    <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_height="match_parent" />
+
+
+    <TextView
+        android:id="@+id/pageNumberTextView"
+        android:text="1 / 2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
+        android:minWidth="80dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="#80000000"
+        android:textColor="#ffffff" />
 
     <SeekBar
         android:id="@+id/seekBar"

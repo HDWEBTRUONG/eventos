@@ -2,15 +2,15 @@ package com.appvisor_event.master.modules.Document;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.appvisor_event.master.AppActivity;
 import com.appvisor_event.master.R;
-import com.joanzapata.pdfview.PDFView;
-import com.joanzapata.pdfview.listener.OnLoadCompleteListener;
-import com.joanzapata.pdfview.listener.OnPageChangeListener;
+import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 
 import org.json.JSONException;
 
@@ -22,22 +22,38 @@ import java.io.File;
 
 public class DocumentViewerActivity extends AppActivity implements OnLoadCompleteListener, OnPageChangeListener
 {
-    private SeekBar seekBar = null;
-    private PDFView pdfView = null;
+    private SeekBar  seekBar                = null;
+    private PDFView  pdfView                = null;
+    private TextView pageNumberTextView     = null;
+    private AlphaAnimation feedInAnimation  = new AlphaAnimation(0, 1);
+    private AlphaAnimation feedOutAnimation = new AlphaAnimation(1, 0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document_viewer);
 
+        pageNumberTextView = (TextView)findViewById(R.id.pageNumberTextView);
+
+        feedInAnimation.setDuration(1000);
+        feedInAnimation.setFillAfter(true);
+        feedOutAnimation.setStartOffset(1000);
+        feedOutAnimation.setDuration(1000);
+        feedOutAnimation.setFillAfter(true);
+
         seekBar = (SeekBar)findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b)
+            public void onProgressChanged(SeekBar seekBar, int page, boolean isOnSeek)
             {
-                pdfView.jumpTo(seekBar.getProgress());
+                if (isOnSeek)
+                {
+                    pdfView.jumpTo(seekBar.getProgress());
+                }
 
-                Toast.makeText(DocumentViewerActivity.this, String.format("%d / %d", seekBar.getProgress(), pdfView.getPageCount()), Toast.LENGTH_SHORT).show();
+                pageNumberTextView.setText(String.format("%d / %d", (page + 1), pdfView.getPageCount()));
+                pageNumberTextView.startAnimation(feedInAnimation);
+                pageNumberTextView.startAnimation(feedOutAnimation);
             }
 
             @Override
@@ -63,7 +79,14 @@ public class DocumentViewerActivity extends AppActivity implements OnLoadComplet
         titleTextView.setText(document.getName());
 
         pdfView = (PDFView)findViewById(R.id.pdfview);
-        pdfView.fromFile(file).onLoad(this).onPageChange(this).load();
+        pdfView.fromFile(file)
+                .defaultPage(0)
+                .enableAnnotationRendering(true)
+                .enableSwipe(true)
+                .swipeHorizontal(true)
+                .onPageChange(this)
+                .onLoad(this)
+                .load();
     }
 
     private Document.Item getDocument()
@@ -79,7 +102,7 @@ public class DocumentViewerActivity extends AppActivity implements OnLoadComplet
     @Override
     public void loadComplete(int nbPages)
     {
-        seekBar.setMax(nbPages);
+        seekBar.setMax(nbPages - 1);
     }
 
     @Override

@@ -76,10 +76,14 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
             @Override
             public int compare(Document.Item itemA, Document.Item itemB)
             {
-                int compare = itemA.getCategory().getId().compareTo(itemB.getCategory().getId());
+                int compare = itemA.getCategory().getSequence().compareTo(itemB.getCategory().getSequence());
                 if (0 == compare)
                 {
-                    compare = itemA.getSequence().compareTo(itemB.getSequence());
+                    compare = itemA.getCategory().getId().compareTo(itemB.getCategory().getId());
+                    if (0 == compare)
+                    {
+                        compare = itemA.getSequence().compareTo(itemB.getSequence());
+                    }
                 }
                 return compare;
             }
@@ -117,6 +121,7 @@ public class DocumentsActivity extends AppActivity implements StickyGridHeadersG
                     if (documents.contains(documentItem))
                     {
                         documents.remove(documentItem);
+                        document.saveDocument(documentItem);
                     }
                     documents.add(documentItem);
                 }

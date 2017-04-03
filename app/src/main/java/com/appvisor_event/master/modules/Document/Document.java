@@ -54,13 +54,15 @@ public class Document
 
         public class Category
         {
-            private String id   = null;
-            private String name = null;
+            private String id       = null;
+            private String name     = null;
+            private String sequence = null;
 
-            public Category(String id, String name)
+            public Category(String id, String name, String sequence)
             {
-                this.id   = id;
-                this.name = name;
+                this.id       = id;
+                this.name     = name;
+                this.sequence = sequence;
             }
 
             public String getId()
@@ -71,6 +73,11 @@ public class Document
             public String getName()
             {
                 return this.name;
+            }
+
+            public String getSequence()
+            {
+                return this.sequence;
             }
         }
 
@@ -105,7 +112,7 @@ public class Document
                     Date endDate   = simpleDateFormat.parse(this.endDate);
                     Date nowDate   = new Date();
 
-                    return (nowDate.equals(startDate) || nowDate.equals(endDate) || (startDate.after(nowDate) && endDate.before(nowDate)));
+                    return (nowDate.equals(startDate) || nowDate.equals(endDate) || (nowDate.after(startDate) && nowDate.before(endDate)));
                 }
                 catch (ParseException exception) {}
 
@@ -277,6 +284,12 @@ public class Document
             return (null == file) ? false : file.canRead();
         }
 
+        public void remove(Context context)
+        {
+            File file = new File(context.getFilesDir(), savedFileName());
+            file.delete();
+        }
+
         public boolean equals(Object object)
         {
             if (null == object)
@@ -297,15 +310,16 @@ public class Document
             try {
                 JSONObject jsonObject = new JSONObject();
 
-                jsonObject.put("id",                            this.id);
-                jsonObject.put("event_document_category_id",    this.category.getId());
-                jsonObject.put("event_document_category_name",  this.category.getName());
-                jsonObject.put("name",                          this.name);
-                jsonObject.put("period_start_date",             this.period.getStartDate());
-                jsonObject.put("period_end_date",               this.period.getEndDate());
-                jsonObject.put("sequence",                      this.sequence);
-                jsonObject.put("thumbnail_image_path",          this.thumbnailImagePath);
-                jsonObject.put("path",                          this.dataPath);
+                jsonObject.put("id",                               this.id);
+                jsonObject.put("event_document_category_id",       this.category.getId());
+                jsonObject.put("event_document_category_name",     this.category.getName());
+                jsonObject.put("event_document_category_sequence", this.category.getSequence());
+                jsonObject.put("name",                             this.name);
+                jsonObject.put("period_start_date",                this.period.getStartDate());
+                jsonObject.put("period_end_date",                  this.period.getEndDate());
+                jsonObject.put("sequence",                         this.sequence);
+                jsonObject.put("thumbnail_image_path",             this.thumbnailImagePath);
+                jsonObject.put("path",                             this.dataPath);
 
                 return jsonObject.toString();
             } catch (JSONException exception) {
@@ -318,7 +332,7 @@ public class Document
         private void init(JSONObject json) throws JSONException
         {
             this.id                 = json.getString("id");
-            this.category           = new Category(json.getString("event_document_category_id"), json.getString("event_document_category_name"));
+            this.category           = new Category(json.getString("event_document_category_id"), json.getString("event_document_category_name"), json.getString("event_document_category_sequence"));
             this.name               = json.getString("name");
             this.period             = new Period(json.getString("period_start_date"), json.getString("period_end_date"));
             this.sequence           = json.getString("sequence");
@@ -352,8 +366,20 @@ public class Document
             for (int i = 0; i < jsonDocuments.length(); i++)
             {
                 JSONObject jsonDocument = jsonDocuments.getJSONObject(i);
-                documents.add(new Item(jsonDocument));
+                Item item = new Item(jsonDocument);
+                if (item.isPublic())
+                {
+                    documents.add(item);
+                    continue;
+                }
+
+                if (item.isSaved(this.context))
+                {
+                    item.remove(this.context);
+                }
             }
+
+            saveDocuments();
         } catch (JSONException exception) {}
     }
 

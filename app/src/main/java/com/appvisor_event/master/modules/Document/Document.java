@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.appvisor_event.master.Constants;
+import com.appvisor_event.master.modules.Hash.Hash;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -126,7 +127,9 @@ public class Document
         private Period   period             = null;
         private String   sequence           = null;
         private String   thumbnailImagePath = null;
+        private String   thumbnailImageHash = null;
         private String   dataPath           = null;
+        private String   dataHash           = null;
 
         public Item(String jsonString) throws JSONException
         {
@@ -281,7 +284,28 @@ public class Document
         public boolean isSaved(Context context)
         {
             File file = new File(context.getFilesDir(), savedFileName());
-            return (null == file) ? false : file.canRead();
+            if (null == file || !file.canRead())
+            {
+                return false;
+            }
+
+            boolean isModified = isModifiedDataFileWithHash(Hash.md5(file));
+            if (isModified)
+            {
+                remove(context);
+                return false;
+            }
+
+            return true;
+        }
+
+        public boolean isModifiedDataFileWithHash(String hash)
+        {
+            if (null == hash || null == this.dataHash)
+            {
+                return true;
+            }
+            return !hash.equals(this.dataHash);
         }
 
         public void remove(Context context)
@@ -319,7 +343,9 @@ public class Document
                 jsonObject.put("period_end_date",                  this.period.getEndDate());
                 jsonObject.put("sequence",                         this.sequence);
                 jsonObject.put("thumbnail_image_path",             this.thumbnailImagePath);
+                jsonObject.put("thumbnail_image_hash",             this.thumbnailImageHash);
                 jsonObject.put("path",                             this.dataPath);
+                jsonObject.put("document_hash",                    this.dataHash);
 
                 return jsonObject.toString();
             } catch (JSONException exception) {
@@ -337,7 +363,9 @@ public class Document
             this.period             = new Period(json.getString("period_start_date"), json.getString("period_end_date"));
             this.sequence           = json.getString("sequence");
             this.thumbnailImagePath = json.getString("thumbnail_image_path");
+            this.thumbnailImageHash = json.getString("thumbnail_image_hash");
             this.dataPath           = json.getString("path");
+            this.dataHash           = json.getString("document_hash");
         }
     }
 
@@ -353,6 +381,10 @@ public class Document
 
     public boolean isSavedItem(Item item)
     {
+        if (!item.isSaved(context))
+        {
+            documents.remove(item);
+        }
         return documents.contains(item);
     }
 

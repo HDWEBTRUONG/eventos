@@ -21,13 +21,13 @@ android {
     productFlavors {
         edogawa_u {
             applicationId = "tokyo.eventos.edogawa_u"
-            versionCode 3
-            versionName "1.1.1"
+            versionCode 4
+            versionName "1.1.2"
         }
         edogawa_u_staging {
             applicationId = "tokyo.eventos.edogawa_u_staging"
             versionCode 1
-            versionName "1.1.1"
+            versionName "1.1.2"
         }
     }
 }

@@ -136,6 +136,17 @@ public class SubMenu extends BaseActivity {
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            // 写真機能の場合は Fragmentを表示する
+            if (url.indexOf(Constants.FACEBOOK_PHOTO_URL) != -1){
+                // インテントのインスタンス生成
+                Intent intent = new Intent(SubMenu.this, FacebookPhotoActivity.class);
+                // サブ画面の呼び出し
+                startActivity(intent);
+                finish();
+                return false;
+            }
+
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)

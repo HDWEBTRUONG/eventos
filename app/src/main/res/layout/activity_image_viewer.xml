@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:id="@+id/main_layout">
+
+    <it.sephiroth.android.library.imagezoom.ImageViewTouch
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.04" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="30dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:id="@+id/linearLayout">
+
+    <Button
+            android:id="@+id/back_button"
+            android:layout_width="100dp"
+            android:layout_height="35dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/border"
+            android:onClick="closePhoto"
+            android:paddingBottom="5dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="5dp"
+            android:text="戻る"
+            android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="100dp"
+        android:layout_height="35dp"
+        android:background="@drawable/border"
+        android:onClick="savePhoto"
+        android:paddingBottom="5dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="5dp"
+        android:text="保存"
+        android:textColor="#fff" />
+    </LinearLayout>
+
+
+</LinearLayout>
+
+        <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<RelativeLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="fill_parent"-->
+    <!--android:id="@+id/main_layout">-->
+
+    <!--<include-->
+    <!--android:id="@+id/title_bar"-->
+    <!--layout="@layout/activity_main_title" />-->
+
+    <!--<it.sephiroth.android.library.imagezoom.ImageViewTouch-->
+    <!--android:id="@+id/image"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_below="@+id/title_bar"-->
+    <!--android:layout_above="@+id/linearLayout" />-->
+
+    <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
+    <!--&lt;!&ndash;android:id="@+id/image"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_centerInParent="true"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_marginLeft="20dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_marginRight="20dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:adjustViewBounds="true"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:scaleType="fitCenter" />&ndash;&gt;-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="35dp"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--android:layout_alignParentLeft="true"-->
+    <!--android:layout_alignParentStart="true"-->
+    <!--android:layout_marginBottom="30dp"-->
+    <!--android:gravity="center_horizontal"-->
+    <!--android:orientation="horizontal"-->
+    <!--android:id="@+id/linearLayout">-->
+
+    <!--<Button-->
+    <!--android:id="@+id/button"-->
+    <!--android:layout_width="100dp"-->
+    <!--android:layout_height="35dp"-->
+    <!--android:background="@drawable/border"-->
+    <!--android:onClick="savePhoto"-->
+    <!--android:paddingBottom="5dp"-->
+    <!--android:paddingLeft="20dp"-->
+    <!--android:paddingRight="20dp"-->
+    <!--android:paddingTop="5dp"-->
+    <!--android:text="保存"-->
+    <!--android:textColor="#fff" />-->
+    <!--</LinearLayout>-->
+
+    <!--</RelativeLayout>-->
+    <!--<?xml version="1.0" encoding="utf-8"?>-->

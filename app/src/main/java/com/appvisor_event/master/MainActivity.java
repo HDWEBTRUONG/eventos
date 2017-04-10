@@ -2,6 +2,8 @@ package com.appvisor_event.master;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -634,8 +636,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                             startActivity(intent);
                         }
                     }
-
-
+                } else if (url.indexOf(Constants.FACEBOOK_PHOTO_URL) != -1){
+                    // インテントのインスタンス生成
+                    Intent intent = new Intent(MainActivity.this, FacebookPhotoActivity.class);
+                    // サブ画面の呼び出し
+                    startActivity(intent);
                 } else {
                     active_url = url;
                     if ((active_url.indexOf(Constants.RegARFlag) != -1)) {

@@ -25,6 +25,8 @@ public class Constants {
     public static final String FAVORITE_URL = BASE_URL + Event + "/favorites";
     //設定画面のURL
     public static final String SETTING_URL = BASE_URL + Event + "/settings";
+    //写真画面のURL
+    public static final String FACEBOOK_PHOTO_URL = BASE_URL + Event + "/facebook_photo";
     //ERRORのURL
     public static final String ERROR_URL = "data:text/html,chromewebdata";
     //アプリ内に表示させるドメイン

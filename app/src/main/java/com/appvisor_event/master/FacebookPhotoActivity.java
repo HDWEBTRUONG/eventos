@@ -75,6 +75,7 @@ public class FacebookPhotoActivity extends Activity implements AbsListView.OnScr
     private int currentScrollState;
     private ProgressDialog mProgressDialog;
     private Boolean isReadAll;
+    private String mPlan;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -85,6 +86,8 @@ public class FacebookPhotoActivity extends Activity implements AbsListView.OnScr
         isLoading = false;
         isReadAll = false;
         page = 1;
+
+        mPlan = getIntent().getStringExtra("plan");
 
         ImageView menuView = (ImageView)this.findViewById(R.id.menu_buttom);
         menuView.setVisibility(View.GONE);
@@ -191,6 +194,7 @@ public class FacebookPhotoActivity extends Activity implements AbsListView.OnScr
         // インテントのインスタンス生成
         Intent intent = new Intent(FacebookPhotoActivity.this, ImageViewerActivity.class);
         intent.putExtra("image_url", url);
+        intent.putExtra("plan", mPlan);
         // サブ画面の呼び出し
         startActivity(intent);
     }

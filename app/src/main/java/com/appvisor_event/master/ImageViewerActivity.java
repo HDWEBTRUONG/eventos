@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,6 +33,8 @@ import java.util.Date;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
+import static java.sql.Types.NULL;
+
 
 /**
  * Created by ookuma on 2017/04/06.
@@ -40,6 +43,7 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 public class ImageViewerActivity extends Activity implements View.OnClickListener {
     private LinearLayout mainLayout;
     private RelativeLayout mContext;
+    private String mPlan;
     ImageViewTouch mImage;
 
     @Override
@@ -56,6 +60,13 @@ public class ImageViewerActivity extends Activity implements View.OnClickListene
 
         Intent i = getIntent();
         String urlStr = i.getStringExtra("image_url");
+        mPlan = i.getStringExtra("plan");
+        if (mPlan != null){
+            if (mPlan.equals("free")){
+                Button saveButton = (Button) findViewById(R.id.button);
+                saveButton.setVisibility(View.GONE);
+            }
+        }
 
         mImage = (ImageViewTouch) findViewById(R.id.image);
         Glide.with(this.getApplicationContext())

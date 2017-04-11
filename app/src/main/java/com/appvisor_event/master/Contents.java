@@ -778,8 +778,12 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
             // 写真機能の場合は Fragmentを表示する
             if (url.indexOf(Constants.FACEBOOK_PHOTO_URL) != -1){
+                String keyword = "&plan=";
+                int index = url.indexOf(keyword);
+                String plan = url.substring(index + keyword.length(), url.length());
                 // インテントのインスタンス生成
                 Intent intent = new Intent(Contents.this, FacebookPhotoActivity.class);
+                intent.putExtra("plan", plan);
                 // サブ画面の呼び出し
                 startActivity(intent);
                 return true;

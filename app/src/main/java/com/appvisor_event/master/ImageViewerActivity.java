@@ -50,7 +50,6 @@ public class ImageViewerActivity extends Activity implements View.OnClickListene
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_viewer);
-        System.out.println("ImageViewerActivity");
 //        ImageView menuView = (ImageView) this.findViewById(R.id.menu_buttom);
 //        menuView.setVisibility(View.GONE);
 //        TextView textView = (TextView) findViewById(R.id.content_text);

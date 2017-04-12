@@ -789,6 +789,32 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                 return true;
             }
 
+            // 速報機能の場合はブラウザで開くようにする。
+            if (url.indexOf("/preview/") != -1) {
+                String keyword = "&prompt_report_title=";
+                int index = url.indexOf(keyword);
+                String title = url.substring(index + keyword.length(), url.length());
+                final String myUrlStr = url.substring(0, index);
+
+                URL myUrl;
+                Uri uri;
+                try {
+                    myUrl = new URL(myUrlStr);
+                    uri = Uri.parse(myUrl.toURI().toString());
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(uri, "application/pdf");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    view.getContext().startActivity(intent);
+                    if (url.indexOf("&direct_to_url") != -1){
+                        finish();
+                    }
+                } catch (MalformedURLException e1) {
+                    e1.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
@@ -827,7 +853,6 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
          */
         @Override
         public void onPageFinished(WebView view, String url) {
-
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
 

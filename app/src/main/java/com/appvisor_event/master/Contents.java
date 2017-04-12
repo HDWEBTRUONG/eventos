@@ -853,6 +853,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
          */
         @Override
         public void onPageFinished(WebView view, String url) {
+            System.out.println("onPageFinished");
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
 

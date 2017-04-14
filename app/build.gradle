@@ -25,12 +25,12 @@ android {
         sportsone_ed {
             applicationId = "tokyo.eventos.sportsone_ed"
             versionCode 1
-            versionName "1.0.0"
+            versionName "1.1.0"
         }
         sportsone_ed_staging {
             applicationId = "tokyo.eventos.sportsone_ed_staging"
             versionCode 1
-            versionName "1.0.0"
+            versionName "1.1.0"
         }
     }
     sourceSets {

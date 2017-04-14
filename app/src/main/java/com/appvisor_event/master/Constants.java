@@ -5,9 +5,9 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "edogawa-u";
+    public static final String Event = "ray-event";
     //ベースURL
-    public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -25,7 +25,7 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "edogawa-u.ac.jp";
+    public static final String EXHIBITER_DOMAIN_1 = "ray.co.jp";
     public static final String EXHIBITER_DOMAIN_2 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_3 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXXXX";
@@ -43,6 +43,6 @@ public class Constants {
     // 資料のためのAPI
     public static final String DOCUMENTS_API_URL = BASE_URL + Event + "/api/documents/get.json";
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
+    public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
     public static final String GCM_SENDER_ID = "485246024931";
 }

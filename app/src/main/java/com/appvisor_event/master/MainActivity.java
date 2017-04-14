@@ -132,6 +132,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
+        extraHeaders.put("app-id", app_id);
+        extraHeaders.put("app-version", version);
 
         //ホーム画面の設定
         setContentView(R.layout.activity_main);
@@ -964,7 +966,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
     private void showDocumentsActivity()
     {
-        Intent intent = new Intent(this, DocumentsActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, DocumentsActivity.class);
+//        startActivity(intent);
     }
 }

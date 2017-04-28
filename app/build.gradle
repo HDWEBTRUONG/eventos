@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        ray_event {
-            applicationId = "tokyo.eventos.ray_event"
-            versionCode 4
+        kcc2017 {
+            applicationId = "tokyo.eventos.kcc2017"
+            versionCode 1
             versionName "1.0.0"
         }
-        ray_event_staging {
-            applicationId = "tokyo.eventos.ray_event_staging"
+        kcc2017_staging {
+            applicationId = "tokyo.eventos.kcc2017_staging"
             versionCode 1
             versionName "1.0.0"
         }

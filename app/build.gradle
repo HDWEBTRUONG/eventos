@@ -24,12 +24,12 @@ android {
     productFlavors {
         sportsone_ed {
             applicationId = "tokyo.eventos.sportsone_ed"
-            versionCode 1
+            versionCode 2
             versionName "1.1.0"
         }
         sportsone_ed_staging {
             applicationId = "tokyo.eventos.sportsone_ed_staging"
-            versionCode 1
+            versionCode 2
             versionName "1.1.0"
         }
     }

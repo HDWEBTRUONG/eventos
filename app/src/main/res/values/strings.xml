@@ -61,5 +61,18 @@
     <string name="share_dialog_text_04_en">enter #企業対抗駅伝.</string>
     <string name="share_dialog_close_en">Close</string>
 
+    <string name="open_market_for_pdf_viewer_dialog_title">PDFファイルを開けません</string>
+    <string name="open_market_for_pdf_viewer_dialog_message">PDFファイルを閲覧できるアプリケーションがインストールされていません。\n\nPlayストアからインストールしますか？</string>
+    <string name="open_market_for_pdf_viewer_dialog_button_yes">はい</string>
+    <string name="open_market_for_pdf_viewer_dialog_button_no">いいえ</string>
+    <string name="open_market_for_pdf_viewer_dialog_title_english">Cannot open a PDF file</string>
+    <string name="open_market_for_pdf_viewer_dialog_message_english">An application that can view PDF files is not installed.\n\nWould you like to install from the market?</string>
+    <string name="open_market_for_pdf_viewer_dialog_button_yes_english">Yes</string>
+    <string name="open_market_for_pdf_viewer_dialog_button_no_english">No</string>
+    <string name="open_market_for_pdf_viewer_id">market://details?id=com.adobe.reader</string>
+
+    <string name="documents_content_title">資料ダウンロード</string>
+    
+    <string name="force_update_alert_dialog_store_button_label">OK</string>
 
 </resources>

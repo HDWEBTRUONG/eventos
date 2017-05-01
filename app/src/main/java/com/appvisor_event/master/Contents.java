@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -66,6 +68,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -773,6 +778,46 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             beaconData = null;
             active_url = url;
+
+            // 写真機能の場合は Fragmentを表示する
+            if (url.indexOf(Constants.FACEBOOK_PHOTO_URL) != -1){
+                String keyword = "&plan=";
+                int index = url.indexOf(keyword);
+                String plan = url.substring(index + keyword.length(), url.length());
+                // インテントのインスタンス生成
+                Intent intent = new Intent(Contents.this, FacebookPhotoActivity.class);
+                intent.putExtra("plan", plan);
+                // サブ画面の呼び出し
+                startActivity(intent);
+                return true;
+            }
+
+            // 速報機能の場合はブラウザで開くようにする。
+            if (url.indexOf("/preview/") != -1) {
+                String keyword = "&prompt_report_title=";
+                int index = url.indexOf(keyword);
+                String title = url.substring(index + keyword.length(), url.length());
+                final String myUrlStr = url.substring(0, index);
+
+                URL myUrl;
+                Uri uri;
+                try {
+                    myUrl = new URL(myUrlStr);
+                    uri = Uri.parse(myUrl.toURI().toString());
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(uri, "application/pdf");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    view.getContext().startActivity(intent);
+                    if (url.indexOf("&direct_to_url") != -1){
+                        finish();
+                    }
+                } catch (MalformedURLException e1) {
+                    e1.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
@@ -811,7 +856,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
          */
         @Override
         public void onPageFinished(WebView view, String url) {
-
+            System.out.println("onPageFinished");
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
 
@@ -1224,7 +1269,6 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
         Bitmap image = Bitmap.createBitmap(tmpImage, 0, 0, tmpImage.getWidth(), tmpImage.getHeight(), matrix, true);
 
-        Log.d("tto", String.format("width: %d, height: %d", image.getWidth(), image.getHeight()));
         return image;
     }
 

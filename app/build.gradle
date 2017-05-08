@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        ray_event {
-            applicationId = "tokyo.eventos.ray_event"
+        mpocket {
+            applicationId = "tokyo.eventos.mpocket"
             versionCode 4
             versionName "1.0.0"
         }
-        ray_event_staging {
-            applicationId = "tokyo.eventos.ray_event_staging"
+        mpocket_staging {
+            applicationId = "tokyo.eventos.mpocket_staging"
             versionCode 1
             versionName "1.0.0"
         }

@@ -5,7 +5,7 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "edogawa-u";
+    public static final String Event = "sap-forum2017";
     //ベースURL
     public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
     //ホームのURL
@@ -25,7 +25,7 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "edogawa-u.ac.jp";
+    public static final String EXHIBITER_DOMAIN_1 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_2 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_3 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXXXX";

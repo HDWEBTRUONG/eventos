@@ -43,6 +43,6 @@ public class Constants {
     // 資料のためのAPI
     public static final String DOCUMENTS_API_URL = BASE_URL + Event + "/api/documents/get.json";
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
-    public static final String GCM_SENDER_ID = "83369102371";
+    public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
+    public static final String GCM_SENDER_ID = "350861218902";
 }

@@ -1,27 +1,20 @@
 {
   "project_info": {
-    "project_number": "83369102371",
-    "firebase_url": "https://eventos-for-sap-forum2017.firebaseio.com",
-    "project_id": "eventos-for-sap-forum2017",
-    "storage_bucket": "eventos-for-sap-forum2017.appspot.com"
+    "project_number": "350861218902",
+    "project_id": "ivory-antler-89408"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:83369102371:android:ef76d7f51512e38c",
+        "mobilesdk_app_id": "1:350861218902:android:171beaa7a124a850",
         "android_client_info": {
-          "package_name": "tokyo.eventos.sap_forum2017"
+          "package_name": "com.appvisor_event.sap_forum"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "83369102371-5vk431g45lprovbuaero3laa1q1ij6li.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyChUdC7dBspVFRh3m7h9d-3B9KdB2Ym_h8"
+          "current_key": "AIzaSyA6iXb9Q7xdJzqlV9qOkEnSDU3M8_fEaJ8"
         }
       ],
       "services": {
@@ -33,7 +26,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 2
+          "status": 1
         }
       }
     }

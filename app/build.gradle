@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        sap_forum2017 {
-            applicationId = "tokyo.eventos.sap_forum2017"
-            versionCode 1
-            versionName "1.0.0"
+        sap_forum {
+            applicationId = "tokyo.eventos.sap_forum"
+            versionCode 2
+            versionName "1.1.0"
         }
-        sap_forum2017_staging {
-            applicationId = "tokyo.eventos.sap_forum2017_staging"
+        sap_forum_staging {
+            applicationId = "tokyo.eventos.sap_forum_staging"
             versionCode 1
             versionName "1.1.0"
         }

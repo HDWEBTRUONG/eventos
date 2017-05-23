@@ -411,7 +411,8 @@ public class MainActivity extends AppActivity {
         notificationManager.cancel(notificationId);
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                .setTitle("お知らせ")
+//                .setTitle("お知らせ")
+                .setTitle(extras.getString("title", getString(R.string.app_name)))
                 .setMessage(extras.getString("content", ""))
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override

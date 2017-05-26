@@ -661,7 +661,6 @@ public class Contents extends AppActivity implements BeaconConsumer, AppPermissi
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)) {
                 extraHeaders.put("user-id", device_id);
-                Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
                 return false;
             }else{
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));

@@ -7,7 +7,7 @@ public class Constants {
     //ホームのURL
     public static final String Event = "kcc2017";
     //ベースURL
-    public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://api.appvisor-event.com/";
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -44,5 +44,5 @@ public class Constants {
     public static final String DOCUMENTS_API_URL = BASE_URL + Event + "/api/documents/get.json";
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
-    public static final String GCM_SENDER_ID = "485246024931";
+    public static final String GCM_SENDER_ID = "485336711595";
 }

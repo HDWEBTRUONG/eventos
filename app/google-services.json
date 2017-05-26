@@ -1,20 +1,27 @@
 {
   "project_info": {
-    "project_number": "485246024931",
-    "project_id": "api-project-485246024931"
+    "project_number": "485336711595",
+    "firebase_url": "https://eventos-for-kcc2017.firebaseio.com",
+    "project_id": "eventos-for-kcc2017",
+    "storage_bucket": "eventos-for-kcc2017.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:485246024931:android:bb570df58173633c",
+        "mobilesdk_app_id": "1:485336711595:android:ef2ec4904fc901a3",
         "android_client_info": {
-          "package_name": "tokyo.eventos.kcc2017_staging"
+          "package_name": "tokyo.eventos.kcc2017"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "485336711595-g3mvc17ab3tpt4g4mh5bhi3vl1giubi2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDzBBAPm_eCXiF-CCGieo59L70Ksc0AR6s"
+          "current_key": "AIzaSyASXP1NTXb8tx-uprIG7Mo4HnQ6mPffh3o"
         }
       ],
       "services": {
@@ -26,7 +33,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

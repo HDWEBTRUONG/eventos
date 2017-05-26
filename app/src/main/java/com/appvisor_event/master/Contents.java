@@ -629,8 +629,14 @@ public class Contents extends AppActivity implements BeaconConsumer, AppPermissi
                 }
                 catch (ActivityNotFoundException exception)
                 {
-                    showOpenMarketForPDFViewerDialog();
+                    try {
+                        pdfIntent.setData(Uri.parse(url));
+                        startActivity(pdfIntent);
+                    }catch (ActivityNotFoundException e) {
+                        showOpenMarketForPDFViewerDialog();
+                    }
                 }
+
                 return true;
             }
 

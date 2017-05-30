@@ -8,6 +8,10 @@ public class Constants {
     public static final String Event = "sap-forum2017";
     //ベースURL
     public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
+    // 機能使用の有無
+    // ①ログイン機能を使用する場合はYES、それ以外はNOを入れる
+    public static final Boolean USED_LOGIN = true;
+
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;
     //サブメニューのURL
@@ -18,6 +22,8 @@ public class Constants {
     public static final String HALL_URL = BASE_URL + Event + "/hall/maps";
     //お気に入りのURL
     public static final String FAVORITE_URL = BASE_URL + Event + "/favorites";
+    //ログインのURL
+    public static final String LOGIN_URL = BASE_URL + Event + "/general_login";
     //設定画面のURL
     public static final String SETTING_URL = BASE_URL + Event + "/settings";
     //ERRORのURL
@@ -45,4 +51,10 @@ public class Constants {
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
     public static final String GCM_SENDER_ID = "485246024931";
+
+    // SharedPreferences KEY
+    public static final String LOGGED_IN_STATUS_SP_KEY = "SP_LOGGED_IN";
+    public static final String LOGGED_IN_STATUS_KEY = "LOGGED_IN_STATUS";
+    public static final String LOGGED_IN_YES = "YES";
+    public static final String LOGGED_IN_NO  = "NO";
 }

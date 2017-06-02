@@ -9,7 +9,7 @@ public class Constants {
     //ベースURL
     public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
     // 機能使用の有無
-    // ①ログイン機能を使用する場合はYES、それ以外はNOを入れる
+    // ①ログイン機能を使用する場合はtrue、それ以外はfalseを入れる
     public static final Boolean USED_LOGIN = true;
 
     //ホームのURL
@@ -31,7 +31,7 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "XXXXXXXX";
+    public static final String EXHIBITER_DOMAIN_1 = "sapevent.jp";
     public static final String EXHIBITER_DOMAIN_2 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_3 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXXXX";

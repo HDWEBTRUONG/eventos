@@ -2,8 +2,10 @@ package com.appvisor_event.master;
 
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,11 +21,16 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+import com.appvisor_event.master.modules.AppPermission.AppPermission;
+import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.Document.Document;
 import com.appvisor_event.master.modules.Document.DocumentsActivity;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.google.android.gcm.GCMRegistrar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,7 +39,7 @@ import java.util.Map;
 
 //import biz.appvisor.push.android.sdk.AppVisorPush;
 
-public class MainActivity extends AppActivity {
+public class MainActivity extends BaseActivity implements AppPermission.Interface {
 
     private GcmClient gcmClient = null;
 
@@ -48,6 +55,95 @@ public class MainActivity extends AppActivity {
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
 
+    private InfosGetter pushGetter;
+
+    //beaconメッセージ関連
+    private InfosGetter myJsonbeacon;
+
+    private GPSManager gps;
+
+    private static final String[] beaconDetectionRequiredPermissions = {
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+    private static final int beaconDetectionRequiredPermissionsRequestCode = 100;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        AppPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public Boolean isRequirePermission(int requestCode, String permission) {
+        AppPermission.log(String.format("isRequirePermission: %s", permission));
+
+        Boolean isRequirePermission = false;
+        switch (requestCode)
+        {
+            case beaconDetectionRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case android.Manifest.permission.ACCESS_FINE_LOCATION:
+                    case android.Manifest.permission.ACCESS_COARSE_LOCATION:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
+        }
+
+        return isRequirePermission;
+    }
+
+    @Override
+    public void showErrorDialog(int requestCode) {
+        AppPermission.log(String.format("showErrorDialog"));
+        switch (requestCode)
+        {
+
+            case beaconDetectionRequiredPermissionsRequestCode:
+                if(AppLanguage.isJapanese(this)) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_location))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(MainActivity.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                }
+                else
+                {
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_location_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(MainActivity.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void allRequiredPermissions(int requestCode, String[] permissions) {
+        switch (requestCode)
+        {
+            case beaconDetectionRequiredPermissionsRequestCode:
+                startService(new Intent(MainActivity.this, BeaconService.class));
+                break;
+        }
+    }
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +155,16 @@ public class MainActivity extends AppActivity {
         //DEVICE_TOKENの取得
         device_token = GCMRegistrar.getRegistrationId(this).replace("-","").replace(" ","").replace(">","").replace("<","");
         Log.d("device_token",device_token);
+
+        Intent mainintent = getIntent();
+        Bundle bundle = mainintent.getExtras();
+        if(bundle!=null)
+        {
+            if(bundle.getString("isbeacon")!=""&&bundle.getString("isbeacon")!=null) {
+                showBeaconMeaasge(bundle.getString("title"), bundle.getString("body"), bundle.getString("link"), bundle.getInt("isInternal"));
+                sendAPIInfo(device_id, bundle.getString("msgid"), "2");
+            }
+        }
 
         extraHeaders = new HashMap<String, String>();
         extraHeaders.put("user-id", device_id);
@@ -90,22 +196,20 @@ public class MainActivity extends AppActivity {
             myWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
         //端末の言語設定を取得
-        String local = null;
-        if (AppLanguage.isUnknown(getApplicationContext()))
-        {
-            local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
+        String local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
+        if(isFirstStart()) {
+            //端末の言語設定を取得
             AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
+            setIsFirstStarts(false);
         }
         else
         {
-            local = AppLanguage.isJapanese(getApplicationContext()) ? "ja" : "en";
+            local=AppLanguage.getLanguageWithStringValue(this.getApplicationContext());
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
-
-
 
         // UUIDが取得できていれば、URLをロードする。
         if(!mIsFailure){
@@ -203,6 +307,63 @@ public class MainActivity extends AppActivity {
 
         this.initGCM();
         this.checkGCMNotification();
+
+        try {
+            myJsonbeacon = new InfosGetter(Constants.Beacon_MESSAGE_API+getBeaconVersion());
+            myJsonbeacon.start();
+            myJsonbeacon.join();
+            Log.d("Test josn",Constants.Beacon_MESSAGE_API+getBeaconVersion());
+            if (myJsonbeacon.mResponse != null && myJsonbeacon.mResponse != "") {
+                JSONObject beaconjson = new JSONObject(myJsonbeacon.mResponse);
+                Log.d("Test josn",myJsonbeacon.mResponse);
+                if (beaconjson.getInt("status") == 200) {
+                    Log.d("Test josn",myJsonbeacon.mResponse);
+                    //beaconサービス起動
+                    BeaconService.beaconobjs=beaconjson;
+                    setBeaconMessages(beaconjson.toString());
+                    setBeaconVersion(beaconjson.getString("version"));
+
+                }
+                else
+                {
+                    if(getBeaconMessages()!=null) {
+                        beaconjson = new JSONObject(getBeaconMessages());
+                        BeaconService.beaconobjs = beaconjson;
+                    }
+                }
+
+                stopService(new Intent(MainActivity.this, BeaconService.class));
+                if(BeaconService.beaconobjs!=null&&BeaconService.beaconobjs.getJSONArray("beacons").length()>0)
+                {
+                    gps = new GPSManager(this);
+                    if(!gps.canGetLocation)
+                    {
+                        if(AppLanguage.isJapanese(this)) {
+                            gps.showSettingsAlert();
+                        }
+                        else
+                        {
+                            gps.showSettingsAlertEn();
+                        }
+                    }
+                    if (AppPermission.checkPermission(this, beaconDetectionRequiredPermissions))
+                    {
+                        startService(new Intent(MainActivity.this, BeaconService.class));
+                    }
+                    else {
+                        AppPermission.requestPermissions(this, beaconDetectionRequiredPermissionsRequestCode, beaconDetectionRequiredPermissions);
+                    }
+                }
+                else
+                {
+                    stopService(new Intent(MainActivity.this, BeaconService.class));
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         StartupAd.setShown(false);
 
@@ -477,6 +638,13 @@ public class MainActivity extends AppActivity {
         StartupAd.setShown(true);
     }
 
+    private String getBeaconVersion()
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
+        String version = sharedPreferences.getString("beaconVersion","-1" );
+        return  version;
+    }
+
     private void sendPushNotificationResponse(String pushId)
     {
         if (null == pushId || !(pushId instanceof String))
@@ -485,6 +653,59 @@ public class MainActivity extends AppActivity {
         }
 
         this.gcmClient.sendResponse(pushId);
+    }
+
+    private void setBeaconVersion(String curversion)
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("beaconVersion", curversion);
+        editor.apply();
+    }
+
+    private String getBeaconMessages()
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
+        String messages = sharedPreferences.getString("beaconmessages","{\"status\":500}");
+        return  messages;
+    }
+
+    private void setBeaconMessages(String messages)
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("beaconmessages", messages);
+        editor.apply();
+    }
+
+    private boolean isFirstStart()
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("appData", Context.MODE_PRIVATE);
+        boolean messages = sharedPreferences.getBoolean("isFirstStart",true);
+        return  messages;
+    }
+
+    private void setIsFirstStarts(Boolean started)
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("appData",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isFirstStart", started);
+        editor.apply();
+    }
+
+    private void sendAPIInfo(String uuid,String msgid,String msgType)
+    {
+        try {
+            pushGetter = new InfosGetter(Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
+            pushGetter.start();
+            pushGetter.join();
+//            if (pushGetter.mResponse != null && pushGetter.mResponse != "") {
+//                Log.d("pushGetter",pushGetter.mResponse);
+//                Log.d("pushGetter",Constants.Beacon_AGGREGATE_API+"uuid="+uuid+"&MsgID="+msgid+"&Type="+msgType);
+//            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showDocumentsActivity()

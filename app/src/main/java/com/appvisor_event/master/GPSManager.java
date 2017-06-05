@@ -83,6 +83,36 @@ public class GPSManager extends Service implements LocationListener {
         // Showing Alert Message
         alertDialog.show();
     }
+
+    public void showSettingsAlertEn(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setTitle(R.string.location_settings_title_en);
+
+        // Setting Dialog Message
+        alertDialog.setMessage(R.string.location_settings_message_en);
+
+        // Setting Icon to Dialog
+        //alertDialog.setIcon(R.drawable.delete);
+
+        // On pressing Settings button
+        alertDialog.setPositiveButton("Setting", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                context.startActivity(intent);
+            }
+        });
+
+        // on pressing cancel button
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        // Showing Alert Message
+        alertDialog.show();
+    }
+
     @Override
     public void onLocationChanged(Location location) {
     }

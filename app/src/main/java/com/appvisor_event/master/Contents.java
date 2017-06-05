@@ -65,7 +65,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Contents extends AppActivity implements BeaconConsumer, AppPermission.Interface {
+public class Contents extends BaseActivity implements BeaconConsumer, AppPermission.Interface {
 
     private WebView myWebView;
     private static final String TAG = "TAG";

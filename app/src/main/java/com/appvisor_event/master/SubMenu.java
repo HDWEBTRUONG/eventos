@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubMenu extends AppActivity {
+public class SubMenu extends BaseActivity {
 
     private WebView myWebView;
     private boolean mIsFailure = false;

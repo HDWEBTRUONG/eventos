@@ -9,6 +9,7 @@
     <facet type="android" name="Android">
       <configuration>
         <option name="SELECTED_BUILD_VARIANT" value="ray_eventDebug" />
+        <option name="SELECTED_TEST_ARTIFACT" value="_android_test_" />
         <option name="ASSEMBLE_TASK_NAME" value="assembleRay_eventDebug" />
         <option name="COMPILE_JAVA_TASK_NAME" value="compileRay_eventDebugSources" />
         <afterSyncTasks>
@@ -39,15 +40,9 @@
       <sourceFolder url="file://$MODULE_DIR$/src/ray_eventDebug/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_eventDebug/aidl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_eventDebug/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ray_eventDebug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_eventDebug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_eventDebug/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/ray_event/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/ray_event/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/ray_event/debug" isTestSource="true" generated="true" />
@@ -55,11 +50,20 @@
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/ray_event/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/ray_event/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/ray_event/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_eventDebug/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_event/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_event/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_event/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_event/aidl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_event/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ray_event/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_event/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ray_event/shaders" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestRay_event/res" type="java-test-resource" />
@@ -67,6 +71,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestRay_event/assets" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestRay_event/aidl" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestRay_event/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRay_event/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestRay_event/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestRay_event/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testRay_event/res" type="java-test-resource" />
@@ -74,6 +79,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testRay_event/assets" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testRay_event/aidl" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testRay_event/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRay_event/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testRay_event/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testRay_event/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
@@ -81,6 +87,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/aidl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/debug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/shaders" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/res" type="java-test-resource" />
@@ -88,6 +95,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/assets" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/aidl" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testDebug/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/res" type="java-resource" />
@@ -95,24 +103,28 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/aidl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/assets" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/aidl" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.2.1/jars" />
@@ -132,12 +144,19 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-measurement/8.3.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/me.dm7.barcodescanner/core/1.5/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/me.dm7.barcodescanner/zxing/1.5/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/org.altbeacon/android-beacon-library/2.9.2/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/org.altbeacon/android-beacon-library/2.10/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-resources" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
@@ -147,10 +166,10 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 23 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="android-beacon-library-2.9.2" level="project" />
     <orderEntry type="library" exported="" name="zxing-1.5" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-8.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-measurement-8.3.0" level="project" />
+    <orderEntry type="library" exported="" name="android-beacon-library-2.10" level="project" />
     <orderEntry type="library" exported="" name="org.jbundle.util.osgi.wrapped.org.apache.http.client-4.1.2" level="project" />
     <orderEntry type="library" exported="" name="gcm" level="project" />
     <orderEntry type="library" exported="" name="android-pdf-viewer-2.5.0" level="project" />

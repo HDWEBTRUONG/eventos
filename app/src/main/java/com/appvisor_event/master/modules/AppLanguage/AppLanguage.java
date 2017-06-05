@@ -23,6 +23,13 @@ public class AppLanguage
         editor.apply();
     }
 
+    public static String getLanguageWithStringValue(Context context)
+    {
+        SharedPreferences data = context.getSharedPreferences("AppLanguage", Context.MODE_PRIVATE);
+        String language = data.getString("language", "ja");
+        return language;
+    }
+
     public static int language(Context context)
     {
         SharedPreferences data = context.getSharedPreferences("AppLanguage", Context.MODE_PRIVATE);

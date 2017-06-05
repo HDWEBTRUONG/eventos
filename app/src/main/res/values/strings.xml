@@ -15,10 +15,16 @@
     <string name="permission_dialog_message_camera_and_location">アプリ設定 > 権限 から\nカメラと位置情報を許可してください。</string>
     <string name="permission_dialog_message_camera_and_storage">アプリ設定 > 権限 から\nカメラとストレージを許可してください。</string>
     <string name="permission_dialog_message_location">アプリ設定 > 権限 から\n位置情報を許可してください。</string>
+    <string name="permission_dialog_title_en">You do not have enough access privileges for this operation.</string>
+    <string name="permission_dialog_message_camera_and_location_en">Go to App Setting > Permissions\n and enable Camera and Location permission.</string>
+    <string name="permission_dialog_message_camera_and_storage_en">Go to App Setting > Permissions\n and enable Camera and Storage permission.</string>
+    <string name="permission_dialog_message_location_en">Go to App Setting > Permissions\n and enable Location permission.</string>
     <string name="search_button_tag_key">1</string>
 
     <string name="location_settings_title">位置情報の設定</string>
     <string name="location_settings_message">位置情報をONにしてください。</string>
+    <string name="location_settings_title_en">Location settings</string>
+    <string name="location_settings_message_en">Enable location settings.</string>
 
     <string name="open_market_for_pdf_viewer_dialog_title">PDFファイルを開けません</string>
     <string name="open_market_for_pdf_viewer_dialog_message">PDFファイルを閲覧できるアプリケーションがインストールされていません。\n\nPlayストアからインストールしますか？</string>

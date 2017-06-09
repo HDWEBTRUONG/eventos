@@ -20,8 +20,8 @@ android {
     }
     productFlavors {
         ray_event {
-            applicationId = "tokyo.eventos.ray_event"
-            versionCode 4
+            applicationId = "ray.seed"
+            versionCode 1
             versionName "1.0.0"
         }
         ray_event_staging {

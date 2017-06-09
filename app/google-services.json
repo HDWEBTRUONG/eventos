@@ -1,20 +1,27 @@
 {
   "project_info": {
-    "project_number": "485246024931",
-    "project_id": "api-project-485246024931"
+    "project_number": "231248900579",
+    "firebase_url": "https://rayseed-47c07.firebaseio.com",
+    "project_id": "rayseed-47c07",
+    "storage_bucket": "rayseed-47c07.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:485246024931:android:bb570df58173633c",
+        "mobilesdk_app_id": "1:231248900579:android:16f40c5701aadf8e",
         "android_client_info": {
-          "package_name": "tokyo.eventos.ray-event_staging"
+          "package_name": "ray.seed"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "231248900579-71ogafp8nr6nudslc7vu3mnb9975lots.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDzBBAPm_eCXiF-CCGieo59L70Ksc0AR6s"
+          "current_key": "AIzaSyAJx1_BsFB0I8t9oLEhsIpdM7LzwARGK98"
         }
       ],
       "services": {
@@ -26,7 +33,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

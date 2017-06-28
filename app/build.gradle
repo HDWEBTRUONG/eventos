@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        kcc2017 {
-            applicationId = "tokyo.eventos.kcc2017"
+        ctc_forum {
+            applicationId = "tokyo.eventos.ctc_forum"
             versionCode 1
             versionName "1.0.0"
         }
-        kcc2017_staging {
-            applicationId = "tokyo.eventos.kcc2017_staging"
+        ctc_forum_staging {
+            applicationId = "tokyo.eventos.ctc_forum_staging"
             versionCode 1
             versionName "1.0.0"
         }

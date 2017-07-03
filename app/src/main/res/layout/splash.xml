@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1">
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/bg_splash"
-        android:scaleType="centerCrop" />
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_splash" />
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

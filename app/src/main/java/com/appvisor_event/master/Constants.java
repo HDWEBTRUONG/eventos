@@ -7,7 +7,7 @@ public class Constants {
     //ホームのURL
     public static final String Event = "sap-forum2017";
     //ベースURL
-    public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://api.appvisor-event.com/";
     // 機能使用の有無
     // ①ログイン機能を使用する場合はtrue、それ以外はfalseを入れる
     public static final Boolean USED_LOGIN = true;
@@ -49,8 +49,8 @@ public class Constants {
     // 資料のためのAPI
     public static final String DOCUMENTS_API_URL = BASE_URL + Event + "/api/documents/get.json";
     //PUSHの設定値
-    public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
-    public static final String GCM_SENDER_ID = "485246024931";
+    public static final String GCM_BASE_URL = "https://push.appvisor-event.com/";
+    public static final String GCM_SENDER_ID = "350861218902";
 
     // SharedPreferences KEY
     public static final String LOGGED_IN_STATUS_SP_KEY = "SP_LOGGED_IN";

@@ -21,8 +21,8 @@ android {
     productFlavors {
         sap_forum {
             applicationId = "com.appvisor_event.sap_forum"
-            versionCode 1
-            versionName "1.1.1"
+            versionCode 2017070301
+            versionName "1.1.2"
         }
         sap_forum_staging {
             applicationId = "com.appvisor_event.sap_forum_staging"

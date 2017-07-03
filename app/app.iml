@@ -62,13 +62,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/sap_forum/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/assets" type="java-test-resource" />
@@ -76,6 +69,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testSap_forum/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestSap_forum/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />

@@ -823,8 +823,14 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                 }
                 catch (ActivityNotFoundException exception)
                 {
-                    showOpenMarketForPDFViewerDialog();
+                    try {
+                        pdfIntent.setData(Uri.parse(url));
+                        startActivity(pdfIntent);
+                    }catch (ActivityNotFoundException e) {
+                        showOpenMarketForPDFViewerDialog();
+                    }
                 }
+
                 return true;
             }
 

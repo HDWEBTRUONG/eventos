@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 
-public class SplashActivity extends Activity {
+import com.appvisor_event.master.modules.BeaconService;
+
+public class SplashActivity extends Activity
+{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -14,10 +17,13 @@ public class SplashActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // splash.xmlをViewに指定します。
         setContentView(R.layout.splash);
+
+        BeaconService.activities.clear();
         Handler hdl = new Handler();
         // 500ms遅延させてsplashHandlerを実行します。
         hdl.postDelayed(new splashHandler(), 1000);
     }
+
     class splashHandler implements Runnable {
         public void run() {
             // スプラッシュ完了後に実行するActivityを指定します。

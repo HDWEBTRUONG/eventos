@@ -1,3 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="CustomDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <!-- The windowFrame Dialog box is not -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- Bleach now activity on -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- Translucent -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+    <style name="MyDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+
+    <style name="squarecamera_CameraFullScreenTheme" parent="squarecamera_CameraFullScreenTheme.Base"
+        >
+    <item name="android:windowBackground">@color/black</item>
+    </style>
+
+    <style name="squarecamera_CameraFullScreenTheme.Base" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="squarecamera__CameraFullScreenTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="squarecamera__CameraFullScreenTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="squarecamera__CameraFullScreenTheme.NoUI" parent="squarecamera_CameraFullScreenTheme.Base">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+    <style name="camera_style" parent="android:Theme.Black.NoTitleBar.Fullscreen">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="android:windowBackground">@color/black</item>
+    </style>
+
 </resources>

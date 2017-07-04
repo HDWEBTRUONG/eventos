@@ -1,31 +1,52 @@
 package com.appvisor_event.master;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.content.Intent;
+import android.widget.Toast;
 
+import com.appvisor_event.master.camerasquare.CameraSquareActivity;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
+import com.appvisor_event.master.modules.BeaconService;
+import java.util.Date;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubMenu extends Activity {
+public class SubMenu extends BaseActivity {
 
     private WebView myWebView;
     private boolean mIsFailure = false;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String device_id;
     private Map<String, String> extraHeaders;
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
@@ -37,6 +58,10 @@ public class SubMenu extends Activity {
 //        device_id  = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
          //メニューリストを表示
          setContentView(R.layout.menu_list);
+
+        //どの管理画面を見ているか判定する。
+        // インテントを取得
+        Intent intent = getIntent();
 
          extraHeaders = new HashMap<String, String>();
          extraHeaders.put("user-id", device_id);
@@ -50,31 +75,37 @@ public class SubMenu extends Activity {
          // JS利用を許可する
          myWebView.getSettings().setJavaScriptEnabled(true);
          // ドロワー画面のページを表示する。
-         myWebView.loadUrl(Constants.SUB_MENU_URL, extraHeaders);
+         myWebView.loadUrl(Constants.SubMenuUrl(), extraHeaders);
          //CATHEを使用する
-         myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        if(isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        } else {
+            //CATHEを使用する
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
 
-         overridePendingTransition(R.anim.right_in, R.anim.nothing);
+        overridePendingTransition(R.anim.right_in, R.anim.nothing);
 
-         myWebView.setWebViewClient(mWebViewClient);
+        myWebView.setWebViewClient(mWebViewClient);
 
-         final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom_return);
-         menu_buttom.setOnClickListener(new View.OnClickListener() {
+        final ImageView menu_buttom = (ImageView) findViewById(R.id.menu_buttom_return);
+        menu_buttom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 // 次画面のアクティビティ終了
-                menu_buttom .setBackgroundColor(getResources().getColor(R.color.selected_color));
+                menu_buttom.setBackgroundColor(getResources().getColor(R.color.selected_color));
                 finish();
 
-                overridePendingTransition(R.anim.nothing,R.anim.right_out);
+                overridePendingTransition(R.anim.nothing, R.anim.right_out);
 
-             }
-            });
+            }
+        });
 
-         Button update_button = (Button)findViewById(R.id.update_button);
+        Button update_button = (Button) findViewById(R.id.update_button);
 
-         update_button.setOnClickListener(new View.OnClickListener() {
+        update_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
@@ -82,7 +113,7 @@ public class SubMenu extends Activity {
                 mIsFailure = false;
                 //URLを表示する
                 extraHeaders.put("user-id", device_id);
-                myWebView.loadUrl(Constants.SUB_MENU_URL);
+                myWebView.loadUrl(Constants.SubMenuUrl());
             }
         });
         // SwipeRefreshLayoutの設定
@@ -91,10 +122,19 @@ public class SubMenu extends Activity {
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
     }
 
+    private boolean isCachePolicy() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+        if (cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     @Override
-    public void onRestart(){
-        final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom_return);
-        menu_buttom .setBackgroundColor(Color.TRANSPARENT);
+    public void onRestart() {
+        final ImageView menu_buttom = (ImageView) findViewById(R.id.menu_buttom_return);
+        menu_buttom.setBackgroundColor(Color.TRANSPARENT);
 
         super.onRestart();
     }
@@ -111,11 +151,14 @@ public class SubMenu extends Activity {
                 extraHeaders.put("user-id", device_id);
                 SubMenu.this.myWebView.loadUrl(url, SubMenu.this.extraHeaders);
                 return false;
-            }else{
+            }else if (url.contains(Constants.SUB_MENU_URL)){
+                return true;
+            } else{
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
         }
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
@@ -128,7 +171,7 @@ public class SubMenu extends Activity {
                 findViewById(R.id.webView1).setVisibility(View.GONE);
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 //ホーム以外の場合はタイトルバーを表示する
                 findViewById(R.id.title_bar).setVisibility(View.VISIBLE);
                 //SWIPEを非表示にする。
@@ -138,7 +181,7 @@ public class SubMenu extends Activity {
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.GONE);
 
-                if (url.equals(Constants.SUB_MENU_URL)) {
+                if (url.equals(Constants.SubMenuUrl())) {
 
                 } else if(url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1
                         || url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1
@@ -147,23 +190,63 @@ public class SubMenu extends Activity {
                         || url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1){
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
-                    bundle.putString("key.url",url);
-
+                    bundle.putString("key.url", url);
                     intent.putExtras(bundle);
                     setResult(RESULT_OK, intent);
-
                     finish();
-                    overridePendingTransition(R.anim.nothing,R.anim.right_out);
-                }else {
-                    Intent intent = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("key.url",url);
+                    overridePendingTransition(R.anim.nothing, R.anim.right_out);
+                } else if (url.indexOf(Constants.HREF_PHOTO_FRAMES) != -1) {
+                    String p = SubMenu.this.getFilesDir().toString() + "/images";
+                    File file=new File(p);
+                    if (!file.exists()){
+                        myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+                        showCameradialog();
+                    }else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            int checkCallPhonePermission = ContextCompat.checkSelfPermission(SubMenu.this, android.Manifest.permission.CAMERA);
+                            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
+                                return;
+                            } else {
+                                finish();
+                                Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
+                                startActivity(intent);
+//                            myWebView.clearHistory();
+//                            myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+                            }
 
-                    intent.putExtras(bundle);
-                    setResult(RESULT_OK, intent);
+                        } else {
+                            finish();
+                            Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
+                            startActivity(intent);
+//                        myWebView.clearHistory();
+//                        myWebView.loadUrl(Constants.SUB_MENU_URL,extraHeaders);
+                        }
+                    }
 
-                    finish();
-                    overridePendingTransition(R.anim.nothing,R.anim.right_out);
+                } else {
+
+                    if ((url.indexOf(Constants.RegARFlag) != -1)) {
+                        if (!BeaconService.isUnityService) {
+                            //テストFOR Unity
+                            finish();
+                            BeaconService.isUnityService = true;
+                            Intent intent = new Intent(SubMenu.this, TgsUnityActivity.class);
+                            startActivity(intent);
+                        }
+                    } else {
+                        Intent intent = new Intent();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("key.url", url);
+
+                        intent.putExtras(bundle);
+                        setResult(RESULT_OK, intent);
+
+                        finish();
+                        overridePendingTransition(R.anim.nothing, R.anim.right_out);
+                    }
+
+
                 }
             }
         }
@@ -192,4 +275,76 @@ public class SubMenu extends Activity {
             myWebView.reload();
         }
     };
+
+
+    private void showCameradialog() {
+        String content = "";
+        String ok = "";
+
+        if (AppLanguage.getLanguageWithStringValue(this).equals("ja")) {
+            content = getResources().getString(R.string.camera_no_image_jp);
+            ok = getResources().getString(R.string.camera_no_certain_jp);
+
+        } else {
+            content = getResources().getString(R.string.camera_no_image_en);
+            ok = getResources().getString(R.string.camera_no_certain_en);
+        }
+        new AlertDialog.Builder(this).setMessage(content)
+                .setPositiveButton(ok, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }
+
+                ).show();
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.e("testpermisson", requestCode + "");
+        if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                finish();
+                Intent intent = new Intent(SubMenu.this, CameraSquareActivity.class);//getApplication()
+                startActivity(intent);
+            } else {
+                // Permission Denied
+                Toast.makeText(SubMenu.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+        String passcode = data.getString("passcode","");
+        Date date = new Date(System.currentTimeMillis());
+        String time = data.getString("time","");
+        int background_flg = data.getInt("background_flg",0);
+        if (!passcode.equals("")) {
+            if (background_flg == 1) {
+                long old_time = Long.parseLong(time);
+                long current_time = date.getTime();
+                long deff = (current_time - old_time) / (1000*60*60);
+                if (deff > 72) {
+                    finish();
+                }else{
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("time", String.valueOf(current_time));
+                    editor.apply();
+                }
+            }
+        }
+    }
 }

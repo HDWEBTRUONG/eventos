@@ -2,25 +2,31 @@ package com.appvisor_event.master;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Base64;
@@ -34,23 +40,28 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.appvisor_event.master.modules.Advertisement.Advertisement;
+import com.appvisor_event.master.modules.AndroidBeaconMapInterface;
 import com.appvisor_event.master.modules.AndroidSpiralETicketInterface;
+import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.AssetsManager;
+import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
 import com.appvisor_event.master.modules.Spiral.ETicket.QRCodeScannerActivity;
 import com.appvisor_event.master.modules.WebAppInterface;
+import com.appvisor_event.master.util.SPUtils;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-import org.altbeacon.beacon.Beacon;
-import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
-import org.altbeacon.beacon.Identifier;
-import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
@@ -58,11 +69,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Contents extends Activity implements BeaconConsumer, AppPermission.Interface {
+public class Contents extends BaseActivity implements  AppPermission.Interface {
 
     private WebView myWebView;
     private static final String TAG = "TAG";
@@ -76,17 +87,13 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     //レイアウトで指定したWebViewのIDを指定する。
     private boolean mIsFailure = false;
     private String backurl = "#####";
-    private String minor;
-    private String mayor;
-    private String UUID;
-    private String region;
-    private ArrayList<String> regId;
     private double longitude;
     private double latitude;
     private GPSManager gps;
     private ArrayList<Region> regionB;
-
     private Uri m_uri;
+
+    static boolean isMultAdShow = false;
 
     private static final String[] beaconDetectionRequiredPermissions = {
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -121,6 +128,37 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
     private static final int ShowGalleryChooserRequestCode = 200;
 
+    //広告表示
+    private Handler ad_handler = new Handler();
+    private String ad_image = null;
+    private String ad_link = null;
+
+    private Runnable adRunnable;
+
+    private boolean isFromMessage = false;
+
+    BeaconContentsReceiver beaconContentsReceiver;
+    IntentFilter intentFilter;
+
+    //検知一番近いbeacon
+    class  BeaconContentsReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if(bundle.getBoolean("beaconON")) {
+                String uuid = bundle.getString("uuid");
+                String major = bundle.getString("major");
+                String minor = bundle.getString("minor");
+                sendBeacon(uuid, major, minor);
+            }else
+            {
+                clearBeacon();
+            }
+
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
@@ -151,13 +189,21 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         myWebView = (WebView) findViewById(R.id.webView1);
         myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
         myWebView.addJavascriptInterface(new AndroidSpiralETicketInterface(this),"AndroidSpiralETicketInterface");
+        myWebView.addJavascriptInterface(new AndroidBeaconMapInterface(this),"AndroidBeaconMapInterface");
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
         // ファイルアクセスを許可する
         myWebView.getSettings().setAllowFileAccess(true);
 
+        if(isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }else {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
+
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -169,7 +215,8 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         Intent intent = getIntent();
         // インテントに保存されたデータを取得
         active_url = intent.getStringExtra("key.url");
-        Log.d("active_url_contents",active_url);
+        isFromMessage = intent.getBooleanExtra("isMessagefrom",false);
+//        Log.d("active_url_contents",active_url);
 
         if(!mIsFailure){
             if (device_id != null){
@@ -231,18 +278,131 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
             // responseがあればログ出力する。
             if ( myJsonSender.mResponse != null ) {
-                Log.i ( "message", myJsonSender.mResponse );
+//                Log.i ( "message", myJsonSender.mResponse );
             }
 
         } catch ( InterruptedException e ) {
 
             e.printStackTrace ();
-            Log.i ( "JSON", e.toString () );
 
         }
 
         // お気に入りに登録しているセミナーの開始時間10分前にローカル通知を発行する準備
         this.setupFavoritSeminarAlarm();
+
+        //広告表示と非表示などコントロール
+        if(Advertisement.isLoaded && Advertisement.interval > 0)
+        {
+
+            findViewById(R.id.adview).setVisibility(View.VISIBLE);
+            findViewById(R.id.error_page).setVisibility(View.GONE);
+            int sc_width = getResources().getDisplayMetrics().widthPixels;
+            int sc_height = getResources().getDisplayMetrics().heightPixels;
+            float sc_density = getResources().getDisplayMetrics().density;
+            int ad_width = sc_width;
+            int ad_height = (int)(ad_width * Advertisement.ratio);
+            LinearLayout.LayoutParams layoutParams_adview = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ad_height);
+            findViewById(R.id.adview).setLayoutParams(layoutParams_adview);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (sc_height - 44 * sc_density - ad_height-MainActivity.status_bar_height));
+            findViewById(R.id.swipe_refresh_layout).setLayoutParams(layoutParams);
+
+            final ImageLoader imageLoader = ImageLoader.getInstance();
+            if(Advertisement.list.length()>1)
+            {
+                isMultAdShow = true;
+                if(adRunnable == null) {
+                    adRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+
+                            try {
+                                if (!isMultAdShow) {
+                                    return;
+                                }
+                                JSONObject adJson = Advertisement.list.getJSONObject(Advertisement.currentIndex);
+                                ad_image = adJson.getString("imageurl");
+                                ad_link = adJson.getString("url");
+                                imageLoader.loadImage(ad_image, new SimpleImageLoadingListener() {
+                                    @Override
+                                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                                        int ad_width = loadedImage.getWidth();
+                                        int ad_height = loadedImage.getHeight();
+                                        int sc_width = getResources().getDisplayMetrics().widthPixels;
+                                        ad_height = (int) ((float) sc_width / (float) ad_width * ad_height);
+                                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ad_height);
+                                        ImageView adimageview = ((ImageView) findViewById(R.id.ad));
+                                        adimageview.setLayoutParams(layoutParams);
+
+                                        adimageview.setImageBitmap(loadedImage);
+                                        adimageview.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ad_link)));
+                                            }
+                                        });
+                                    }
+                                });
+
+                                ad_handler.postDelayed(this, Advertisement.interval * 1000);
+                                Advertisement.currentIndex++;
+                                if (Advertisement.currentIndex >= Advertisement.list.length()) {
+                                    Advertisement.currentIndex = 0;
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    ad_handler.post(adRunnable);
+                }
+            }
+            else {
+
+                try
+                {
+                    JSONObject adJson = Advertisement.list.getJSONObject(Advertisement.currentIndex);
+                    ad_image = adJson.getString("imageurl");
+                    ad_link = adJson.getString("url");
+
+                    imageLoader.loadImage(ad_image, new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            int ad_width = loadedImage.getWidth();
+                            int ad_height = loadedImage.getHeight();
+                            int sc_width = getResources().getDisplayMetrics().widthPixels;
+                            ad_height = (int) ((float) sc_width / (float) ad_width * ad_height);
+                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ad_height);
+                            ImageView adimageview = ((ImageView) findViewById(R.id.ad));
+                            adimageview.setLayoutParams(layoutParams);
+
+                            adimageview.setImageBitmap(loadedImage);
+                            adimageview.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ad_link)));
+                                }
+                            });
+                        }
+                    });
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else
+        {
+            findViewById(R.id.adview).setVisibility(View.GONE);
+        }
+
+        beaconContentsReceiver=new BeaconContentsReceiver();
+        intentFilter=new IntentFilter();
+        intentFilter.addAction("Beacon_Nearest");
+        registerReceiver(beaconContentsReceiver,intentFilter);
+
     }
 
     private void showGallery()
@@ -308,15 +468,12 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         // 端末の戻るボタンを押した時にwebviewの戻る履歴があれば1つ前のページに戻る
         if (myWebView.canGoBack() == true) {
             Log.d("戻る前URL",(myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl()));
-//                        if (myWebView.copyBackForwardList().getItemAtIndex(myWebView.copyBackForwardList().getCurrentIndex() -1).getUrl().indexOf(Constants.FAVORITE_URL) != -1){
-//                            myWebView.goBack();
-//                            backurl = myWebView.getUrl();
-//                        }else{
             view .setBackgroundColor(getResources().getColor(R.color.selected_color));
             myWebView.goBack();
 
         }else{
             view .setBackgroundColor(getResources().getColor(R.color.selected_color));
+            // 端末のホーム画面に戻る
             Contents.this.finish();
         }
     }
@@ -351,7 +508,13 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         gps = new GPSManager(this);
         if (!gps.canGetLocation)
         {
-            gps.showSettingsAlert();
+            if(AppLanguage.isJapanese(this)) {
+                gps.showSettingsAlert();
+            }
+            else
+            {
+                gps.showSettingsAlertEn();
+            }
             return;
         }
 
@@ -398,12 +561,19 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
     public void startBeacon(String data)
     {
+
         beaconData = data;
 
         gps = new GPSManager(this);
         if(!gps.canGetLocation)
         {
-            gps.showSettingsAlert();
+            if(AppLanguage.isJapanese(this)) {
+                gps.showSettingsAlert();
+            }
+            else
+            {
+                gps.showSettingsAlertEn();
+            }
         }
 
         if (AppPermission.checkPermission(this, beaconDetectionRequiredPermissions))
@@ -421,46 +591,39 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         {
             return;
         }
-
-        regionB = new ArrayList<Region>();
-        regId = new ArrayList<String>();
-        String[] param = data.split("/", -1);
-        for (int i = 0; i < param.length; i++) {
-            String[] beac = param[i].split("\\.", -1);
-            region = beac[0];
-            UUID = beac[1];
-            minor = beac[3];
-            mayor = beac[2];
-            regId.add(region);
-            Identifier may = Identifier.parse(mayor);
-            Identifier min = Identifier.parse(minor);
-            Identifier uui = Identifier.parse(UUID);
-            Region reg = new Region(region, uui, may, min);
-            regionB.add(reg);
-        }
-
-        Log.d("TAG", String.valueOf(regionB.get(0).getIdentifier(0)));
-        beaconManager = BeaconManager.getInstanceForApplication(this);
+        BeaconService.beaconmap=data;
         bluetoothAdapter = bluetoothAdapter.getDefaultAdapter();
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, 2);
-        } else if (beaconManager.checkAvailability()) {
-            beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
-            beaconManager.bind(this);
-            beaconManager.setBackgroundMode(true);
+        } else {
+           if(isBeaconServiceRunning(BeaconService.class))
+           {
+               stopService(new Intent(Contents.this, BeaconService.class));
+           }
+            startService(new Intent(Contents.this, BeaconService.class));
         }
+    }
+
+    private boolean isBeaconServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         // 許可しないにすると無限ループに陥るので辞める。
 //        if (null != beaconData)
 //        {
 //            startBeacon(beaconData);
 //        }
+        BeaconService.isUnityService=false;
     }
 
     @Override
@@ -470,9 +633,9 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         final ImageView menu_buttom = (ImageView)findViewById(R.id.menu_buttom);
         menu_buttom .setBackgroundColor(Color.TRANSPARENT);
         btn_back_button .setBackgroundColor(Color.TRANSPARENT);
-        if(beaconManager!=null) {
-            if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
-        }
+//        if(beaconManager!=null) {
+//            if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
+//        }
     }
 
     @Override
@@ -498,9 +661,13 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
     @Override
     public void onDestroy(){
         super.onDestroy();
-        if(beaconManager!=null) {
-            if (beaconManager.isBound(this)) beaconManager.unbind(this);
+        isMultAdShow = false;
+        if(ad_handler != null&&adRunnable != null) {
+
+            ad_handler.removeCallbacks(adRunnable);
         }
+        BeaconService.beaconmap=null;
+        unregisterReceiver(beaconContentsReceiver);
     }
 
     @Override
@@ -512,7 +679,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     active_url = bundle.getString("key.url", "");
-                    if(active_url.equals(Constants.HOME_URL)){
+                    if(active_url.equals(Constants.HomeUrl())){
                         finish();
                     }
 
@@ -590,19 +757,30 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         @Override
         public void onRefresh() {
             // 更新処理
-            if(beaconManager!=null) {
-                if (beaconManager.isBound(Contents.this)) beaconManager.unbind(Contents.this);
-            }
+//            if(beaconManager!=null) {
+//                if (beaconManager.isBound(Contents.this)) beaconManager.unbind(Contents.this);
+//            }
             extraHeaders.put("user-id", device_id);
             myWebView.loadUrl(active_url,extraHeaders);
         }
     };
 
+    private boolean isCachePolicy()
+    {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+        if(cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected())
+        {
+            return false;
+        }else
+        {
+            return true;
+        }
+    }
+
     /** WebViewClientクラス */
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
             beaconData = null;
 
             // webviewではpdfファイルが開けないので専用のアプリで開く
@@ -626,13 +804,31 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1)
-                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)) {
-                extraHeaders.put("user-id", device_id);
-                Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
-                return false;
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)
+                    || isFromMessage) {
+               if(isFromMessage) {
+                   Contents.this.myWebView.loadUrl(url);
+                   return false;
+               }
+                else
+               {
+                   extraHeaders.put("user-id", device_id);
+                   Contents.this.myWebView.loadUrl(url, Contents.this.extraHeaders);
+                   return false;
+               }
             }else{
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
+            }
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+
+            String nonQueryUrl = (-1 == url.indexOf("?")) ? url : url.substring(0, url.indexOf("?"));
+            if (nonQueryUrl.equals(Constants.HOME_URL) || nonQueryUrl.equals(Constants.HomeUrl())) {
+                finish();
             }
         }
 
@@ -641,6 +837,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
          */
         @Override
         public void onPageFinished(WebView view, String url) {
+
             final ImageView btn_back_button = (ImageView)findViewById(R.id.btn_back_button);
             btn_back_button.setBackgroundColor(Color.TRANSPARENT);
 
@@ -665,21 +862,19 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 //エラーページを表示する
                 findViewById(R.id.error_page).setVisibility(View.VISIBLE);
             }else {
-                if (url.equals(Constants.HOME_URL)) {
-                    finish();
-
-//                    active_url = url;
-//                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-//                    mSwipeRefreshLayout.setEnabled(true);
-//                    //ホームの場合はタイトルバーを非表示にする
-//                    findViewById(R.id.title_bar).setVisibility(View.GONE);
-//                    //SWIPEを表示にする。
-//                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
-//                    //WEBVIEWを表示にする
-//                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
-//                    //エラーページを非表示にする
-//                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
-
+                String nonQueryUrl = (-1 == url.indexOf("?")) ? url : url.substring(0, url.indexOf("?"));
+                if (nonQueryUrl.equals(Constants.HOME_URL) || nonQueryUrl.equals(Constants.HomeUrl())) {
+                    active_url = url;
+                    mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+                    mSwipeRefreshLayout.setEnabled(true);
+                    //ホームの場合はタイトルバーを非表示にする
+                    findViewById(R.id.title_bar).setVisibility(View.GONE);
+                    //SWIPEを表示にする。
+                    findViewById(R.id.swipe_refresh_layout).setVisibility(View.VISIBLE);
+                    //WEBVIEWを表示にする
+                    findViewById(R.id.webView1).setVisibility(View.VISIBLE);
+                    //エラーページを非表示にする
+                    findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
                 } else if ((url.indexOf(Constants.BOOTH) != -1) || (url.indexOf(Constants.HALL_URL) != -1)) {
                     active_url = url;
                     // SwipeRefreshLayoutの設定
@@ -698,7 +893,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     if(myWebView.getTitle() != null) {
-                        if (myWebView.getTitle().length() >= 15) {
+                        if (myWebView.getTitle().length() >= 16) {
                             textView.setText(myWebView.getTitle().substring(0, 15) + "...");
                         } else {
                             textView.setText(myWebView.getTitle());
@@ -720,7 +915,7 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                     TextView textView = (TextView) findViewById(R.id.content_text);
                     // 表示するテキストの設定
                     if(myWebView.getTitle() != null) {
-                        if (myWebView.getTitle().length() >= 15) {
+                        if (myWebView.getTitle().length() >= 16) {
                             textView.setText(myWebView.getTitle().substring(0, 15) + "...");
                         } else {
                             textView.setText(myWebView.getTitle());
@@ -780,9 +975,23 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 message = message.replace("ajax-handler:", "");
                 JavascriptManager.getInstance().onJsAlert(message);
 
-                if (0 == url.indexOf(Constants.SETTING_URL))
+                if (0 == url.indexOf(Constants.SettingUrl()))
                 {
-                    myWebView.reload();
+                    if (0 == message.indexOf("language:"))
+                    {
+                        String language = message.replace("language:", "");
+                        language = language.equals("ja") ? "en" : "ja";
+                        AppLanguage.setLanguageWithStringValue(Contents.this.getApplicationContext(), language);
+
+                        BeaconService.isJP=AppLanguage.isJapanese(getApplicationContext());
+
+                        SPUtils.put(getApplicationContext(), "language", "1");
+                        myWebView.reload();
+                    }
+                    else
+                    {
+                        myWebView.loadUrl("javascript:alert('ajax-handler:language:' + $('#language').children('option[selected]')[0].value)");
+                    }
                 }
 
                 result.cancel();
@@ -806,38 +1015,23 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
         return new AssetsManager(this).loadStringFromFile("ajax_handler.js");
     }
 
-    public void sendBeacon(final String re,final String ui,final String ma,final String min){
+    public void sendBeacon(final String ui,final String ma,final String min){
         myWebView.post(new Runnable() {
             @Override
             public void run() {
-                myWebView.loadUrl("javascript:CheckIn.detectBeacon('"+device_id+"','"+re+"','"+ui+"','"+ma+"','"+min+"')");
+                myWebView.loadUrl("javascript:BeaconMap.detectBeacon('"+ui+"','"+ma+"','"+min+"')");
             }
         });
+
     }
-
-    @Override
-    public void onBeaconServiceConnect() {
-        beaconManager.setRangeNotifier(new RangeNotifier() {
+    public void clearBeacon(){
+        myWebView.post(new Runnable() {
             @Override
-            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                if (beacons.size() > 0) {
-                    for(int i = 0 ; i < regionB.size() ; i++){
-                        if(beacons.iterator().next().getIdentifier(0).equals(regionB.get(i).getIdentifier(0))
-                                && beacons.iterator().next().getIdentifier(1).equals(regionB.get(i).getIdentifier(1))
-                                && beacons.iterator().next().getIdentifier(2).equals(regionB.get(i).getIdentifier(2))){
-                            sendBeacon(regId.get(i),String.valueOf(regionB.get(i).getIdentifier(0)),String.valueOf(regionB.get(i).getIdentifier(1)),String.valueOf(regionB.get(i).getIdentifier(2)));
-                            Log.d("TAGG", "javascript:detectBeacon('"+device_id+"','"+regId.get(i)+"','"+String.valueOf(regionB.get(i).getIdentifier(0))+"','"+String.valueOf(regionB.get(i).getIdentifier(1))+"','"+String.valueOf(regionB.get(i).getIdentifier(2))+"')");
-                        }
-                    }
-                }
+            public void run() {
+                myWebView.loadUrl("javascript:BeaconMap.clearAllBeacon()");
             }
         });
 
-        try {
-            for(Region r : regionB) {
-                beaconManager.startRangingBeaconsInRegion(r);
-            }
-        }catch (RemoteException e){}
     }
 
     @Override
@@ -888,49 +1082,96 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
 
         AppPermission.log(String.format("showErrorDialog"));
 
-        switch (requestCode)
+        if(AppLanguage.isJapanese(this)) {
+            switch (requestCode) {
+                case imageUploadRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_camera_and_storage))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
+
+                case qrcodeScannerRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
+
+                case beaconDetectionRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_location))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
+            }
+        }
+        else
         {
-            case imageUploadRequiredPermissionsRequestCode:
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.permission_dialog_title))
-                        .setMessage(getString(R.string.permission_dialog_message_camera_and_storage))
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                AppPermission.openSettings(Contents.this);
-                            }
-                        })
-                        .create()
-                        .show();
-                break;
+            switch (requestCode) {
+                case imageUploadRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_camera_and_storage_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
 
-            case qrcodeScannerRequiredPermissionsRequestCode:
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.permission_dialog_title))
-                        .setMessage(getString(R.string.permission_dialog_message_camera_and_location))
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                AppPermission.openSettings(Contents.this);
-                            }
-                        })
-                        .create()
-                        .show();
-                break;
+                case qrcodeScannerRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_camera_and_location_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
 
-            case beaconDetectionRequiredPermissionsRequestCode:
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.permission_dialog_title))
-                        .setMessage(getString(R.string.permission_dialog_message_location))
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                AppPermission.openSettings(Contents.this);
-                            }
-                        })
-                        .create()
-                        .show();
-                break;
+                case beaconDetectionRequiredPermissionsRequestCode:
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_location_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(Contents.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                    break;
+            }
         }
     }
 
@@ -1129,5 +1370,29 @@ public class Contents extends Activity implements BeaconConsumer, AppPermission.
                 });
         builder.setNegativeButton(dialogButtonNo, null);
         builder.create().show();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
+        String passcode = data.getString("passcode","");
+        Date date = new Date(System.currentTimeMillis());
+        String time = data.getString("time","");
+        int background_flg = data.getInt("background_flg",0);
+        if (!passcode.equals("")) {
+            if (background_flg == 1) {
+                long old_time = Long.parseLong(time);
+                long current_time = date.getTime();
+                long deff = (current_time - old_time) / (1000*60*60);
+                if (deff > 72) {
+                    finish();
+                }else{
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putString("time", String.valueOf(current_time));
+                    editor.apply();
+                }
+            }
+        }
     }
 }

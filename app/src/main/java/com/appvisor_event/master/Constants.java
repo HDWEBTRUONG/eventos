@@ -3,9 +3,14 @@ package com.appvisor_event.master;
 public class Constants {
     private static final String TAG = Constants.class.getSimpleName();
 
+    // パスコード 利用する場合は "/passcode" しない場合は "" にする
+    private static final String PASSCODE = "";
+
     private Constants(){}
     //ホームのURL
-    public static final String Event = "bravesoft-app";
+    public static final String Event = "bravesoft-app" + PASSCODE;
+    public static String CurrentSlug = Event;
+
     //ベースURL
     public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
     //ホームのURL
@@ -38,7 +43,61 @@ public class Constants {
     public static final String REGISTER_API_URL = BASE_URL + Event + "/api/users/register.json";
     // device_tokenのためのAPI
     public static final String DEVICE_TOKEN_API_URL = BASE_URL + Event + "/api/users/update.json";
+    // 広告のAPI
+    public static final String ADS_API = BASE_URL + Event +"/api/advertisements/get";
+
+    // ARのAPI
+//    public static final String AR_API = BASE_URL + Event +"/api/ar/download?androidversion=";
+    public static final String AR_API = BASE_URL + Event +"/api/ar/download?os=android&version=";
+
+    public static final String Beacon_MESSAGE_API= BASE_URL+Event+"/api/beacon/messages/?version=";
+
+    public static final String Beacon_AGGREGATE_API= BASE_URL+Event+"/api/beacon/messages/push?";
+
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
     public static final String GCM_SENDER_ID = "485246024931";
+
+    public static final String RegARFlag= "/"+Event+"/ar/marker-scanner";
+
+    public static String HomeUrl()
+    {
+        return HOME_URL.replace(Event, CurrentSlug);
+    }
+
+    public static String SubMenuUrl()
+    {
+        return SUB_MENU_URL.replace(Event, CurrentSlug);
+    }
+
+    public static String SettingUrl()
+    {
+        return SETTING_URL.replace(Event, CurrentSlug);
+    }
+
+    public static String AdvertisementUrl()
+    {
+        return ADS_API.replace(Event, CurrentSlug);
+    }
+
+    public static String PhotoframeUrl()
+    {
+        return HREF_PHOTO_FRAMES.replace(Event, CurrentSlug);
+    }
+
+    public static void UpdateSlug(String url)
+    {
+        String path = url.replaceAll(Constants.BASE_URL, "");
+        int index = (-1 != path.indexOf("?")) ? path.indexOf("?") : path.indexOf("/");
+        CurrentSlug = path.substring(0, index);
+    }
+
+    public static final String PHOTO_FRAME = HOME_URL + "/api/photoframes/check?os=android&version=%d";
+
+    public static final String HREF_PHOTO_FRAMES = Event + "/photoframes/starting";
+
+    public static boolean isPasscodeEnable()
+    {
+        return (0 < PASSCODE.length());
+    }
 }

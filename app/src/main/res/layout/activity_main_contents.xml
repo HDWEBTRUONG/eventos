@@ -20,6 +20,23 @@
             android:layout_height="match_parent"
             />
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="#327db0"
+        android:id="@+id/adview">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/ad"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitXY"
+             />
+    </LinearLayout>
+
     <include layout="@layout/error_page"
         android:id="@+id/error_page"/>
 </LinearLayout>

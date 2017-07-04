@@ -8,14 +8,14 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "bravesoft-app" + PASSCODE;
+    public static final String Event = "stg-bravesoft-app" + PASSCODE;
     public static String CurrentSlug = Event;
 
     //ベースURL
     public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
     // 機能使用の有無
     // ①ログイン機能を使用する場合はtrue、それ以外はfalseを入れる
-    public static final Boolean USED_LOGIN = true;
+    public static final Boolean USED_LOGIN = false;
 
     //ホームのURL
     public static final String HOME_URL = BASE_URL + Event;

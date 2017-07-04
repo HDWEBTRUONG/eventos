@@ -20,7 +20,7 @@ android {
     }
     productFlavors {
         bravesoft_app {
-            applicationId = "tokyo.eventos.bravesoft_app"
+            applicationId = "tokyo.eventos.bravesoft_app.merge"
             versionCode 1
             versionName "1.0.0"
         }

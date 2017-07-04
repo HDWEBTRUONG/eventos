@@ -103,8 +103,8 @@ public class BeaconService extends Service implements BeaconConsumer {
         try {
             beaconManager = BeaconManager.getInstanceForApplication(this);
             beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(IBEACON_FORMAT));
-            beaconManager.setBackgroundScanPeriod(TimeUnit.SECONDS.toMillis(5));
-            beaconManager.setBackgroundBetweenScanPeriod(TimeUnit.SECONDS.toMillis(5));
+            beaconManager.setBackgroundScanPeriod(TimeUnit.SECONDS.toMillis(1));
+            beaconManager.setBackgroundBetweenScanPeriod(TimeUnit.SECONDS.toMillis(1));
 
             if(beaconobjs!=null)
             {

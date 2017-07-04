@@ -27,6 +27,8 @@ public class Constants {
     public static final String SETTING_URL = BASE_URL + Event + "/settings";
     //QRコード読み取りのURL
     public static final String READING_QRCODE = "/reading_qrcode/";
+    //写真画面のURL
+    public static final String FACEBOOK_PHOTO_URL = BASE_URL + Event + "/facebook_photo";
     //ERRORのURL
     public static final String ERROR_URL = "data:text/html,chromewebdata";
     //アプリ内に表示させるドメイン
@@ -60,7 +62,6 @@ public class Constants {
     public static final String DOCUMENTS_API_URL = BASE_URL + Event + "/api/documents/get.json";
 
     public static final String Beacon_AGGREGATE_API= BASE_URL+Event+"/api/beacon/messages/push?";
-
     //PUSHの設定値
     public static final String GCM_BASE_URL = "https://stg-push.appvisor-event.com/";
     public static final String GCM_SENDER_ID = "485246024931";

@@ -1,6 +1,8 @@
 package com.appvisor_event.master;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +34,8 @@ import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.Document.Document;
 import com.appvisor_event.master.modules.Document.DocumentsActivity;
+import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
+import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.Photoframe.Photoframe;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
@@ -231,15 +235,15 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         }
 
         //端末の言語設定を取得
-        local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
-        if(isFirstStart()) {
-            //端末の言語設定を取得
+
+        if (AppLanguage.isUnknown(getApplicationContext()))
+        {
+            local = Resources.getSystem().getConfiguration().locale.getLanguage().toString();
             AppLanguage.setLanguageWithStringValue(this.getApplicationContext(), local);
-            setIsFirstStarts(false);
         }
         else
         {
-            local = AppLanguage.getLanguageWithStringValue(this.getApplicationContext());
+            local = AppLanguage.isJapanese(getApplicationContext()) ? "ja" : "en";
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -461,6 +465,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
         GcmClient.checkPlayServices(this);
         BeaconService.isUnityService = false;
+
+        if (active_url.indexOf(Constants.HOME_URL) != -1)
+        {
+            checkVersion();
+        }
     }
 
     @Override
@@ -602,17 +611,16 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
             } catch (MalformedURLException e) {}
 
+            String passcode;
+            String checkPasscode = "?passcode=";
+            int passcode_index = url.indexOf(checkPasscode);
+
             if (url.indexOf(Constants.HOME_URL) != -1)
             {
                 checkVersion();
             }
 
             active_url = url;
-
-            String passcode;
-            String checkPasscode = "?passcode=";
-            int passcode_index = url.indexOf(checkPasscode);
-
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)
@@ -700,8 +708,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                             startActivity(intent);
                         }
                     }
-
-
+                } else if (url.indexOf(Constants.FACEBOOK_PHOTO_URL) != -1){
+                    // インテントのインスタンス生成
+                    Intent intent = new Intent(MainActivity.this, FacebookPhotoActivity.class);
+                    // サブ画面の呼び出し
+                    startActivity(intent);
                 } else {
                     active_url = url;
                     if ((active_url.indexOf(Constants.RegARFlag) != -1)) {
@@ -988,6 +999,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         SharedPreferences.Editor editor = data.edit();
         editor.putInt("background_flg", 0);
         editor.apply();
+        ForceUpdate.dismissAlertView();
     }
 
     private void reset()
@@ -1022,9 +1034,27 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         });
     }
 
+    public void checkVersion()
+    {
+        ForceUpdate.checkVersion(getApplicationContext(), new ForceUpdate.CheckVersionListener() {
+            @Override
+            public void OnSuccess(ForceUpdateApiClient.Response response) {
+                if (ForceUpdate.isNotSatisfiedVersion(response))
+                {
+                    ForceUpdate.showAlertViewWithData(getFragmentManager(), response.getData());
+                }
+            }
+
+            @Override
+            public void OnError(Exception exception) {
+
+            }
+        });
+    }
+
     private void showDocumentsActivity()
     {
-        Intent intent = new Intent(this, DocumentsActivity.class);
-        startActivity(intent);
+       Intent intent = new Intent(this, DocumentsActivity.class);
+       startActivity(intent);
     }
 }

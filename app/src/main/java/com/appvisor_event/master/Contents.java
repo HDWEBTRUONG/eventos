@@ -1,7 +1,6 @@
 package com.appvisor_event.master;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -20,7 +19,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -52,6 +50,8 @@ import com.appvisor_event.master.modules.AssetsManager;
 import com.appvisor_event.master.modules.BeaconService;
 import com.appvisor_event.master.modules.JavascriptHandler.FavoritSeminarJavascriptHandler;
 import com.appvisor_event.master.modules.JavascriptManager;
+import com.appvisor_event.master.modules.PermissionRequestManager.PermissionRequestManager;
+import com.appvisor_event.master.modules.Schedule.Schedule;
 import com.appvisor_event.master.modules.Spiral.ETicket.QRCodeScannerActivity;
 import com.appvisor_event.master.modules.WebAppInterface;
 import com.appvisor_event.master.util.SPUtils;
@@ -67,6 +67,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -163,6 +165,8 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         }
     }
 
+    private Schedule schedule = null;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
@@ -195,6 +199,9 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         myWebView.addJavascriptInterface(new AndroidSpiralETicketInterface(this),"AndroidSpiralETicketInterface");
         myWebView.addJavascriptInterface(new AndroidBeaconMapInterface(this),"AndroidBeaconMapInterface");
         myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
+
+        schedule = new Schedule(myWebView, this);
+        myWebView.addJavascriptInterface(schedule, "ScheduleJavascriptInterface");
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
         // ファイルアクセスを許可する
@@ -208,7 +215,14 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         }
 
         //CATHEを使用する
-        myWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        if (isCachePolicy())
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }
+        else
+        {
+            myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        }
 
         // Android 5.0以降は https のページ内に http のコンテンツがある場合に表示出来ない為設定追加。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -790,18 +804,6 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         }
     };
 
-    private boolean isCachePolicy()
-    {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
-        if(cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected())
-        {
-            return false;
-        }else
-        {
-            return true;
-        }
-    }
-
     /** WebViewClientクラス */
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
@@ -822,6 +824,25 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                 }
                 return true;
             }
+
+            try {
+                final URL urlObject = new URL(url);
+
+                // 「スケジュール登録」リクエスト
+                if (Schedule.isRegistCalenderUrl(urlObject))
+                {
+                    registSchedules(urlObject);
+                    return true;
+                }
+
+                // 「スケジュール削除」リクエスト
+                if (Schedule.isDeleteCalenderUrl(urlObject))
+                {
+                    deleteSchedules(urlObject);
+                    return true;
+                }
+
+            } catch (MalformedURLException e) {}
 
             active_url = url;
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
@@ -1289,7 +1310,6 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
         Bitmap image = Bitmap.createBitmap(tmpImage, 0, 0, tmpImage.getWidth(), tmpImage.getHeight(), matrix, true);
 
-        Log.d("tto", String.format("width: %d, height: %d", image.getWidth(), image.getHeight()));
         return image;
     }
 
@@ -1424,5 +1444,41 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                 }
             }
         }
+    }
+
+    private void registSchedules(URL url)
+    {
+        schedule.setUrl(url);
+        PermissionRequestManager.getInstance().requestPermissions(Contents.this, new String[]{Manifest.permission.WRITE_CALENDAR}, new PermissionRequestManager.OnRequestPermissionsResultListener() {
+            @Override
+            public void onRequestPermissionsResult(PermissionRequestManager.PermissionsResult result) {
+                if (result.isGrantedAll())
+                {
+                    schedule.registSchedules();
+                }
+                else
+                {
+                    schedule.cancel();
+                }
+            }
+        });
+    }
+
+    private void deleteSchedules(URL url)
+    {
+        schedule.setUrl(url);
+        PermissionRequestManager.getInstance().requestPermissions(Contents.this, new String[]{Manifest.permission.WRITE_CALENDAR}, new PermissionRequestManager.OnRequestPermissionsResultListener() {
+            @Override
+            public void onRequestPermissionsResult(PermissionRequestManager.PermissionsResult result) {
+                if (result.isGrantedAll())
+                {
+                    schedule.deleteSchedules();
+                }
+                else
+                {
+                    schedule.cancel();
+                }
+            }
+        });
     }
 }

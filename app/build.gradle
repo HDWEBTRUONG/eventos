@@ -56,4 +56,8 @@ dependencies {
     compile 'org.altbeacon:android-beacon-library:2.9.1'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile group: 'com.tonicartos', name: 'stickygridheaders', version: '1.0.1'
+    compile 'com.github.barteksc:android-pdf-viewer:2.5.0'
 }

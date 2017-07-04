@@ -1,6 +1,5 @@
 package com.appvisor_event.master;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +10,7 @@ import android.os.Bundle;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.BeaconService;
 
-public class BaseActivity extends Activity {
+public class BaseActivity extends AppActivity {
     public int activityIndex=0;
     BeaconMessageReceiver beaconMessageReceiver;
     IntentFilter beaconMessageintentFilter;

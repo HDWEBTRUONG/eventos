@@ -49,7 +49,7 @@
     <string name="camera_no_image_en">Failed to download Photo Frame.</string>
     <string name="camera_no_certain_jp">確認</string>
     <string name="camera_no_certain_en">OK</string>
-    
+
     <!--image activity-->
     <string name="image_camera_dialog_jp">写真を撮り直しますか？</string>
     <string name="image_camera_dialog_yes_jp">はい</string>
@@ -70,5 +70,11 @@
     <string name="share_dialog_text_03_en">If you want to share it with Facebook and Instagram,</string>
     <string name="share_dialog_text_04_en">enter #表参道イルミネーション.</string>
     <string name="share_dialog_close_en">Close</string>
+
+    <string name="documents_content_title">資料ダウンロード</string>
+    <string name="document_failed_download_message">ダウンロードできませんでした。</string>
+    <string name="document_failed_open_message">資料を開けませんでした。</string>
+
+    <string name="force_update_alert_dialog_store_button_label">OK</string>
 
 </resources>

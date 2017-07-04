@@ -1,6 +1,5 @@
 package com.appvisor_event.master;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +30,8 @@ import com.appvisor_event.master.modules.Advertisement.Advertisement;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.AppPermission.AppPermission;
 import com.appvisor_event.master.modules.BeaconService;
+import com.appvisor_event.master.modules.Document.Document;
+import com.appvisor_event.master.modules.Document.DocumentsActivity;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
 import com.appvisor_event.master.modules.Photoframe.Photoframe;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
@@ -42,6 +42,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +54,7 @@ import java.util.Map;
 
 public class MainActivity extends BaseActivity implements AppPermission.Interface {
 
-        private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
 
     private GcmClient gcmClient = null;
 
@@ -103,6 +105,74 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         }
     }
 
+    @Override
+    public Boolean isRequirePermission(int requestCode, String permission) {
+        AppPermission.log(String.format("isRequirePermission: %s", permission));
+
+        Boolean isRequirePermission = false;
+        switch (requestCode)
+        {
+            case beaconDetectionRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case android.Manifest.permission.ACCESS_FINE_LOCATION:
+                    case android.Manifest.permission.ACCESS_COARSE_LOCATION:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
+        }
+
+        return isRequirePermission;
+    }
+
+    @Override
+    public void showErrorDialog(int requestCode) {
+        AppPermission.log(String.format("showErrorDialog"));
+        switch (requestCode)
+        {
+
+            case beaconDetectionRequiredPermissionsRequestCode:
+                if(AppLanguage.isJapanese(this)) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title))
+                            .setMessage(getString(R.string.permission_dialog_message_location))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(MainActivity.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                }
+                else
+                {
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.permission_dialog_title_en))
+                            .setMessage(getString(R.string.permission_dialog_message_location_en))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    AppPermission.openSettings(MainActivity.this);
+                                }
+                            })
+                            .create()
+                            .show();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void allRequiredPermissions(int requestCode, String[] permissions) {
+        switch (requestCode)
+        {
+            case beaconDetectionRequiredPermissionsRequestCode:
+                startService(new Intent(MainActivity.this, BeaconService.class));
+                break;
+        }
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -111,7 +181,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         device_id  = User.getUUID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         String app_id = User.getAppID(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
         String version =  User.getAppVersion(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
-//        device_id = AppUUID.get(this.getApplicationContext()).replace("-","").replace(" ","").replace(">","").replace("<","");
+
         //DEVICE_TOKENの取得
         device_token = GCMRegistrar.getRegistrationId(this).replace("-", "").replace(" ", "").replace(">", "").replace("<", "");
         Log.d("device_token", device_token);
@@ -145,10 +215,13 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
 
-        if (isCachePolicy()) {
+        //CATHEを使用する
+        if (isCachePolicy())
+        {
             myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        } else {
-            //CATHEを使用する
+        }
+        else
+        {
             myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         }
 
@@ -269,6 +342,63 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         this.initGCM();
         this.checkGCMNotification();
 
+        try {
+            myJsonbeacon = new InfosGetter(Constants.Beacon_MESSAGE_API+getBeaconVersion());
+            myJsonbeacon.start();
+            myJsonbeacon.join();
+            Log.d("Test josn",Constants.Beacon_MESSAGE_API+getBeaconVersion());
+            if (myJsonbeacon.mResponse != null && myJsonbeacon.mResponse != "") {
+                JSONObject beaconjson = new JSONObject(myJsonbeacon.mResponse);
+                Log.d("Test josn",myJsonbeacon.mResponse);
+                if (beaconjson.getInt("status") == 200) {
+                    Log.d("Test josn",myJsonbeacon.mResponse);
+                    //beaconサービス起動
+                    BeaconService.beaconobjs=beaconjson;
+                    setBeaconMessages(beaconjson.toString());
+                    setBeaconVersion(beaconjson.getString("version"));
+
+                }
+                else
+                {
+                    if(getBeaconMessages()!=null) {
+                        beaconjson = new JSONObject(getBeaconMessages());
+                        BeaconService.beaconobjs = beaconjson;
+                    }
+                }
+
+                stopService(new Intent(MainActivity.this, BeaconService.class));
+                if(BeaconService.beaconobjs!=null&&BeaconService.beaconobjs.getJSONArray("beacons").length()>0)
+                {
+                    gps = new GPSManager(this);
+                    if(!gps.canGetLocation)
+                    {
+                        if(AppLanguage.isJapanese(this)) {
+                            gps.showSettingsAlert();
+                        }
+                        else
+                        {
+                            gps.showSettingsAlertEn();
+                        }
+                    }
+                    if (AppPermission.checkPermission(this, beaconDetectionRequiredPermissions))
+                    {
+                        startService(new Intent(MainActivity.this, BeaconService.class));
+                    }
+                    else {
+                        AppPermission.requestPermissions(this, beaconDetectionRequiredPermissionsRequestCode, beaconDetectionRequiredPermissions);
+                    }
+                }
+                else
+                {
+                    stopService(new Intent(MainActivity.this, BeaconService.class));
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         StartupAd.setShown(false);
 
         try {
@@ -321,69 +451,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         reset();
 
         sInstance = this;
-    }
 
-    @Override
-    public Boolean isRequirePermission(int requestCode, String permission) {
-        AppPermission.log(String.format("isRequirePermission: %s", permission));
-
-        Boolean isRequirePermission = false;
-        switch (requestCode) {
-            case beaconDetectionRequiredPermissionsRequestCode:
-                switch (permission) {
-                    case android.Manifest.permission.ACCESS_FINE_LOCATION:
-                    case android.Manifest.permission.ACCESS_COARSE_LOCATION:
-                        isRequirePermission = true;
-                        break;
-                }
-                break;
-        }
-
-        return isRequirePermission;
-    }
-
-    @Override
-    public void showErrorDialog(int requestCode) {
-        AppPermission.log(String.format("showErrorDialog"));
-        switch (requestCode) {
-
-            case beaconDetectionRequiredPermissionsRequestCode:
-                if (AppLanguage.isJapanese(this)) {
-                    new AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.permission_dialog_title))
-                            .setMessage(getString(R.string.permission_dialog_message_location))
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    AppPermission.openSettings(MainActivity.this);
-                                }
-                            })
-                            .create()
-                            .show();
-                } else {
-                    new AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.permission_dialog_title_en))
-                            .setMessage(getString(R.string.permission_dialog_message_location_en))
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    AppPermission.openSettings(MainActivity.this);
-                                }
-                            })
-                            .create()
-                            .show();
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void allRequiredPermissions(int requestCode, String[] permissions) {
-        switch (requestCode) {
-            case beaconDetectionRequiredPermissionsRequestCode:
-                startService(new Intent(MainActivity.this, BeaconService.class));
-                break;
-        }
+        checkVersion();
     }
 
     @Override
@@ -499,17 +568,21 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         @Override
         public void onRefresh() {
             myWebView.reload();
+
+            if (active_url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
+            // 3秒待機
+//            new Handler().postDelayed(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//
+//                }
+//            }, 10000);
         }
     };
-
-    private boolean isCachePolicy() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
-        if (cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     /**
      * WebViewClientクラス
@@ -517,6 +590,23 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            try {
+                final URL urlObject = new URL(url);
+
+                // 「資料」リクエスト
+                if (Document.isDocumentUrl(urlObject))
+                {
+                    showDocumentsActivity();
+                    return true;
+                }
+
+            } catch (MalformedURLException e) {}
+
+            if (url.indexOf(Constants.HOME_URL) != -1)
+            {
+                checkVersion();
+            }
+
             active_url = url;
 
             String passcode;
@@ -790,6 +880,13 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         StartupAd.setShown(true);
     }
 
+    private String getBeaconVersion()
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
+        String version = sharedPreferences.getString("beaconVersion","-1" );
+        return  version;
+    }
+
     private void sendPushNotificationResponse(String pushId)
     {
         if (null == pushId || !(pushId instanceof String))
@@ -798,13 +895,6 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
         }
 
         this.gcmClient.sendResponse(pushId);
-    }
-
-    private String getBeaconVersion()
-    {
-        SharedPreferences sharedPreferences=getSharedPreferences("beaconData", Context.MODE_PRIVATE);
-        String version = sharedPreferences.getString("beaconVersion","-1" );
-        return  version;
     }
 
     private void setBeaconVersion(String curversion) {
@@ -930,5 +1020,11 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                 }
             }
         });
+    }
+
+    private void showDocumentsActivity()
+    {
+        Intent intent = new Intent(this, DocumentsActivity.class);
+        startActivity(intent);
     }
 }

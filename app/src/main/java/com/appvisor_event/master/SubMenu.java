@@ -31,7 +31,12 @@ import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.BeaconService;
 import java.util.Date;
 
+import com.appvisor_event.master.modules.Document.Document;
+import com.appvisor_event.master.modules.Document.DocumentsActivity;
+
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,11 +82,12 @@ public class SubMenu extends BaseActivity {
          // ドロワー画面のページを表示する。
          myWebView.loadUrl(Constants.SubMenuUrl(), extraHeaders);
          //CATHEを使用する
-        if(isCachePolicy())
+        if (isCachePolicy())
         {
             myWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        } else {
-            //CATHEを使用する
+        }
+        else
+        {
             myWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         }
 
@@ -122,15 +128,6 @@ public class SubMenu extends BaseActivity {
         mSwipeRefreshLayout.setColorScheme(R.color.red, R.color.green, R.color.blue, R.color.yellow);
     }
 
-    private boolean isCachePolicy() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
-        if (cm != null && cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     @Override
     public void onRestart() {
         final ImageView menu_buttom = (ImageView) findViewById(R.id.menu_buttom_return);
@@ -142,6 +139,20 @@ public class SubMenu extends BaseActivity {
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            try {
+                final URL urlObject = new URL(url);
+
+                // 「資料」リクエスト
+                if (Document.isDocumentUrl(urlObject))
+                {
+                    showDocumentsActivity();
+                    finish();
+                    return true;
+                }
+
+            } catch (MalformedURLException e) {}
+
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_1) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
@@ -276,7 +287,6 @@ public class SubMenu extends BaseActivity {
         }
     };
 
-
     private void showCameradialog() {
         String content = "";
         String ok = "";
@@ -346,5 +356,11 @@ public class SubMenu extends BaseActivity {
                 }
             }
         }
+    }
+
+    private void showDocumentsActivity()
+    {
+        Intent intent = new Intent(this, DocumentsActivity.class);
+        startActivity(intent);
     }
 }

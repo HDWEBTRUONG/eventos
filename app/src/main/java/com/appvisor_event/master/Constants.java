@@ -54,6 +54,11 @@ public class Constants {
 
     public static final String Beacon_MESSAGE_API= BASE_URL+Event+"/api/beacon/messages/?version=";
 
+    // バージョンチェックの為のAPI
+    public static final String CHECK_VERSION_API_URL = BASE_URL + Event + "/api/users/check_version.json";
+    // 資料のためのAPI
+    public static final String DOCUMENTS_API_URL = BASE_URL + Event + "/api/documents/get.json";
+
     public static final String Beacon_AGGREGATE_API= BASE_URL+Event+"/api/beacon/messages/push?";
 
     //PUSHの設定値

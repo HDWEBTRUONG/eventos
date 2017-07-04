@@ -190,12 +190,6 @@ public class BeaconService extends Service implements BeaconConsumer {
                     for(int i = 0 ;i<beaconlist.length;i++) {
 
                         Beacon beacon =(Beacon)beaconlist[i];
-                        if (7.0 < beacon.getDistance())
-                        {
-                            // 遠すぎるビーコンは検知対象外とする
-                            continue;
-                        }
-
                         if(beaconmap!=null) {
                             if (nearestbeacon.getDistance() > beacon.getDistance()) {
                                 nearestbeacon = beacon;
@@ -417,7 +411,7 @@ public class BeaconService extends Service implements BeaconConsumer {
     public  String getTopActivityName(Context context){
         String topActivityClassName=null;
         ActivityManager activityManager =
-                (ActivityManager)(context.getSystemService(android.content.Context.ACTIVITY_SERVICE )) ;
+                (ActivityManager)(context.getSystemService(Context.ACTIVITY_SERVICE )) ;
         List<ActivityManager.RunningTaskInfo> runningTaskInfos = activityManager.getRunningTasks(1) ;
         if(runningTaskInfos != null){
             ComponentName f=runningTaskInfos.get(0).topActivity;

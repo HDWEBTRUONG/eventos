@@ -112,6 +112,10 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
+
+    private static final String[] readingQRcodeRequiredPermissions = {
+            Manifest.permission.CAMERA
+    };
     private static final int qrcodeScannerRequiredPermissionsRequestCode = 102;
 
     private static final String[] spiralETicketQRCodeScannerRequiredPermissions = {
@@ -190,6 +194,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
         myWebView.addJavascriptInterface(new AndroidSpiralETicketInterface(this),"AndroidSpiralETicketInterface");
         myWebView.addJavascriptInterface(new AndroidBeaconMapInterface(this),"AndroidBeaconMapInterface");
+        myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
         // ファイルアクセスを許可する
@@ -538,6 +543,17 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         }
     }
 
+    public void startReadingQRcode(){
+
+        if (AppPermission.checkPermission(this, readingQRcodeRequiredPermissions))
+        {
+            startQRCodeScanner();
+        }
+        else {
+            AppPermission.requestPermissions(this, qrcodeScannerRequiredPermissionsRequestCode, readingQRcodeRequiredPermissions);
+        }
+    }
+
     public void showGalleryChooser(String inputId, int width, int height)
     {
         this.inputId = inputId;
@@ -701,8 +717,17 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                     String code = bundle.getString("data");
                     latitude = bundle.getDouble("lat");
                     longitude = bundle.getDouble("lon");
-                    myWebView.loadUrl("javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
-                    Log.d("TAG","javascript:CheckIn.scanQRCode('"+device_id+"','"+ code + "','"+ latitude + "','"+longitude + "')");
+                    String url = myWebView.getOriginalUrl();
+                    String reading_qrcode_url = "/reading_qrcode/";
+
+                    if (url.indexOf(reading_qrcode_url) != -1) {
+                        myWebView.loadUrl("javascript:Reading.scanQRCode('"+ code + "')");
+                    }else {
+                        latitude = bundle.getDouble("lat");
+                        longitude = bundle.getDouble("lon");
+                        myWebView.loadUrl("javascript:CheckIn.scanQRCode('" + device_id + "','" + code + "','" + latitude + "','" + longitude + "')");
+                        Log.d("TAG", "javascript:CheckIn.scanQRCode('" + device_id + "','" + code + "','" + latitude + "','" + longitude + "')");
+                    }
                 }
                 break;
             case 4:
@@ -849,6 +874,11 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
             Contents.this.setupJavascriptHandler();
 
             super.onPageFinished(view, url);
+
+            // ReadingQRcodeの場合はweb側にvalueをセットするリクエストを送る
+            if ((url.indexOf(Constants.READING_QRCODE) != -1)) {
+                myWebView.loadUrl("javascript:Reading.setCanOpenQRcodeCameraValue()");
+            }
             if(url.equals(Constants.ERROR_URL)){
                 mIsFailure = true;
             }

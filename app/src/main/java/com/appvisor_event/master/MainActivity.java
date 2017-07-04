@@ -1,8 +1,7 @@
 package com.appvisor_event.master;
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.DownloadManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +14,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -125,6 +125,15 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                         break;
                 }
                 break;
+
+            case imageDownloadRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case android.Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
         }
 
         return isRequirePermission;
@@ -165,6 +174,20 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                             .show();
                 }
                 break;
+
+            case imageDownloadRequiredPermissionsRequestCode:
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.permission_dialog_title))
+                        .setMessage(getString(R.string.permission_dialog_message_storage))
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                AppPermission.openSettings(MainActivity.this);
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
         }
     }
 
@@ -175,8 +198,20 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             case beaconDetectionRequiredPermissionsRequestCode:
                 startService(new Intent(MainActivity.this, BeaconService.class));
                 break;
+
+            case imageDownloadRequiredPermissionsRequestCode:
+                downloadImage(imageDownloadUrl);
+                break;
         }
     }
+
+
+    private String imageDownloadUrl;
+
+    private static final String[] imageDownloadRequiredPermissions = {
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    private static final int imageDownloadRequiredPermissionsRequestCode = 104;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -215,6 +250,22 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
+
+        myWebView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                WebView webView = (WebView) v;
+                WebView.HitTestResult hr = webView.getHitTestResult();
+                switch (hr.getType())
+                {
+                    case WebView.HitTestResult.IMAGE_TYPE:
+                        String url = hr.getExtra();
+                        confirmDownloadImageDialog(url);
+                        break;
+                }
+                return false;
+            }
+        });
 
         // JS利用を許可する
         myWebView.getSettings().setJavaScriptEnabled(true);
@@ -1056,5 +1107,47 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
     {
        Intent intent = new Intent(this, DocumentsActivity.class);
        startActivity(intent);
+    }
+
+    private void confirmDownloadImageDialog(final String url)
+    {
+        new AlertDialog.Builder(this)
+                .setMessage("画像を保存しますか？")
+                .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        checkImageDownloadPermissions(url);
+                    }
+                })
+                .setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                })
+                .show();
+    }
+
+    private void checkImageDownloadPermissions(String url)
+    {
+        if (AppPermission.checkPermission(this, imageDownloadRequiredPermissions))
+        {
+            downloadImage(url);
+        }
+        else {
+            imageDownloadUrl = url;
+            AppPermission.requestPermissions(this, imageDownloadRequiredPermissionsRequestCode, imageDownloadRequiredPermissions);
+        }
+    }
+
+    private void downloadImage(final String url)
+    {
+        File image = new File(url);
+
+        DownloadManager mdDownloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, image.getName());
+        mdDownloadManager.enqueue(request);
     }
 }

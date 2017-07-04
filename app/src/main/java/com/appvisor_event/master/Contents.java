@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.DownloadManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -26,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -66,6 +68,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -96,6 +99,9 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
     private double latitude;
     private GPSManager gps;
     private ArrayList<Region> regionB;
+
+    private String imageDownloadUrl;
+
     private Uri m_uri;
 
     static boolean isMultAdShow = false;
@@ -126,7 +132,12 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
     private static final String[] spiralETicketQRCodeScannerRequiredPermissions = {
             Manifest.permission.CAMERA
     };
-    private static final int spiralETicketQRCodeScannerRequiredPermissionsRequestCode = 102;
+    private static final int spiralETicketQRCodeScannerRequiredPermissionsRequestCode = 103;
+
+    private static final String[] imageDownloadRequiredPermissions = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    private static final int imageDownloadRequiredPermissionsRequestCode = 104;
 
     private String beaconData;
 
@@ -198,6 +209,23 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         findViewById(R.id.title_bar).setVisibility(View.GONE);
         //レイアウトで指定したWebViewのIDを指定する。
         myWebView = (WebView) findViewById(R.id.webView1);
+
+        myWebView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                WebView webView = (WebView) v;
+                WebView.HitTestResult hr = webView.getHitTestResult();
+                switch (hr.getType())
+                {
+                    case WebView.HitTestResult.IMAGE_TYPE:
+                        String url = hr.getExtra();
+                        confirmDownloadImageDialog(url);
+                        break;
+                }
+                return false;
+            }
+        });
+
         myWebView.addJavascriptInterface(new WebAppInterface(this),"Android");
         myWebView.addJavascriptInterface(new AndroidSpiralETicketInterface(this),"AndroidSpiralETicketInterface");
         myWebView.addJavascriptInterface(new AndroidBeaconMapInterface(this),"AndroidBeaconMapInterface");
@@ -1172,6 +1200,15 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                         break;
                 }
                 break;
+
+            case imageDownloadRequiredPermissionsRequestCode:
+                switch (permission)
+                {
+                    case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                        isRequirePermission = true;
+                        break;
+                }
+                break;
         }
 
         return isRequirePermission;
@@ -1289,6 +1326,10 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
 
             case beaconDetectionRequiredPermissionsRequestCode:
                 startBeaconDetection(beaconData);
+                break;
+
+            case imageDownloadRequiredPermissionsRequestCode:
+                downloadImage(imageDownloadUrl);
                 break;
         }
     }
@@ -1529,5 +1570,47 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                 }
             }
         });
+    }
+
+    private void confirmDownloadImageDialog(final String url)
+    {
+        new AlertDialog.Builder(this)
+                .setMessage("画像を保存しますか？")
+                .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        checkImageDownloadPermissions(url);
+                    }
+                })
+                .setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                })
+                .show();
+    }
+
+    private void checkImageDownloadPermissions(String url)
+    {
+        if (AppPermission.checkPermission(this, imageDownloadRequiredPermissions))
+        {
+            downloadImage(url);
+        }
+        else {
+            imageDownloadUrl = url;
+            AppPermission.requestPermissions(this, imageDownloadRequiredPermissionsRequestCode, imageDownloadRequiredPermissions);
+        }
+    }
+
+    private void downloadImage(final String url)
+    {
+        File image = new File(url);
+
+        DownloadManager mdDownloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, image.getName());
+        mdDownloadManager.enqueue(request);
     }
 }

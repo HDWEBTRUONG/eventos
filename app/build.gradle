@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        ctc_forum {
-            applicationId = "tokyo.eventos.ctc_forum"
+        dengeki {
+            applicationId = "tokyo.eventos.dengeki"
             versionCode 1
             versionName "1.0.0"
         }
-        ctc_forum_staging {
-            applicationId = "tokyo.eventos.ctc_forum_staging"
+        dengeki_staging {
+            applicationId = "tokyo.eventos.dengeki_staging"
             versionCode 1
             versionName "1.0.0"
         }

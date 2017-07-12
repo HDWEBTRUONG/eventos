@@ -41,13 +41,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/dengekiDebug/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dengekiDebug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dengekiDebug/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/dengeki/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/dengeki/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/dengeki/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/dengeki/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/dengeki/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/dengeki/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/dengeki/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengekiDebug/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengekiDebug/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengekiDebug/assets" type="java-test-resource" />
@@ -55,6 +48,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testDengekiDebug/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengekiDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengekiDebug/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/dengeki/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/dengeki/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/dengeki/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/dengeki/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/dengeki/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/dengeki/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/dengeki/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/dengeki/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/dengeki/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/dengeki/assets" type="java-resource" />
@@ -62,13 +62,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/dengeki/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dengeki/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dengeki/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengeki/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengeki/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengeki/assets" type="java-test-resource" />
@@ -76,6 +69,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testDengeki/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengeki/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDengeki/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestDengeki/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />

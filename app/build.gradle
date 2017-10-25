@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        backstage {
-            applicationId = "tokyo.eventos.backstage"
+        foodex {
+            applicationId = "tokyo.eventos.foodex"
             versionCode 1
             versionName "1.0.0"
         }
-        backstage_staging {
-            applicationId = "tokyo.eventos.backstage.staging"
+        foodex_staging {
+            applicationId = "tokyo.eventos.foodex_staging"
             versionCode 1
             versionName "1.0.0"
         }

@@ -8,7 +8,7 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "backstage-2017" + PASSCODE;
+    public static final String Event = "foodex" + PASSCODE;
     public static String CurrentSlug = Event;
 
     //ベースURL
@@ -40,8 +40,8 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "backstage.tours";
-    public static final String EXHIBITER_DOMAIN_2 = "eventregist.com";
+    public static final String EXHIBITER_DOMAIN_1 = "jma.or.jp/foodex/";
+    public static final String EXHIBITER_DOMAIN_2 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_3 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_5 = "XXXXXXXX";

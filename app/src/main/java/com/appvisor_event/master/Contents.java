@@ -930,7 +930,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)
                     || isFromMessage
                     || isInternalOpen) {
-               if(isFromMessage || isInternalOpen) {
+               if(isFromMessage) {
                    Contents.this.myWebView.loadUrl(url);
                    return false;
                }

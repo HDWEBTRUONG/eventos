@@ -904,6 +904,7 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
                         Intent intent = new Intent(MainActivity.this, Contents.class);
                         intent.putExtra("key.url", gcmClient.getLink(linkId));
+                        intent.putExtra("internal", true);
                         startActivity(intent);
                     }
                 });

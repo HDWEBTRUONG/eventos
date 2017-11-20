@@ -3,8 +3,6 @@ package com.appvisor_event.master;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.DownloadManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
@@ -26,8 +24,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -156,6 +154,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
     private Runnable adRunnable;
 
     private boolean isFromMessage = false;
+    private boolean isInternalOpen = false;
 
     BeaconContentsReceiver beaconContentsReceiver;
     IntentFilter intentFilter;
@@ -265,6 +264,7 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
         Intent intent = getIntent();
         // インテントに保存されたデータを取得
         active_url = intent.getStringExtra("key.url");
+        isInternalOpen = intent.getBooleanExtra("internal", false);
         isFromMessage = intent.getBooleanExtra("isMessagefrom",false);
 //        Log.d("active_url_contents",active_url);
 
@@ -928,8 +928,9 @@ public class Contents extends BaseActivity implements  AppPermission.Interface {
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)
-                    || isFromMessage) {
-               if(isFromMessage) {
+                    || isFromMessage
+                    || isInternalOpen) {
+               if(isFromMessage || isInternalOpen) {
                    Contents.this.myWebView.loadUrl(url);
                    return false;
                }

@@ -19,13 +19,13 @@ android {
         }
     }
     productFlavors {
-        foodex {
-            applicationId = "tokyo.eventos.foodex"
+        family {
+            applicationId = "tokyo.eventos.family"
             versionCode 1
             versionName "1.0.0"
         }
-        foodex_staging {
-            applicationId = "tokyo.eventos.foodex_staging"
+        family_staging {
+            applicationId = "tokyo.eventos.family_staging"
             versionCode 1
             versionName "1.0.0"
         }

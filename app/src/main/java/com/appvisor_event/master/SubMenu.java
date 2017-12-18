@@ -1,6 +1,5 @@
 package com.appvisor_event.master;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,12 +7,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -23,20 +19,19 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.content.Intent;
 import android.widget.Toast;
 
 import com.appvisor_event.master.camerasquare.CameraSquareActivity;
 import com.appvisor_event.master.modules.AppLanguage.AppLanguage;
 import com.appvisor_event.master.modules.BeaconService;
-import java.util.Date;
-
 import com.appvisor_event.master.modules.Document.Document;
 import com.appvisor_event.master.modules.Document.DocumentsActivity;
+import com.appvisor_event.master.modules.IntentUtility;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -175,7 +170,32 @@ public class SubMenu extends BaseActivity {
             }else if (url.contains(Constants.SUB_MENU_URL)){
                 return true;
             } else{
-                view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                if (IntentUtility.existsBrowser(SubMenu.this, url))
+                {
+                    view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }
+                else {
+                    int dialogTitleStringId = R.string.not_found_browser_dialog_title;
+                    int dialogMessageStringId = R.string.not_found_browser_dialog_message;
+                    if (!AppLanguage.isJapanese(SubMenu.this))
+                    {
+                        dialogTitleStringId = R.string.not_found_browser_dialog_title_english;
+                        dialogMessageStringId = R.string.not_found_browser_dialog_message_english;
+                    }
+
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(SubMenu.this)
+                            .setTitle(getString(dialogTitleStringId))
+                            .setMessage(getString(dialogMessageStringId))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            });
+
+                    dialog.create().show();
+                }
+
                 return true;
             }
         }

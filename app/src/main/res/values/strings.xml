@@ -78,4 +78,9 @@
 
     <string name="force_update_alert_dialog_store_button_label">OK</string>
 
+    <string name="not_found_browser_dialog_title">エラー</string>
+    <string name="not_found_browser_dialog_title_english">Error</string>
+    <string name="not_found_browser_dialog_message">このURLを開く事が出来るアプリケーションが見つかりませんでした。</string>
+    <string name="not_found_browser_dialog_message_english">We could not find an application that could open this URL.</string>
+
 </resources>

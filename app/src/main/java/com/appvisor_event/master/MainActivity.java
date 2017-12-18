@@ -37,6 +37,7 @@ import com.appvisor_event.master.modules.Document.DocumentsActivity;
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdate;
 import com.appvisor_event.master.modules.ForceUpdate.ForceUpdateApiClient;
 import com.appvisor_event.master.modules.Gcm.GcmClient;
+import com.appvisor_event.master.modules.IntentUtility;
 import com.appvisor_event.master.modules.Photoframe.Photoframe;
 import com.appvisor_event.master.modules.StartupAd.StartupAd;
 import com.appvisor_event.master.util.SPUtils;
@@ -689,8 +690,40 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
                     Constants.UpdateSlug(url);
                     reset();
-                }else {
-                    MainActivity.this.myWebView.stopLoading();
+                } else if (url.indexOf(Constants.PhotoframeUrl()) != -1) {
+                    String p = MainActivity.this.getFilesDir().toString() + "/images";
+                    File file=new File(p);
+                    if (!file.exists()){
+                        showCameradialog();
+                    }else {
+                        Intent intent = new Intent(MainActivity.this, CameraSquareActivity.class);//getApplication()
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            int checkCallPhonePermission = ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA);
+                            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
+                                return true;
+                            } else {
+                                startActivity(intent);
+                            }
+
+                        } else {
+                            startActivity(intent);
+                        }
+                    }
+                } else if (url.indexOf(Constants.FACEBOOK_PHOTO_URL) != -1){
+                    // インテントのインスタンス生成
+                    Intent intent = new Intent(MainActivity.this, FacebookPhotoActivity.class);
+                    // サブ画面の呼び出し
+                    startActivity(intent);
+                } else {
+                    // インテントのインスタンス生成
+                    Intent intent = new Intent(MainActivity.this, Contents.class);
+                    // URLを表示
+                    intent.putExtra("key.url", active_url);
+                    // サブ画面の呼び出し
+                    startActivity(intent);
+                    return true;
                 }
                 return false;
             }else{
@@ -703,7 +736,32 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
                     return true;
                 }
-                view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                if (IntentUtility.existsBrowser(MainActivity.this, url))
+                {
+                    view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }
+                else {
+                    int dialogTitleStringId = R.string.not_found_browser_dialog_title;
+                    int dialogMessageStringId = R.string.not_found_browser_dialog_message;
+                    if (!AppLanguage.isJapanese(MainActivity.this))
+                    {
+                        dialogTitleStringId = R.string.not_found_browser_dialog_title_english;
+                        dialogMessageStringId = R.string.not_found_browser_dialog_message_english;
+                    }
+
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this)
+                            .setTitle(getString(dialogTitleStringId))
+                            .setMessage(getString(dialogMessageStringId))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            });
+
+                    dialog.create().show();
+                }
+
                 return true;
             }
         }
@@ -770,14 +828,6 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                         //テストFOR Unity
                         BeaconService.isUnityService = true;
                         Intent intent = new Intent(MainActivity.this, TgsUnityActivity.class);
-                        startActivity(intent);
-                    } else {
-                        // インテントのインスタンス生成
-                        Log.d("LANGUAGE","Contents");
-                        Intent intent = new Intent(MainActivity.this, Contents.class);
-                        // URLを表示
-                        intent.putExtra("key.url", active_url);
-                        // サブ画面の呼び出し
                         startActivity(intent);
                     }
                 }

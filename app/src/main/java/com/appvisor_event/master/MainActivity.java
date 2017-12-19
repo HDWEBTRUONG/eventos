@@ -1118,13 +1118,12 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
     private void resetPhotoframe()
     {
-        Photoframe.clearCache(getApplicationContext());
-
         Photoframe.check(getApplicationContext(), new Photoframe.OnCheckListener() {
             @Override
             public void onFinishCheck(final int version, final String url, final String frame) {
                 if (Photoframe.isNewVersion(getApplicationContext(), version))
                 {
+                    Photoframe.clearCache(getApplicationContext());
                     Photoframe.donwloadData(url, MainActivity.this, new Photoframe.OnDownloadListener() {
                         @Override
                         public void onFinishDownload() {

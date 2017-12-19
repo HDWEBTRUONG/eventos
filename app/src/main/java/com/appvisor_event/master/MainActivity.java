@@ -702,7 +702,6 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                             int checkCallPhonePermission = ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA);
                             if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
                                 requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
-                                return true;
                             } else {
                                 startActivity(intent);
                             }
@@ -711,11 +710,13 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                             startActivity(intent);
                         }
                     }
+                    return true;
                 } else if (url.indexOf(Constants.FACEBOOK_PHOTO_URL) != -1){
                     // インテントのインスタンス生成
                     Intent intent = new Intent(MainActivity.this, FacebookPhotoActivity.class);
                     // サブ画面の呼び出し
                     startActivity(intent);
+                    return true;
                 } else {
                     // インテントのインスタンス生成
                     Intent intent = new Intent(MainActivity.this, Contents.class);

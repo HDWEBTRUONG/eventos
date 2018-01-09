@@ -457,53 +457,6 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
 
         StartupAd.setShown(false);
 
-        try {
-            myJsonbeacon = new InfosGetter(Constants.Beacon_MESSAGE_API + getBeaconVersion());
-            myJsonbeacon.start();
-            myJsonbeacon.join();
-            Log.d("Test josn", Constants.Beacon_MESSAGE_API + getBeaconVersion());
-            if (myJsonbeacon.mResponse != null && myJsonbeacon.mResponse != "") {
-                JSONObject beaconjson = new JSONObject(myJsonbeacon.mResponse);
-                Log.d("Test josn", myJsonbeacon.mResponse);
-                if (beaconjson.getInt("status") == 200) {
-                    Log.d("Test josn", myJsonbeacon.mResponse);
-                    //beaconサービス起動
-                    BeaconService.beaconobjs = beaconjson;
-                    setBeaconMessages(beaconjson.toString());
-                    setBeaconVersion(beaconjson.getString("version"));
-
-                } else {
-                    if (getBeaconMessages() != null) {
-                        beaconjson = new JSONObject(getBeaconMessages());
-                        BeaconService.beaconobjs = beaconjson;
-                    }
-                }
-
-                stopService(new Intent(MainActivity.this, BeaconService.class));
-                if (BeaconService.beaconobjs != null && BeaconService.beaconobjs.getJSONArray("beacons").length() > 0) {
-                    gps = new GPSManager(this);
-                    if (!gps.canGetLocation) {
-                        if (AppLanguage.isJapanese(this)) {
-                            gps.showSettingsAlert();
-                        } else {
-                            gps.showSettingsAlertEn();
-                        }
-                    }
-                    if (AppPermission.checkPermission(this, beaconDetectionRequiredPermissions)) {
-                        startService(new Intent(MainActivity.this, BeaconService.class));
-                    } else {
-                        AppPermission.requestPermissions(this, beaconDetectionRequiredPermissionsRequestCode, beaconDetectionRequiredPermissions);
-                    }
-                } else {
-                    stopService(new Intent(MainActivity.this, BeaconService.class));
-                }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
         reset();
 
         sInstance = this;

@@ -133,6 +133,7 @@ public class BeaconService extends Service implements BeaconConsumer {
             }
             beaconManager.bind(this);
             beaconManager.setBackgroundMode(true);
+            Log.d(TAG, "beaconManager bind");
         }
          catch (JSONException e) {
             e.printStackTrace();
@@ -173,7 +174,11 @@ public class BeaconService extends Service implements BeaconConsumer {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (beaconManager.isBound(this)) beaconManager.unbind(this);
+        if (beaconManager.isBound(this)) {
+            beaconManager.unbind(this);
+
+            Log.d(TAG, "beaconManager unbind");
+        }
     }
 
     @Override
@@ -181,6 +186,8 @@ public class BeaconService extends Service implements BeaconConsumer {
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                Log.d(TAG, "didRangeBeaconsInRegion region: " + region.toString() + " beacons: " + beacons.toString());
+
                 Object[] beaconlist=beacons.toArray();
                 beacons_inRegion.clear();
                 if (beaconlist.length > 0) {
@@ -199,59 +206,69 @@ public class BeaconService extends Service implements BeaconConsumer {
 
                         beacons_inRegion.add(bkey);
 
+                        Log.d(TAG, "didRangeBeaconsInRegion targetBeacons: " + beacons_message.toString());
+
                         if(beacons_message.get(bkey)!=null)
                         {
+                            Log.d(TAG, "didRangeBeaconsInRegion isTargetBeacon: " + beacon.toString());
                             try {
-                            JSONArray beaconmessages=beacons_message.get(bkey);
-                            for (int k =0;k<beaconmessages.length();k++)
-                            {
-                                JSONObject message = beaconmessages.getJSONObject(k);
-                                String messageid=message.getString("id");
-                                if(beaconSendedset==null||(!beaconSendedset.contains(messageid)))
+                                JSONArray beaconmessages=beacons_message.get(bkey);
+                                for (int k =0;k<beaconmessages.length();k++)
                                 {
-                                    JSONObject period=message.getJSONObject("period");
-                                    //時間を判断
-                                    String fromtime = period.getString("from");
-                                    String endtime = period.getString("to");
-                                    if(strnowtime.compareTo(fromtime)>=0&&strnowtime.compareTo(endtime)<=0)
-                                    {
-                                        beaconSendedset.add(messageid);
-                                        setSendedMessageSet(beaconSendedset);
-                                        //メッセージを表示
-                                        JSONObject msgcontent = message.getJSONObject("message");
-                                        if(msgcontent!=null)
-                                        {
-                                            String title="";
-                                            String body="";
-                                            String link="";
-                                            int isInternal=0;
-                                            if(isJP)
-                                            {
-                                                JSONObject jpmessage = msgcontent.getJSONObject("ja");
-                                                title=jpmessage.getString("title");
-                                                body=jpmessage.getString("body");
-                                                link=jpmessage.getString("link");
-                                                isInternal=jpmessage.getInt("isInternal");
-                                            }
-                                            else
-                                            {
-                                                JSONObject enmessage = msgcontent.getJSONObject("en");
-                                                title=enmessage.getString("title");
-                                                body=enmessage.getString("body");
-                                                link=enmessage.getString("link");
-                                                isInternal=enmessage.getInt("isInternal");
+                                    JSONObject message = beaconmessages.getJSONObject(k);
+                                    String messageid=message.getString("id");
 
+                                    Log.d(TAG, "didRangeBeaconsInRegion messageid: " + messageid);
+                                    if(beaconSendedset==null||(!beaconSendedset.contains(messageid)))
+                                    {
+                                        Log.d(TAG, "didRangeBeaconsInRegion newMessage: " + beaconmessages.toString(2));
+
+                                        JSONObject period=message.getJSONObject("period");
+                                        //時間を判断
+                                        String fromtime = period.getString("from");
+                                        String endtime = period.getString("to");
+                                        if(strnowtime.compareTo(fromtime)>=0&&strnowtime.compareTo(endtime)<=0)
+                                        {
+                                            Log.d(TAG, "didRangeBeaconsInRegion FireMessage: " + beaconmessages.toString(2));
+                                            beaconSendedset.add(messageid);
+                                            setSendedMessageSet(beaconSendedset);
+                                            //メッセージを表示
+                                            JSONObject msgcontent = message.getJSONObject("message");
+                                            if(msgcontent!=null)
+                                            {
+                                                String title="";
+                                                String body="";
+                                                String link="";
+                                                int isInternal=0;
+                                                if(isJP)
+                                                {
+                                                    JSONObject jpmessage = msgcontent.getJSONObject("ja");
+                                                    title=jpmessage.getString("title");
+                                                    body=jpmessage.getString("body");
+                                                    link=jpmessage.getString("link");
+                                                    isInternal=jpmessage.getInt("isInternal");
+                                                }
+                                                else
+                                                {
+                                                    JSONObject enmessage = msgcontent.getJSONObject("en");
+                                                    title=enmessage.getString("title");
+                                                    body=enmessage.getString("body");
+                                                    link=enmessage.getString("link");
+                                                    isInternal=enmessage.getInt("isInternal");
+
+                                                }
+                                                showMessageDailog(messageid,title,body,link,isInternal);
                                             }
-                                            showMessageDailog(messageid,title,body,link,isInternal);
+
                                         }
 
                                     }
-
                                 }
-                            }
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
+
+                                Log.d(TAG, "didRangeBeaconsInRegion JSONException: " + e.toString());
                             }
 
                         }

@@ -751,12 +751,12 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     findViewById(R.id.error_page).setVisibility(View.INVISIBLE);
                 } else {
                     active_url = url;
-                    if ((active_url.indexOf(Constants.RegARFlag) != -1)) {
-                        //テストFOR Unity
-                        BeaconService.isUnityService = true;
-                        Intent intent = new Intent(MainActivity.this, TgsUnityActivity.class);
-                        startActivity(intent);
-                    }
+//                    if ((active_url.indexOf(Constants.RegARFlag) != -1)) {
+//                        //テストFOR Unity
+//                        BeaconService.isUnityService = true;
+//                        Intent intent = new Intent(MainActivity.this, TgsUnityActivity.class);
+//                        startActivity(intent);
+//                    }
                 }
             }
         }

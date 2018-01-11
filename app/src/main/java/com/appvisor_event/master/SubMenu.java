@@ -268,13 +268,13 @@ public class SubMenu extends BaseActivity {
                 } else {
 
                     if ((url.indexOf(Constants.RegARFlag) != -1)) {
-                        if (!BeaconService.isUnityService) {
-                            //テストFOR Unity
-                            finish();
-                            BeaconService.isUnityService = true;
-                            Intent intent = new Intent(SubMenu.this, TgsUnityActivity.class);
-                            startActivity(intent);
-                        }
+//                        if (!BeaconService.isUnityService) {
+//                            //テストFOR Unity
+//                            finish();
+//                            BeaconService.isUnityService = true;
+//                            Intent intent = new Intent(SubMenu.this, TgsUnityActivity.class);
+//                            startActivity(intent);
+//                        }
                     } else {
                         Intent intent = new Intent();
                         Bundle bundle = new Bundle();

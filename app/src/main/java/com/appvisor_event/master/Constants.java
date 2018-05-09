@@ -8,7 +8,7 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "family" + PASSCODE;
+    public static final String Event = "3ds" + PASSCODE;
     public static String CurrentSlug = Event;
 
     //ベースURL
@@ -40,7 +40,7 @@ public class Constants {
     //アプリ内に表示させるドメイン
     public static final String APPLI_DOMAIN = "appvisor-event";
     //アプリ内に表示させるドメイン
-    public static final String EXHIBITER_DOMAIN_1 = "family.co.jp";
+    public static final String EXHIBITER_DOMAIN_1 = "3ds.com";
     public static final String EXHIBITER_DOMAIN_2 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_3 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXXXX";

@@ -19,15 +19,15 @@ android {
         }
     }
     productFlavors {
-        family {
-            applicationId = "tokyo.eventos.family"
+        sands {
+            applicationId = "tokyo.eventos.sands"
             versionCode 1
-            versionName "1.0.0"
+            versionName "2.0.0"
         }
-        family_staging {
-            applicationId = "tokyo.eventos.family_staging"
+        sands_staging {
+            applicationId = "tokyo.eventos.sands_staging"
             versionCode 1
-            versionName "1.0.0"
+            versionName "2.0.0"
         }
     }
     sourceSets {

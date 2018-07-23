@@ -35,7 +35,7 @@
         android:layout_height="@dimen/squarecamera_cover_start_height"
         android:layout_alignBottom="@id/camera_preview_view"
         android:background="@android:color/black"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <LinearLayout
         android:layout_width="match_parent"

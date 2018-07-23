@@ -619,13 +619,13 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
             String passcode;
             String checkPasscode = "?passcode=";
             int passcode_index = url.indexOf(checkPasscode);
-
             if (url.indexOf(Constants.HOME_URL) != -1)
             {
                 checkVersion();
             }
 
             active_url = url;
+            //if = 1
             if((url.indexOf(Constants.APPLI_DOMAIN) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL) != -1)
                     || (url.indexOf(Constants.GOOGLEMAP_URL2) != -1)
@@ -633,7 +633,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_2) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_3) != -1)
                     || (url.indexOf(Constants.EXHIBITER_DOMAIN_4) != -1)
-                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)) {
+                    || (url.indexOf(Constants.EXHIBITER_DOMAIN_5) != -1)
+                    ) {
                 if(passcode_index != -1) {
                     passcode = url.substring(passcode_index+10,url.length());
                     SharedPreferences data = getSharedPreferences("ricoh_passcode", MainActivity.getInstance().getApplicationContext().MODE_PRIVATE);
@@ -680,7 +681,8 @@ public class MainActivity extends BaseActivity implements AppPermission.Interfac
                     return true;
                 }
                 return false;
-            }else{
+            } //end If=1
+            else{
                 if (url.indexOf("app-api://") != -1){
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("Passcode Error")

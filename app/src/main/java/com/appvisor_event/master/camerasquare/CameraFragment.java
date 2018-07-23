@@ -169,6 +169,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             public void onClick(View v) {
                 if (mCameraID == CameraInfo.CAMERA_FACING_FRONT) {
                     mCameraID = getBackCameraID();
+
                 } else {
                     mCameraID = getFrontCameraID();
                 }

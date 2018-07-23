@@ -8,11 +8,15 @@ public class Constants {
 
     private Constants(){}
     //ホームのURL
-    public static final String Event = "3ds" + PASSCODE;
+   // public static final String Event = "3ds" + PASSCODE;
+    public static final String Event = "bsv_event_01" + PASSCODE;
+
     public static String CurrentSlug = Event;
 
     //ベースURL
-    public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
+    //public static final String BASE_URL = "https://stg-api.appvisor-event.com/";
+    public static final String BASE_URL = "https://stg-v-api.appvisor-event.com/";
+
     // 機能使用の有無
     // ①ログイン機能を使用する場合はtrue、それ以外はfalseを入れる
     public static final Boolean USED_LOGIN = false;
@@ -45,6 +49,7 @@ public class Constants {
     public static final String EXHIBITER_DOMAIN_3 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_4 = "XXXXXXXX";
     public static final String EXHIBITER_DOMAIN_5 = "XXXXXXXX";
+//    public static final String TEST="bsv_event_01";
     // GoogleMapのURL
     public static final String GOOGLEMAP_URL = "www.google.com/maps";
     // GoogleMapのURL
